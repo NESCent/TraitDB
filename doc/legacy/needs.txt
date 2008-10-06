@@ -1,0 +1,238 @@
+-*- mode: outline -*-
+
+Needs Assessment document: description of the domain, problem area,
+and needs that are to be addressed.
+
+Goals of Needs Assessment: 
+  - Summarize understanding of the domain and current practices. 
+  - State the problems that need to be addressed.
+
+
+* Domain overview: Data collection in trait-based studies
+
+A trait-based study is a common kind of a synthetic study in
+evolutionary biology that involves collecting large amounts of
+previously published data on various traits pertaining to multiple
+taxons, which is followed by analysing the data in order to answer one
+or several questions about evolution of the taxons.
+
+Techniques for the latter data analyses are fairly well-developed, to
+the degree of being embodied in software, software toolkits, and data
+representation formats.  The data collection stage, however, is very
+labor-intensive and is not supported by software tools other than
+Excel spreadsheets.
+
+Major high-level activities involved in trait data collection are
+ - recording basic information of interest from publications,
+ - cleansing the data (e.g., resolving conflicts between sources,
+   transforming into uniform measurement units (for quantitative data)
+   or discrete codes (for qualitative data), averaging, summarising),
+ - distilling the data in a format required by analysis software. 
+
+Data collection is complicated by several factors.  For example,
+
+ - Since purpose and reliability of the works from which the data is
+   collected can vary, actions performed during data collection often
+   require judgment calls on the part of the scientist, which might
+   require later revisions based on better understanding of the
+   problem area.
+ - Data collection may be performed by several people (often
+   undergraduate students) who might have varying understanding of the
+   data collection and curation policy.
+ - The above collection tasks are not performed in a strict waterfall
+   sequence, but rather in cycles and waves induced by discovery of
+   new data points, changes to data curation policies and analysis
+   techniques, and emergence of new research questions.
+
+These aspects, together with the large numbers of taxons and traits in
+a typical study, imply that ensuring quality of the collected data
+depends on careful tracking of provenance and changes.
+
+
+* Examples of trait-based studies
+
+  TODO: put here synopsis of descriptions in traitstudies.txt
+
+
+* Data collection activities in a trait-based study
+
+For clarity, we first describe major high-level activities, arranging
+them in the order of their logical dependency.  This order, however,
+does not imply the waterfall organization of the data collection
+workflow.  The subsequent section lists some of the factors that
+entangle the actual workflow. 
+
+** Major high-level activities
+
+*** Assemble the taxon list for the study
+  -- Enter or import the list of taxons about which the data will be
+     collected.
+  -- There can be discrepancy between taxon ranks for which basic data
+     is avalable and the taxon rank on which subsequent analysis is
+     performed.  E.g. genus-level analysis may need to be based on
+     data pertaining to species and specimens.  That is, there can be
+     meaningful relationships between taxons.
+
+*** Set up a "schema" for the data to be collected
+  -- There is a variety of quantitative and qualitative traits and the
+     shape of data for each trait should be described as a particular
+     basic or complex (record) data type. 
+  -- Generally, for each trait, there will be data values coming
+     directly from sources and "cleansed" data values sutable for
+     passing to analyses.  The latter is dependent on and is obtained
+     from the former, but they are likely to be described by different
+     data types.
+
+*** Record raw data from sources 
+  -- Conceptually, this amounts to filling up the "taxons x traits"
+     matrix set up in the previous two steps.  
+  -- Workflow, however, is likely to be based on going through
+     publications one after another, where each publication contains
+     data for a small subset of taxons and traits. 
+  -- Some researchers insist on tracking references to source
+     publications meticulously.
+
+*** Cleanse the data 
+  -- Translate between measurement systems (e.g. Imperial to Metric),
+     scales (e.g. cm to mm). 
+  -- Normalize between measurement protocols (e.g., for fish size,
+     standard length vs. fork length, vs. total length; measurements
+     of juveniles vs. adults; measurements in different seasons). 
+  -- Quantify data reliability, if accepted by an analysis
+     (e.g. whether the measurement was derived from 1 vs 100
+     specimens).
+
+*** Aggregate the data 
+  -- Establish a summary value for a trait of a taxon from several
+     collected data points (e.g., corresponding to different
+     publications, specimens from different museums, or compute the
+     summary value corresponding to a genus when basic data is
+     per-species).
+
+*** Extract a data slice  
+   -- Construct a data slice determined by: 
+        - a subset of taxons and
+        - a subset of data points.
+   -- In the slice, the data corresponding to each taxon + data point
+      is a clean value, where the notion of cleanliness is dictated by
+      the requirements of the subsequent analysis.
+   -- Achieving the cleanliness of data in the slice may require
+      dropping a taxon for which no clean data value is available for each
+      data point in the slice or estimating the data value for such a
+      taxon.
+
+*** Export a data slice 
+   -- Export the slice in a format suitable for consumption by a an
+      external analysis tool (Mesquite, R, ...).
+
+
+** Workflow complications 
+
+  -- Taxon list may be extended or re-organized multiple times during
+     the study.
+
+  -- The "schema" may be modified along the way [entailing all the
+     difficulties of schema evolution!]
+
+  -- Collection, cleansing and aggregation can be interleaved in time,
+     since they may proceed at different pace for different taxons.
+  
+  -- Collection, cleansing, and aggregation policies may be changed
+     along the way, making it necessary to revisit computed data that
+     depends on them.
+
+  -- Many different slices can be extracted from the same body of data
+     (e.g., induced by proper subsets of taxons and traits), as inputs
+     to a variety of data analyses.
+
+  -- Slice extraction and analysis can be performed at various times
+     for exploratory purposes, while the database is still growing.
+
+  
+
+
+* Current practice 
+
+Currently, data of one study is usually collected in one or several
+Excel spreadsheets.
+
+A spreadsheet's rows, roughly, correspond to taxa and columns
+correspond to trait data points.  When one data point has more than
+one corresponding reading at other datapoints, the whole row is
+usually duplicated (e.g., data for the same species from different
+papers, sizes of adults vs sizes of juveniles).  Alternatively, one
+can create additional columns to avoid row duplication (e.g., columns
+for adult and juvenile sizes), but the new column may remain sparcely
+populated (e.g., if most papers report only adult sizes).
+
+Policies regarding provenance tracking from raw to cleansed and
+aggregated data vary among researchers.  In a single-person project,
+it may be feasible to enter cleansed data directly into the
+spreadsheet (e.g. use a geographic description of a location in the
+paper to compute latitude and longtitude and keep only the latter in
+the spreadsheet).  This may create difficulties later on: if cleansing
+policy is changed in the middle of data collection, earlier processed
+papers may need to be revisited.  In a project with less-experienced
+collaborators (e.g., undergraduate students) the researcher may
+require keeping note of raw data from the paper, as well as free-text
+notes to record any possible doubts.
+
+For the purposes of collaboration, the spreadsheet may be split
+vertically or horizontally.  The vertical split, when columns for
+different groups of traits go to different spreadsheets, usually
+corresponds to splitting according to spheres of expertise.  The
+horizontal split usually corresponds to splitting source publications
+among several data-entry workers. Subsequent merging requires locating
+and grouping same-taxon data that may have ended up in separate
+splits.
+
+To export data into an analysis applcation, one usually creates a
+slice by creating a copy of the spreadsheet, deleting irrelevant rows
+and columns, and saving the result in a comma- or tab-separated format
+that can be either consumed directly or further processed with scripts. 
+
+Upon completion of the study, some of the final data slices may be
+published as tables or graphs in the paper. The spreadsheets may be
+published on authors' web pages, as electronic appendices in certain
+journals, or in a repository like Dryad.
+
+
+* Problems to be addressed 
+
+** Data getting into wrong cells 
+   In a spreadsheet with thousands of rows, tens of dozens of columns,
+   and many empty cells, scrolling up-down and sideways must be extra
+   careful to avoid putting data into wrong cells.  
+
+** Divergence of duplicate entries 
+   This is the nighmare of updating non-normalized data: if, e.g., a
+   citation is stored in several spreadsheet cells, changes to one of
+   them are not propagated to others.
+
+** Tracking data provenance requires explicit effort and is unreliable
+   E.g., computation of an average body size for a species done at one
+   time from specimen entries becomes invalid if new specimen entries
+   are added later.
+
+** Collaborative data collection is difficult to manage 
+  - Coordinating to maintain consistency across several spreadheets
+    that resulted from vertical and horizontal splits is challenging. 
+  - Combining data from the splits is also difficult and error-prone. 
+  - The "square-shaped" separation of work induced by horizontal and
+    vertical spreadsheet splits is inflexible. 
+  - Tracking "who did what" through voluntary comments is unrelaible. 
+
+** Explorative data analysis is prohibitively expensive 
+    ... since it requires creation of a data slice, which is
+    labor-intensive and has to be repeated all over again after the
+    master spreadsheet grows with new data. 
+   
+** Meaningful data sharing is non-existent 
+    Every trait-collection effort is study-specific.  Even if the
+    resulting spreadsheets have been published, it is hard for other
+    researchers to incorporate a subset of the data into their own
+    study.
+
+
+
+

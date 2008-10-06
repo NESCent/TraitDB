@@ -1,0 +1,213 @@
+-*- mode: outline -*-
+
+This is a "kitchen sink" of potential features, requirements, design
+ideas, open questions etc.  Some effort was applied to group them into
+large groups.
+
+This can be useful for further steps in the requirements process. 
+
+
+* Possible features and ideas 
+
+** Data representation 
+
+*** Taxon names 
+   Freely-definable names vs. identifiers from an authoritative
+   database (eg, uBIO, Catalog of Life)?
+
+*** Taxonomies and phylogenies
+     - Is taxonomic or phylogenetic subordination of taxons important
+       for any aspect of data collection?  
+     - E.g., is it a basis of aggregations? (See next section.)
+     - Is it useful to support multiple alternative taxonomies within
+       one study?
+
+*** Degree of source fidelity
+    -- Require that data from source papers should be preserved in the
+       system as is (and linked to its interpretation/cleansing as don
+       by the collector). 
+    vs 
+    -- Allow the collector to perform interpretive work outside the
+       system and enter already-cleansed data? 
+
+*** Semantically different "NULLS" 
+   -- "This data point was not reported in the paper"
+   -- "This data point was not yet looked for (may be, it is in the paper)"
+
+*** Ad hoc extensibility of controlled vocabularies
+   -- No two papers report data in the same way ==> Controlled
+      vocabularies are not clear ahead of time: need flexibility of
+      incorporating unexpected info [and tracking changes in data
+      collection policy implying new collection passes over papers?]
+   -- A student must have a pre-determined controlled vocabulary for
+     entering data, but also ability to complement or override it with
+     free text in exceptional cases.  Such entries should be
+     re-processable into controlled values later, when the controlled
+     vocabulary is extended.
+
+*** Integraton with EndNote
+ - Linking of citations to EndNote would be useful -- instead of
+   copying them into each cell.
+
+*** Support for BLOBs
+ -- Maintaining all data about species in a uniform system
+    (descriptions, image files, xrays, superimposed coordinate files,
+    all associated metadata).  Currently, it is all in files, and
+    often important metadata is encoded in file names (e.g., species
+    name, specimen location, who and when took the picture, etc) --
+    making almost impossible to do searches.
+ -- Storing PDFs of source papers may also fall here. 
+
+*** Versioning 
+   Is it important to establish snapshots of the database at different
+   points in time and be able to revert to them?  How about branching
+   and merging of versions?  
+
+
+
+** Data management/processing  
+
+*** Resolution of obsolete taxon names 
+    Taxonomic identifiers evolve over time. Is support for resolving
+    obsolete identifiers from old publications into modern ones
+    needed?  One approach would be references through vouchers.  Is
+    there a database that keeps track of the corresponding links?  If
+    not, would community effort along these lines b useful, if
+    facilitated by a protocol within our "trait bank"?
+
+
+***  Aggregation alongside taxonomic subordinations.
+   An intended study is to be done in terms of a fixed taxonnomic
+   rank (about species, about genuses, or about families).  The source
+   literature may provide data for the suitable rank, or for lower
+   ranks.  In the latter case, the data needs to be aggregated.  The
+   provenance of the aggregation must be preserved, to help with
+   possible revisions of the aggregation methodology.
+
+
+*** Reconciliation of contradictions 
+   -- Papers may contradict one another 
+   -- Must record all info, as well as reconciliation desisions. 
+
+*** Revisions 
+   -- Data entry errors can be discovered at any time. 
+   -- Need support for tracking and correcting data that is depended
+      on the corrected data.
+
+*** Provenance must be tracked
+   -- Exact raw data and where came from. 
+   -- How data was translated into common representation.  
+   -- How data was aggregated. 
+   -- Who performed each of collection, translation and aggregation. 
+   -- Who and why performed data corrections 
+
+
+
+** User interface 
+
+*** Record-like interface for initial data harvesting (to alleviate
+     wrong data in wrong cells) 
+
+*** Automatic parsing of highlighted PDF for "semi-bulk" data entry,
+     to avoid re-typing errors more likely with "field-by-field" entry. 
+
+** Collaboration and sharing 
+
+   - Data contributed by one team member should be soon (immediately?)
+     visible to everyone. 
+   - Should be no technical restrictions on carving areas of work to
+     be assigned to members.  "Stepping on each other's feet" should
+     not lead to chaos. 
+   - Traceability of who did what. 
+
+
+*** Collaboration
+   -- Undergrads read papers and enter data
+   -- The scientist merges data and maintains the master DB
+   -- Fine-grained collaboration is possible in the future 
+
+*** Sharing 
+   -- Maintaining integrity of the curated data collection vs enabling
+      other researchers to do the same kinds of data manipulation and
+      annotation the original researcher did.
+
+*** Audit trail 
+   -- who changed what when 
+
+*** Backups 
+   -- keep dated snapshots of the data
+
+
+    over others.  TraitBank (or TraitWeb?) just provides an
+    environment where this happens.
+
+
+
+** Overall architecture 
+
+*** Dissemination approach: "publications"
+    Users can publish these kinds of contributions: 
+      - Static raw data collections -- as extracted from literature
+      - Dynamic compilations
+      - "Signed" snapshots of dynamic compilations
+      - Corrections to the above
+
+    The goal: TraitBank itself does not maintain "authoritativeness"
+    of data -- the community takes over this task by valuing some pubs
+
+*** Evolution of infrastructure via mining of text annotations
+
+   The system should allow researchers to perform manual overrides for
+   most automatic resolutions (e.g., write in a species name different
+   from the one looked up by the system; write in a summary number
+   different from the one calculated by the system).  
+
+   It should also encourage the researcher to leave behind a textual
+   explanation of the override (a reference to a more up-to-date
+   taxonomy; a more appropriate summary formula). 
+
+   Mining of these explanations will be a great source of system
+   improvement ideas for the IT team. 
+
+*** Data warehousing? 
+   Are data cleansing, aggregation, and slicing tasks in TraitDB
+   workflow similar to those in data warehousing?  
+   -- A clear difference: many more judgment-intensive non-automatable
+      operations. 
+   -- Abstracting from that, can data warehousing approaches be
+      transplanted here?
+
+   The core similarity is the inverted conceptial perspective: instead
+   of a schematic container (table) filled with data we work with a
+   "soup" of data values where each value is (appears to be) annotated
+   with lots of meta-information about its meaning. 
+      - "Real data" is numeric and coded values. 
+      - Each data value is accompanied by meta-information about its meaning. 
+      - The metadata serves as coordinates that can be used to place
+        its accompanied value into the proper cell in a table that a
+        reasercher may want to construct from the values classified
+        w.r.t. the same "metadata dimensions".
+
+    The tricky thing is this tension: 
+      - To support effective searching, the information must be seen
+        as the soup of annotated data points. 
+      - For meaningful research work, the data must be arranged into
+        neat tables (possibly, with drill-down) alongside selected
+        metadata dimensions.  
+      - Efficient physical storage and interchange is yet another
+        matter, that must find a sweet spot somewhere between the
+        extremes dictated by the other two. 
+
+    Does BioNumbers.org do something along the lines of storing the
+    soup of data values?  (Do they have dimensions anymore structured
+    than textual descriptions?  Do they have facilities for arranging
+    data points into tables?)
+
+
+*** SQL as the query language 
+
+Based on the "schemas" and actual data, the system automatically
+synthesises the most appropriate relational schema, informs the user
+of the schema, and loads clean data into it. The user can then query
+this read-only data directly with SQL, creating table views of
+interest, essentially ready for exporting for analysis.

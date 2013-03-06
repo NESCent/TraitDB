@@ -6,9 +6,20 @@
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
 </head>
-<body>
+<body style="padding-top: 40px;">
 <div class="container">
-<%= yield %>
+  <div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <a class="brand" href="#">TraitDB</a>
+        <ul class="nav">
+          <li class="active"><a>Datasets</a></li>
+          <li><a>Import Jobs</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <%= yield %>
 </div>
 </body>
 </html>

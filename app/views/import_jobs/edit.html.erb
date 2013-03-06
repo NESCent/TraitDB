@@ -1,14 +1,13 @@
-<%= link_to("<< Back to List", csv_dataset_import_jobs_path(@dataset)) %>
-
-<div class="dataset edit">
-  <h2>Update Dataset</h2>
-  
-  <%= form_for(:import_job, {:method => :put, :url => csv_dataset_import_jobs_path(@dataset.id), }) do |f| %>
-  <%= render(:partial => "form", :locals => { :f => f}) %>
-  <div class="form-buttons">
-	<%= submit_tag("Update import job") %>
+<% @page_title = "Edit Import Job" %>
+<div class="row-fluid">
+  <div class="row"><h2>Update Import Job:</h2></div>
+  <div class="row">
+    <%= form_for(:import_job, {:method => :put, :url => csv_dataset_import_jobs_path(@dataset.id), }) do |f| %>
+      <%= render(:partial => "form", :locals => { :f => f}) %>
+      <div class="form-buttons">
+        <%= submit_tag("Update import job", :class => 'btn btn-primary') %>
+      </div>
+    <% end %>
   </div>
-
-  <% end %>
-  
+  <div class="row"><%= link_to("<< Back", csv_dataset_import_jobs_path(@dataset), :class => 'btn') %>
 </div>

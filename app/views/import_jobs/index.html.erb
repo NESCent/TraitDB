@@ -1,21 +1,28 @@
 <% @page_title = "Import Jobs" %>
-<div class="import_job list">
-	<h2>Import Jobs</h2>
-	<table class="listing" summary="Import Job List">
-	<tr class="header">
-	  <th>Dataset</th>
-		<th>Status</th>
-		<th>Actions</th>
-	</tr>
-	<% @import_jobs.each do |import_job| %>
-	<tr>
-		<td><%= import_job.csv_dataset.csv_file_file_name %></td>
-		<td><%= import_job.status %></td>
-		<td class="actions">
-			<%= link_to("Show", csv_dataset_import_job_path(import_job.csv_dataset, import_job), :class => 'action show') %>
-			<%= link_to("Edit", edit_csv_dataset_import_job_path(import_job.csv_dataset, import_job), :class => 'action edit') %>
-			<%= link_to("Destroy", csv_dataset_import_job_path(import_job.csv_dataset, import_job), :class => 'action destroy', :method => :delete) %>
-		</td>
-	<% end %>
-	</table>
+<div class="row-fluid">
+  <div class="row"><h2>Import Jobs</h2></div>
+  <div class="row">
+    <table class="table table-condensed table-striped table-bordered" summary="Import Job List">
+    <tr class="header">
+      <th>Dataset</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+    <% @import_jobs.each do |import_job| %>
+    <tr>
+      <td><%= import_job.csv_dataset.csv_file_file_name %></td>
+      <td><%= import_job.status %></td>
+      <td class="actions">
+        <div class="btn-group">
+          <%= link_to("Show", csv_dataset_import_job_path(import_job.csv_dataset, import_job), :class => 'btn btn-small') %>
+          <%= link_to("Edit", edit_csv_dataset_import_job_path(import_job.csv_dataset, import_job), :class => 'btn btn-small') %>
+          <%= link_to("Destroy", csv_dataset_import_job_path(import_job.csv_dataset, import_job), :class => 'btn btn-small btn-danger', :method => :delete) %>
+        </div>
+        <%= link_to("Do Import", csv_dataset_import_job_path(import_job.csv_dataset, import_job), :class => 'btn btn-small btn-primary') %>
+      </td>
+    </tr>
+    <% end %>
+    </table>
+  </div>
+  <div class="row"><%= link_to("<< Back", csv_datasets_path, :class => 'btn') %>
 </div>

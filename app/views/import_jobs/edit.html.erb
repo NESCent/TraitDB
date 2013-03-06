@@ -1,6 +1,6 @@
 <% @page_title = "Edit Import Job" %>
 <div class="row-fluid">
-  <div class="row"><h2>Update Import Job:</h2></div>
+  <div class="row"><p class="lead">Update Import Job:</p></div>
   <div class="row">
     <%= form_for(:import_job, {:method => :put, :url => csv_dataset_import_jobs_path(@dataset.id), }) do |f| %>
       <%= render(:partial => "form", :locals => { :f => f}) %>

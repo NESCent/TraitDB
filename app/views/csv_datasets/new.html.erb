@@ -1,6 +1,6 @@
 <% @page_title = "Upload Dataset" %>
 <div class="row-fluid">
-  <div class="row"><h2>Upload dataset:</h2></div>
+  <div class="row"><p class="lead">Upload dataset:</p></div>
   <div class="row">
     <%= form_for(:dataset, :url => {:action => 'create'}, :html => { :multipart => 'true', :class =>"upload_form" }) do |f| %>
       <%= render(:partial => "form", :locals => {:f => f }) %>

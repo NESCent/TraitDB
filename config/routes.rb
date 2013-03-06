@@ -1,5 +1,9 @@
 TraitDB::Application.routes.draw do
-  resources :csv_datasets
+
+  # import jobs are nested within csv datasets
+  resources :csv_datasets do
+    resources :import_jobs
+  end
 
 
   # The priority is based upon order of creation:

@@ -1,0 +1,25 @@
+<%= link_to("<< Back to List", csv_dataset_import_jobs_path(@dataset)) %>
+
+<div class="import_job show">
+  <h2>Show Import Job</h2>
+
+  <table>
+  	<tr>
+  	  <th>Dataset</th>
+  	  <td><%= link_to(@dataset.csv_file_file_name, csv_dataset_path(@dataset)) %></td>
+  	</tr>
+    <tr>
+      <th>Status</th>
+      <td><%= @import_job.status %></td>
+    </tr>
+    <tr>
+      <th>Created</th>
+      <td><%= @import_job.created_at %></td>
+    </tr>
+    <tr>
+      <th>Updated</th>
+      <td><%= @import_job.updated_at %></td>
+    </tr>
+  </table>
+  
+</div>

@@ -21,6 +21,7 @@
 			<%= link_to("Show", csv_dataset_path(dataset), :class => 'action show') %>
 			<%= link_to("Edit", edit_csv_dataset_path(dataset), :class => 'action edit') %>
 			<%= link_to("Destroy", csv_dataset_path(dataset), :class => 'action destroy', :method => :delete) %>
+			<%= link_to("Import", new_csv_dataset_import_job_path(dataset), :class => 'action import') %>
 		</td>
 	<% end %>
 	</table>

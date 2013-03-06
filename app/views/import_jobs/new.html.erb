@@ -1,0 +1,11 @@
+<%= link_to("<< Back to List", csv_dataset_import_jobs_path(@dataset)) %>
+
+<div class="import_job new">
+  <h2>Import dataset:</h2>
+  <%= form_for(:import_job, {:url => csv_dataset_import_jobs_path(@dataset.id), :html => { :multipart => 'true', :class =>"upload_form" }}) do |f| %>
+  <div class="form-buttons">
+	<%= submit_tag("Import dataset") %>
+  </div>
+  <% end %>
+  
+</div>

@@ -57,7 +57,7 @@ GEM
     less-rails (2.2.6)
       actionpack (>= 3.1)
       less (~> 2.2.0)
-    less-rails-bootstrap (2.2.0)
+    less-rails-bootstrap (2.3.0)
       less-rails (~> 2.2.0)
     libv8 (3.11.8.13)
     mail (2.4.4)

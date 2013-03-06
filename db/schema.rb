@@ -11,6 +11,31 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 0) do
+ActiveRecord::Schema.define(:version => 20130306035107) do
+
+  create_table "projects", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "projects_users", :id => false, :force => true do |t|
+    t.integer "project_id"
+    t.integer "user_id"
+  end
+
+  add_index "projects_users", ["project_id", "user_id"], :name => "index_projects_users_on_project_id_and_user_id"
+  add_index "projects_users", ["user_id", "project_id"], :name => "index_projects_users_on_user_id_and_project_id"
+
+  create_table "users", :force => true do |t|
+    t.string   "username",        :limit => 25
+    t.string   "first_name",      :limit => 25
+    t.string   "last_name",       :limit => 50
+    t.string   "email",           :limit => 100, :default => "", :null => false
+    t.string   "hashed_password", :limit => 40
+    t.string   "salt",            :limit => 40
+    t.datetime "created_at",                                     :null => false
+    t.datetime "updated_at",                                     :null => false
+  end
 
 end

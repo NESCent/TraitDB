@@ -4,6 +4,7 @@
   <h2>Update Dataset</h2>
   
   <%= form_for(:import_job, {:method => :put, :url => csv_dataset_import_jobs_path(@dataset.id), }) do |f| %>
+  <%= render(:partial => "form", :locals => { :f => f}) %>
   <div class="form-buttons">
 	<%= submit_tag("Update import job") %>
   </div>

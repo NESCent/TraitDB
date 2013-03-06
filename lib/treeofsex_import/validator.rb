@@ -22,6 +22,7 @@ module TreeOfSexImport
     attr_reader :datasets, :chr_headers
     attr_accessor :quantitative_header_start, :quantitative_header_end
     attr_accessor :qualitative_header_start, :qualitative_header_end
+    attr_accessor :messages 
     # Constant Header column names, required
     TAXON_HEADERS = ["Higher taxonomic group", "Order", "Family", "Genus", "species"]
     TAXON_SYMBOLS = [:higher_taxonomic_group, :order, :family, :genus, :species]

@@ -1,0 +1,20 @@
+<%= error_messages_for(@import_job) %>
+<% fields_array = CsvDataset.fields.map { |field| [field, field] } %>
+  <table>
+    <tr>
+      <th><%= f.label(:quantitative_header_start) %></th>
+      <td><%= f.select(:quantitative_header_start, options_for_select(fields_array)) %></th>
+    </tr>
+    <tr>
+      <th><%= f.label(:quantitative_header_end) %></th>
+      <td><%= f.select(:quantitative_header_end, options_for_select(fields_array)) %></th>
+    </tr>
+    <tr>
+      <th><%= f.label(:qualitative_header_start) %></th>
+      <td><%= f.select(:qualitative_header_start, options_for_select(fields_array)) %></th>
+    </tr>
+    <tr>
+      <th><%= f.label(:qualitative_header_end) %></th>
+      <td><%= f.select(:qualitative_header_end, options_for_select(fields_array)) %></th>
+    </tr>
+  </table>

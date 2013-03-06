@@ -9,6 +9,17 @@
   	  <td><%= link_to(@dataset.csv_file_file_name, csv_dataset_path(@dataset)) %></td>
   	</tr>
     <tr>
+      <th>Character Header Field bookends</th>
+      <td>
+        <ul>
+          <li><%= @import_job.quantitative_header_start %></li>
+          <li><%= @import_job.quantitative_header_end %></li>
+          <li><%= @import_job.qualitative_header_start %></li>
+          <li><%= @import_job.qualitative_header_end %></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
       <th>Status</th>
       <td><%= @import_job.status %></td>
     </tr>

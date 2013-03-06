@@ -16,14 +16,15 @@
       <td><%= dataset.project.name %></td>
       <td><%= dataset.user.name%></td>
       <td><%= dataset.created_at %></td>
-      <td class="actions">
+      <td>
         <div class="btn-group">
-        <%= link_to("Show", csv_dataset_path(dataset), :class => 'btn btn-small' ) %>
-        <%= link_to("Edit", edit_csv_dataset_path(dataset), :class => 'btn btn-small') %>
-        <%= link_to("Destroy", csv_dataset_path(dataset), :class => 'btn btn-small btn-danger', :method => :delete) %>
+          <%= link_to("Show", csv_dataset_path(dataset), :class => 'btn btn-small' ) %>
+          <%= link_to("Edit", edit_csv_dataset_path(dataset), :class => 'btn btn-small') %>
+          <%= link_to("Destroy", csv_dataset_path(dataset), :class => 'btn btn-small btn-danger', :method => :delete) %>
         </div>
         <%= link_to("Import", new_csv_dataset_import_job_path(dataset), :class => 'btn btn-small btn-primary') %>
       </td>
+    </tr>
     <% end %>
     </table>
 	</div>

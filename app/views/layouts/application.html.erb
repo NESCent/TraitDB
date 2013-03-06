@@ -11,10 +11,14 @@
   <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
       <div class="container">
-        <a class="brand" href="#">TraitDB</a>
-        <ul class="nav">
-          <li class="active"><a>Datasets</a></li>
-          <li><a>Import Jobs</a></li>
+        <%= link_to("TraitDB", root_path, :class => :brand) %>
+        <ul class="nav pull-right">
+          <li></li>
+          <li><a href="#">About</a></li>
+            <li><%= link_to("Search", "#") %></li>
+          <% if true %>
+            <li><%= link_to("Upload", csv_datasets_path) %></li>
+          <% end %>
         </ul>
       </div>
     </div>

@@ -2,7 +2,11 @@ TraitDB::Application.routes.draw do
 
   # import jobs are nested within csv datasets
   resources :csv_datasets do
-    resources :import_jobs
+    resources :import_jobs do
+      member do
+        get 'background_import'
+      end
+    end
   end
   
   match 'about' => 'about#index'

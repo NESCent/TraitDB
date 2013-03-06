@@ -48,7 +48,14 @@ class ImportJobsController < ApplicationController
     import_job.destroy
     flash[:notice] = 'Job destroyed successfully'
     redirect_to(csv_dataset_import_jobs_path(@dataset))
-  end  
+  end
+  
+  def background_import
+    import_job = ImportJob.find(params[:id])
+    import_job.delay.do_import
+    flash[:notice] = 'Import started'
+    redirect_to(csv_dataset_import_job_path(@dataset, import_job))
+  end
   
   private
   

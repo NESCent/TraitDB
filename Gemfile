@@ -5,6 +5,11 @@ gem 'rails', '3.2.12'
 # Paperclip adds file upload support to ActiveRecord models
 gem "paperclip", "~> 3.4.1"
 
+# delayed_job allows background asynchronous jobs
+# it used to import uploaded files
+gem "delayed_job", "~> 3.0.5"
+gem "delayed_job_active_record"
+gem "daemons"
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 

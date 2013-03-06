@@ -1,28 +1,31 @@
 <% @page_title = "Datasets" %>
-<div class="dataset list">
-	<h2>Datasets</h2>
-	
-	<%= link_to("Upload dataset", { :action => 'new' }, :class => 'action new') %>
-	
-	<table class="listing" summary="Dataset List">
-	<tr class="header">
-		<th>Filename</th>
-		<th>Status</th>
-		<th>Project</th>
-		<th>Uploader</th>
-		<th>Actions</th>
-	</tr>
-	<% @datasets.each do |dataset| %>
-	<tr>
-		<td><%= dataset.csv_file_file_name %></td>
-		<td><%= dataset.project.name %></td>
-		<td><%= dataset.user.name%></td>
-		<td class="actions">
-			<%= link_to("Show", csv_dataset_path(dataset), :class => 'action show') %>
-			<%= link_to("Edit", edit_csv_dataset_path(dataset), :class => 'action edit') %>
-			<%= link_to("Destroy", csv_dataset_path(dataset), :class => 'action destroy', :method => :delete) %>
-			<%= link_to("Import", new_csv_dataset_import_job_path(dataset), :class => 'action import') %>
-		</td>
-	<% end %>
-	</table>
+<div class="row-fluid">
+  <div class="row"><h2>Datasets</h2></div>
+  <div class="row">
+    <table class="table table-bordered table-condensed table-striped" summary="Dataset List">
+    <tr class="header">
+      <th>Filename</th>
+      <th>Project</th>
+      <th>Uploader</th>
+      <th>Uploaded</th>
+      <th>Actions</th>
+    </tr>
+    <% @datasets.each do |dataset| %>
+    <tr>
+      <td><%= dataset.csv_file_file_name %></td>
+      <td><%= dataset.project.name %></td>
+      <td><%= dataset.user.name%></td>
+      <td><%= dataset.created_at %></td>
+      <td class="actions">
+        <div class="btn-group">
+        <%= link_to("Show", csv_dataset_path(dataset), :class => 'btn btn-small' ) %>
+        <%= link_to("Edit", edit_csv_dataset_path(dataset), :class => 'btn btn-small') %>
+        <%= link_to("Destroy", csv_dataset_path(dataset), :class => 'btn btn-small btn-danger', :method => :delete) %>
+        </div>
+        <%= link_to("Import", new_csv_dataset_import_job_path(dataset), :class => 'btn btn-small btn-primary') %>
+      </td>
+    <% end %>
+    </table>
+	</div>
+	<div class="row"><%= link_to("Upload dataset", { :action => 'new' }, :class => 'btn btn-primary action new pull-right') %></div>
 </div>

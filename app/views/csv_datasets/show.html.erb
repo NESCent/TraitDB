@@ -1,29 +1,30 @@
-<%= link_to("<< Back to List", csv_datasets_path) %>
-
-<div class="dataset show">
-  <h2>Show Dataset</h2>
-
-  <table summary="Page detail view">
-  	<tr>
-  	  <th>Filename</th>
-  	  <td><%= link_to(@dataset.csv_file_file_name, @dataset.csv_file.url) %></td>
-  	</tr>
-    <tr>
-      <th>Project</th>
-      <td><%= @dataset.project.name %></td>
-    </tr>
-    <tr>
-      <th>Owner</th>
-      <td><%= @dataset.user.name %></td>
-    </tr>
-    <tr>
-      <th>Created</th>
-      <td><%= @dataset.created_at %></td>
-    </tr>
-    <tr>
-      <th>Updated</th>
-      <td><%= @dataset.updated_at %></td>
-    </tr>
-  </table>
-  
+<% @page_title = "Dataset" %>
+<div class="row-fluid">
+  <div class="row"><h2>Show Dataset</h2></div>
+  <div class="row">
+    <table class="table table-striped table-bordered">
+      <tr>
+        <th>File</th>
+        <td><%= link_to(@dataset.csv_file_file_name, @dataset.csv_file.url) %></td>
+      </tr>
+      <tr>
+        <th>Project</th>
+        <td><%= @dataset.project.name %></td>
+      </tr>
+      <tr>
+        <th>Owner</th>
+        <td><%= @dataset.user.name %></td>
+      </tr>
+      <tr>
+        <th>Created</th>
+        <td><%= @dataset.created_at %></td>
+      </tr>
+      <tr>
+        <th>Updated</th>
+        <td><%= @dataset.updated_at %></td>
+      </tr>
+    </table>
+  </div>  
+  <div class="row"><%= link_to("<< Back", csv_datasets_path, :class => 'btn') %>
+</div>
 </div>

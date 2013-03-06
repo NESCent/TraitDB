@@ -11,7 +11,18 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130306035107) do
+ActiveRecord::Schema.define(:version => 20130306145427) do
+
+  create_table "csv_datasets", :force => true do |t|
+    t.string   "csv_file_file_name"
+    t.string   "csv_file_content_type"
+    t.integer  "csv_file_file_size"
+    t.datetime "csv_file_updated_at"
+    t.integer  "project_id"
+    t.integer  "user_id"
+    t.datetime "created_at",            :null => false
+    t.datetime "updated_at",            :null => false
+  end
 
   create_table "projects", :force => true do |t|
     t.string   "name"

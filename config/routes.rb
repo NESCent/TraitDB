@@ -1,4 +1,7 @@
 TraitDB::Application.routes.draw do
+  resources :csv_datasets
+
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

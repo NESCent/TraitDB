@@ -1,0 +1,15 @@
+<%= link_to("<< Back to List", csv_datasets_path) %>
+
+<div class="dataset new">
+  <h2>Upload dataset:</h2>
+  
+  <%= form_for(:dataset, :url => {:action => 'create'}, :html => { :multipart => 'true', :class =>"upload_form" }) do |f| %>
+
+  <%= render(:partial => "form", :locals => {:f => f}) %>
+  
+  <div class="form-buttons">
+	<%= submit_tag("Upload dataset") %>
+  </div>
+  <% end %>
+  
+</div>

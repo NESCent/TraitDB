@@ -7,18 +7,25 @@
       <th>Dataset</th>
       <th>Status</th>
       <th>Actions</th>
+      <th>Job Control</th>
     </tr>
     <% @import_jobs.each do |import_job| %>
     <tr>
       <td><%= import_job.csv_dataset.csv_file_file_name %></td>
       <td><%= import_job.status %></td>
-      <td class="actions">
+      <td>
         <div class="btn-group">
           <%= link_to("Show", csv_dataset_import_job_path(import_job.csv_dataset, import_job), :class => 'btn btn-small') %>
           <%= link_to("Edit", edit_csv_dataset_import_job_path(import_job.csv_dataset, import_job), :class => 'btn btn-small') %>
           <%= link_to("Destroy", csv_dataset_import_job_path(import_job.csv_dataset, import_job), :class => 'btn btn-small btn-danger', :method => :delete) %>
         </div>
-        <%= link_to("Do Import", {:controller => 'import_jobs', :action => 'background_import', :dataset_id => import_job.csv_dataset.id, :id => import_job.id }, :class => 'btn btn-small btn-primary') %>
+      </td>
+      <td>
+        <% if import_job.status == "importing" %>
+          <%= link_to("Stop", {:controller => 'import_jobs', :action => 'show', :dataset_id => import_job.csv_dataset.id, :id => import_job.id }, :class => 'btn btn-small btn-info') %>
+        <% else %>
+          <%= link_to("Start", {:controller => 'import_jobs', :action => 'background_import', :dataset_id => import_job.csv_dataset.id, :id => import_job.id }, :class => 'btn btn-small btn-info') %>
+        <% end %>
       </td>
     </tr>
     <% end %>

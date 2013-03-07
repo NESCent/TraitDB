@@ -19,14 +19,13 @@
       <td>
         <div class="btn-group">
           <%= link_to("Show", csv_dataset_path(dataset), :class => 'btn btn-small' ) %>
-          <%= link_to("Edit", edit_csv_dataset_path(dataset), :class => 'btn btn-small') %>
+          <%= link_to("Import", new_csv_dataset_import_job_path(dataset), :class => 'btn  btn-small') %>
           <%= link_to("Destroy", csv_dataset_path(dataset), :class => 'btn btn-small btn-danger', :method => :delete) %>
         </div>
-        <%= link_to("Import", new_csv_dataset_import_job_path(dataset), :class => 'btn btn-small btn-primary') %>
       </td>
     </tr>
     <% end %>
     </table>
 	</div>
-	<div class="row"><%= link_to("Upload dataset", { :action => 'new' }, :class => 'btn btn-primary action new pull-right') %></div>
+	<div class="row"><%= link_to("Upload New CSV Dataset", { :action => 'new' }, :class => 'btn btn-primary action new pull-right') %></div>
 </div>

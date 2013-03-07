@@ -8,7 +8,9 @@ TraitDB is a Rails 3.2 application.  It requires [ruby](http://ruby-lang.org) an
 
 1. Clone the repository
 
+    ```
     git clone git@github.com:NESCent/TraitDB.git
+    ```
     
 2. Install dependencies with `bundle install`
 3. Create a `config/database.yml` configuration file.  The `config/database.template` is provided as a template.  In this file, you should specify the database names you wish to use, as well as accounts, passwords, and any database host information.
@@ -17,8 +19,8 @@ TraitDB is a Rails 3.2 application.  It requires [ruby](http://ruby-lang.org) an
 6. Create a user in the application.  Run `rails console` to start the interactive shell
 
     ```ruby
-    u = User.new(:username => 'jpublic', :first_name => 'John', :last_name => 'Public', :email => 'jpublic@domain.com', :email_confirmation => 'jpublic@domain.com', :password => 'PasswordHere')
-    u.save
+    > u = User.new(:username => 'jpublic', :first_name => 'John', :last_name => 'Public', :email => 'jpublic@domain.com', :email_confirmation => 'jpublic@domain.com', :password => 'PasswordHere')
+    > u.save
     ```
 
 7. If the save result is false, type `u.errors` to see why it failed

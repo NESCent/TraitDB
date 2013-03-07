@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130307194549) do
+ActiveRecord::Schema.define(:version => 20130307195211) do
 
   create_table "csv_datasets", :force => true do |t|
     t.string   "csv_file_file_name"
@@ -88,6 +88,15 @@ ActiveRecord::Schema.define(:version => 20130307194549) do
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
   end
+
+  create_table "taxon_ancestors", :force => true do |t|
+    t.integer  "parent_id",  :null => false
+    t.integer  "child_id",   :null => false
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "taxon_ancestors", ["parent_id", "child_id"], :name => "index_taxon_ancestors_on_parent_id_and_child_id"
 
   create_table "users", :force => true do |t|
     t.string   "username",        :limit => 25

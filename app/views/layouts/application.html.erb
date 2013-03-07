@@ -12,12 +12,20 @@
     <div class="navbar-inner">
       <div class="container">
         <%= link_to("TraitDB", root_path, :class => :brand) %>
+        <ul class="nav pull-left">
+        </ul>
         <ul class="nav pull-right">
-          <li></li>
           <li><%= link_to("About", :controller => 'about') %></li>
-            <li><%= link_to("Search", "#") %></li>
-          <% if true %>
-            <li><%= link_to("Upload", csv_datasets_path) %></li>
+          <li><%= link_to("Search", "#") %></li>
+          <!-- Upload will require login -->
+          <li><%= link_to("Upload", csv_datasets_path) %></li>
+          <% if session[:user_id] %>
+            <li class="dropdown">
+              <a class="dropdown-toggle" href="#" data-toggle="dropdown"><%= session[:username] %> <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><%= link_to("Logout", {:controller => 'access', :action => 'logout'} ) %></li>
+              </ul>
+            </li>
           <% end %>
         </ul>
       </div>

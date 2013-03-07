@@ -1,0 +1,2 @@
+class TaxaController < ApplicationController
+end

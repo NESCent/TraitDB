@@ -95,20 +95,36 @@ class ImportJob < ActiveRecord::Base
         # consider iczn_group names
         # Do we need a root taxon for the project or should there be htg in each
         # project
-        # 
+        
+        last_parent = nil
+        
         if taxon[:higher_taxonomic_group]
+          # Search for Taxon with this name and no parent
+          last_parent = Taxon.where(:name => taxon[:higher_taxonomic_group]).first_or_create(:import_job => self)
         end
         
         # order
         if taxon[:order]
+          last_parent = last_parent.where(:name => taxon[:order]).first_or_create do |t|
+            t.import_job = self
+            t.iczn_group = IcznGroup.find_by_name("order")
+          end
         end
         
         # family
         if taxon[:family]
+          last_parent = last_parent.where(:name => taxon[:family]).first_or_create do |t|
+            t.import_job = self
+            t.iczn_group = IcznGroup.find_by_name("family")
+          end
         end
         
         # genus
         if taxon[:genus]
+          last_parent = last_parent.where(:name => taxon[:genus]).first_or_create do |t|
+            t.import_job = self
+            t.iczn_group = IcznGroup.find_by_name("genus")
+          end
         end
         
         # species
@@ -116,7 +132,13 @@ class ImportJob < ActiveRecord::Base
         # what about subspecies?
         # can taxonifi help with this?
         if taxon[:species]
+          last_parent = last_parent.where(:name => taxon[:species]).first_or_create do |t|
+            t.import_job = self
+            t.iczn_group = IcznGroup.find_by_name("species")
+          end
           otu_notes = d[:notes_comments]
+          # make an otu
+          Otu.create(:name => otu_name, :taxon => last_parent, :import_job => self)
           # refs
           # codings
         end

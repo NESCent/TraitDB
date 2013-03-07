@@ -1,5 +1,5 @@
 class Taxon < ActiveRecord::Base
-  attr_accessible :name, :uri
+  attr_accessible :name, :uri, :import_job
   belongs_to :iczn_group
   belongs_to :import_job
   has_many :otus

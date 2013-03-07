@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130307193901) do
+ActiveRecord::Schema.define(:version => 20130307194549) do
 
   create_table "csv_datasets", :force => true do |t|
     t.string   "csv_file_file_name"
@@ -55,6 +55,15 @@ ActiveRecord::Schema.define(:version => 20130307193901) do
     t.string   "quantitative_header_end"
     t.string   "qualitative_header_start"
     t.string   "qualitative_header_end"
+  end
+
+  create_table "otus", :force => true do |t|
+    t.string   "name"
+    t.string   "author"
+    t.integer  "taxon_id"
+    t.integer  "import_job_id"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
   end
 
   create_table "projects", :force => true do |t|

@@ -1,5 +1,8 @@
 TraitDB::Application.routes.draw do
 
+  resources :otus
+
+
   resources :taxa
 
 

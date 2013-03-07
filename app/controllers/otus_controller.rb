@@ -1,0 +1,2 @@
+class OtusController < ApplicationController
+end

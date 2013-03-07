@@ -1,7 +1,6 @@
 class CsvDatasetsController < ApplicationController
 
-  # TODO: before filter to require project and login
-  # avoid hardcoding project and user
+  before_filter :confirm_logged_in
 
   def index
     @datasets = CsvDataset.order('created_at DESC')
@@ -13,8 +12,9 @@ class CsvDatasetsController < ApplicationController
 
   def create
     @dataset = CsvDataset.new(params[:dataset])
+    # avoid hardcoding project
     @dataset.project = Project.first
-    @dataset.user = User.first
+    @dataset.user = User.find(session[:user_id])
     if @dataset.save
       flash[:notice] = 'Dataset created successsfully'
       redirect_to(:action => 'index')

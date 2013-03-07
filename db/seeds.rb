@@ -5,3 +5,6 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+
+# Populate ICZN groups
+IcznGroup.create([{name: 'order'}, {name: 'family'}, {name: 'genus'}, {name: 'species'}])

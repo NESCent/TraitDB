@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130306213858) do
+ActiveRecord::Schema.define(:version => 20130307192747) do
 
   create_table "csv_datasets", :force => true do |t|
     t.string   "csv_file_file_name"
@@ -39,6 +39,12 @@ ActiveRecord::Schema.define(:version => 20130306213858) do
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
+
+  create_table "iczn_groups", :force => true do |t|
+    t.string   "name",       :null => false
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "import_jobs", :force => true do |t|
     t.integer  "csv_dataset_id"

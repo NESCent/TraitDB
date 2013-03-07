@@ -13,9 +13,12 @@ class ImportJob < ActiveRecord::Base
     end
 
     self.status = "importing"
+    save
     parsed_datasets, parsed_chrs = validate_dataset
     puts @validator_messages.join("\n")
     unless parsed_chrs && parsed_datasets
+      self.status = "failed"
+      save
       return false
     end
 
@@ -23,7 +26,7 @@ class ImportJob < ActiveRecord::Base
     puts import_chrs_messages.join("\n")
     import_datasets_messages = import_datasets(parsed_datasets)
     puts import_datasets_messages.join("\n")
-    self.status = "imported" # this is not saving
+    self.status = "imported"
     save
     true
   end

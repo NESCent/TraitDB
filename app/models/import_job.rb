@@ -2,7 +2,8 @@ require 'treeofsex_import/validator'
 
 class ImportJob < ActiveRecord::Base
   belongs_to :csv_dataset
-  has_many :taxa, :otus
+  has_many :taxa
+  has_many :otus
   attr_accessible :status, :csv_dataset
   attr_accessible :quantitative_header_start, :quantitative_header_end, :qualitative_header_start, :qualitative_header_end
   # TODO: On creating records in the actual database, relate them to this model object

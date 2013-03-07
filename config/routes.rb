@@ -1,5 +1,7 @@
 TraitDB::Application.routes.draw do
 
+  # access controller
+  match 'access(/:action)' => 'access'
   # import jobs are nested within csv datasets
   resources :csv_datasets do
     resources :import_jobs do

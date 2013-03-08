@@ -16,8 +16,10 @@
       <td><%= import_job.status %></td>
       <td>
         <div class="btn-group row-fluid">
-          <%= link_to("Taxa (#{import_job.taxa.count})", taxa_path(:import_job => import_job.id), :class => 'btn btn-small span6') %>
-          <%= link_to("OTUs (#{import_job.otus.count})", otus_path(:import_job => import_job.id), :class => 'btn btn-small span6') %>
+          <%= link_to("Taxa (#{import_job.taxa.count})", taxa_path(:import_job => import_job.id), :class => 'btn btn-small span3') %>
+          <%= link_to("OTUs (#{import_job.otus.count})", otus_path(:import_job => import_job.id), :class => 'btn btn-small span3') %>
+          <%= link_to("Traits (0)", "#", :class => 'btn btn-small span3') %>
+          <%= link_to("Codings (0)", "#", :class => 'btn btn-small span3') %>
         </div>
       </td>
       <td>

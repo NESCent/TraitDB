@@ -11,7 +11,7 @@ class Taxon < ActiveRecord::Base
   has_one :parent_taxon, :class_name => 'TaxonAncestor', :foreign_key => 'child_id'
   has_one :parent, :through => :parent_taxon
 
-  scope :sorted, order('taxa.name ASC')
+  scope :sorted, order('name ASC')
 
   def dataset_name
     csv_dataset.csv_file_file_name if csv_dataset

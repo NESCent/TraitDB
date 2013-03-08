@@ -1,10 +1,7 @@
 TraitDB::Application.routes.draw do
 
   resources :otus
-
-
   resources :taxa
-
 
   # access controller
   match 'access(/:action)' => 'access'

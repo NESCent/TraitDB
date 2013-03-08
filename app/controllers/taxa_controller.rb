@@ -1,6 +1,6 @@
 class TaxaController < ApplicationController
-  
-  before_filter :confirm_logged_in, :except => [:index, :show]
+
+before_filter :confirm_logged_in, :except => [:index, :show]
 
   def index
     parent = Taxon.find(params[:parent_id]) if params[:parent_id]
@@ -9,7 +9,9 @@ class TaxaController < ApplicationController
       iczn_group = IcznGroup.find_by_name(params[:iczn_group_name])
       where_options[:iczn_group_id] = iczn_group.id
     end
-    iczn_group =
+    if params[:import_job]
+      where_options[:import_job_id] = params[:import_job].to_i
+    end
     if params[:start]
       @start = params[:start].to_i
     else

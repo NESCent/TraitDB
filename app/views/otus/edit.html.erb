@@ -1,0 +1,12 @@
+<% @page_title = "Edit OTU" %>
+<div class="row-fluid">
+  <div class="row"><p class="lead">Update OTU</p></div>
+  <div class="row">
+  <%= form_for(:taxon, :url => {:action => 'update', :id => @otu.id }, :html => { :class => "form" }) do |f| %>
+    <%= render(:partial => "form", :locals => { :f => f }) %>
+    <div class="form-actions">
+    	<%= submit_tag("Update OTU", :class => 'btn btn-primary') %>
+    </div>
+  <% end %>
+  </div>
+</div>

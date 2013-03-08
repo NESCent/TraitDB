@@ -106,6 +106,7 @@ class ImportJob < ActiveRecord::Base
         # order
         if taxon[:order]
           last_parent = last_parent.children.where(:name => taxon[:order]).first_or_create do |t|
+            t.parent = last_parent
             t.import_job = self
             t.iczn_group = IcznGroup.find_by_name("order")
           end
@@ -114,6 +115,7 @@ class ImportJob < ActiveRecord::Base
         # family
         if taxon[:family]
           last_parent = last_parent.children.where(:name => taxon[:family]).first_or_create do |t|
+            t.parent = last_parent
             t.import_job = self
             t.iczn_group = IcznGroup.find_by_name("family")
           end
@@ -122,6 +124,7 @@ class ImportJob < ActiveRecord::Base
         # genus
         if taxon[:genus]
           last_parent = last_parent.children.where(:name => taxon[:genus]).first_or_create do |t|
+            t.parent = last_parent
             t.import_job = self
             t.iczn_group = IcznGroup.find_by_name("genus")
           end
@@ -133,6 +136,7 @@ class ImportJob < ActiveRecord::Base
         # can taxonifi help with this?
         if taxon[:species]
           last_parent = last_parent.children.where(:name => taxon[:species]).first_or_create do |t|
+            t.parent = last_parent
             t.import_job = self
             t.iczn_group = IcznGroup.find_by_name("species")
           end

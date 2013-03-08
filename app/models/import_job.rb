@@ -57,9 +57,10 @@ class ImportJob < ActiveRecord::Base
     # chrs need to be imported into database.
     quant = chrs[:quantitative]
     quant.each do |chr_name|
-      # need a chr model!
-      messages << "Adding continuous character #{chr_name}"
-#       chr.save
+      ContinuousTrait.where(:name => chr_name).first_or_create do |trait|
+        messages << "Adding continuous character #{chr_name}"
+        trait.import_job = self
+      end
     end
 
     qual = chrs[:qualitative]
@@ -67,12 +68,14 @@ class ImportJob < ActiveRecord::Base
       # each chr is a hash with :raw_header_name, :chr_name, :chr_states
       # see if this project has a character with this name
       # need a chr model!
-      messages << "Adding categorical character #{chr_hash[:chr_name]}"
-#       chr.save
+      categorical_trait = CategoricalTrait.where(:name => chr_hash[:chr_name]).first_or_create do |trait|
+        messages << "Adding categorical character #{chr_hash[:chr_name]}"
+        trait.import_job = self;
+      end
       chr_hash[:chr_states].each do |state_name|
-      # need a chr_state model!
-        messages << "Adding state #{state_name} to #{chr_hash[:chr_name]}"
-#         chr_state.save
+        categorical_trait.categorical_trait_categories.where(:name => state_name).first_or_create do |category|
+          messages << "Adding state #{state_name} to #{chr_hash[:chr_name]}"
+        end
       end
     end
     messages

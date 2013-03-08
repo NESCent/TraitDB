@@ -1,0 +1,39 @@
+<% @page_title = @taxon.name %>
+<div class="row-fluid">
+  <div class="row"><p class="lead">Taxon</p></div>
+  <div class="row">
+    <table class="table table-striped table-bordered">
+      <tr>
+        <th>Name</th>
+        <td><%= @taxon.name %></td>
+      </tr>
+      <tr>
+        <th>Parent</th>
+        <td>
+          <% if @taxon.parent %>
+              <%= link_to(@taxon.parent_name, taxon_path(@taxon.parent)) %>
+          <% end %>
+        </td>
+      </tr>
+      <tr>
+        <th>Children</th>
+        <td>
+          <ol>
+            <% @taxon.children.each do |child| %>
+              <li><%= link_to(child.name, taxon_path(child)) %></li>
+            <% end %>
+          </ol>
+        </td>
+      </tr>
+      <tr>
+        <th>Created</th>
+        <td><%= @taxon.created_at %></td>
+      </tr>
+      <tr>
+        <th>Updated</th>
+        <td><%= @taxon.updated_at %></td>
+      </tr>
+    </table>
+  </div>
+</div>
+</div>

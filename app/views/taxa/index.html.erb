@@ -1,0 +1,48 @@
+<% @page_title = "Taxa" %>
+<div class="row-fluid">
+  <div class="row"><p class="lead">Taxa</p></div>
+  <div class="row">
+    <table class="table table-bordered table-condensed table-striped" summary="Taxon List">
+    <tr class="header">
+      <th>Taxon Name</th>
+      <th>URI</th>
+      <th>Source Dataset</th>
+      <th>ICZN Group</th>
+      <th>Parent</th>
+      <th>Children</th>
+      <th>OTUs</th>
+      <th>Actions</th>
+    </tr>
+    <% @taxa.each do |taxon| %>
+    <tr>
+      <td><%= taxon.name %></td>
+      <td><% if taxon.uri %><%= link_to(taxon.uri) %><% end %></td>
+      <td><% if taxon.csv_dataset %><%= link_to(taxon.dataset_name, csv_dataset_path(taxon.csv_dataset)) %><% end %></td>
+      <td><%= taxon.iczn_group_name %></td>
+      <td><% if taxon.parent %><%= link_to(taxon.parent_name, taxon_path(taxon.parent)) %><% end %></td>
+      <td><%= link_to("#{taxon.children.count}", taxa_path({:parent_id => taxon.id })) %></td>
+      <td><%= link_to("#{taxon.otus.count}", "#") %></td>
+      <td>
+        <div class="btn-group">
+          <%= link_to("Show", taxon_path(taxon), :class => 'btn btn-small' ) %>
+          <%= link_to("Edit", edit_taxon_path(taxon), :class => 'btn  btn-small') %>
+          <%= link_to("Destroy", taxon_path(taxon), :class => 'btn btn-small btn-danger', :method => :delete) %>
+        </div>
+      </td>
+    </tr>
+    <% end %>
+    </table>
+	</div>
+	<div class="row">
+    <div class="pagination">
+      <ul>
+        <% 
+          pages = (@total / @count) + 1
+          pages.times.each do |p|
+        %>
+          <li><%= link_to((p+1).to_s, taxa_path({:start => "#{p * @count}" , :count => @count})) %></li>
+        <% end %>
+      </ul>
+    </div>
+	</div>
+</div>

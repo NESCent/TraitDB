@@ -1,0 +1,2 @@
+module CategoricalTraitCategoriesHelper
+end

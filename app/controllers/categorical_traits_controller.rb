@@ -1,0 +1,2 @@
+class CategoricalTraitsController < ApplicationController
+end

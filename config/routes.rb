@@ -1,5 +1,8 @@
 TraitDB::Application.routes.draw do
 
+  resources :categorical_trait_categories
+  resources :categorical_traits
+  resources :continuous_traits
   resources :otus
   resources :taxa
 

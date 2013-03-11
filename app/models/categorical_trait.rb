@@ -3,6 +3,7 @@ class CategoricalTrait < ActiveRecord::Base
   has_many :categorical_trait_categories, :dependent => :destroy
   belongs_to :import_job
   has_one :csv_dataset, :through => :import_job
+  has_many :otus, :through => :categorical_trait_categories, :source => :categorical_trait_values
   scope :sorted, order('name ASC')
 
   def dataset_name

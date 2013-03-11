@@ -3,4 +3,7 @@ class CategoricalTraitValue < ActiveRecord::Base
   belongs_to :otu
   belongs_to :categorical_trait_category
   has_one :categorical_trait, :through => :categorical_trait_category
+
+  scope :sorted, order('position ASC')
+
 end

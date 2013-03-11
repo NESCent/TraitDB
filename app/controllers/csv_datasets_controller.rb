@@ -1,6 +1,5 @@
 class CsvDatasetsController < ApplicationController
-
-  before_filter :confirm_logged_in
+  before_filter :authenticate_user!
 
   def index
     @datasets = CsvDataset.order('created_at DESC')

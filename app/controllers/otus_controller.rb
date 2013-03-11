@@ -1,5 +1,5 @@
 class OtusController < ApplicationController
-  before_filter :confirm_logged_in, :except => [:index, :show]
+  before_filter :authenticate_user!, :except => [:index, :show]
 
   def index
     where_options = {}

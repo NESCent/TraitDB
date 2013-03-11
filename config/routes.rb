@@ -1,5 +1,7 @@
 TraitDB::Application.routes.draw do
 
+  devise_for :users
+
   resources :continuous_trait_values
   resources :categorical_trait_values
   resources :categorical_trait_categories
@@ -23,7 +25,7 @@ TraitDB::Application.routes.draw do
   
   match 'about' => 'about#index'
 
-  root :to => "csv_datasets#index"
+  root :to => "about#index"
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

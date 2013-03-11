@@ -12,7 +12,7 @@
     <% @otus.each do |otu| %>
     <tr>
       <td><%= otu.name %></td>
-      <td><%= link_to(otu.taxon.name, taxon_path(otu.taxon)) %></td>
+      <td><% if otu.taxon %><%= link_to(otu.taxon.name, taxon_path(otu.taxon)) %><% end %></td>
       <td><% if otu.csv_dataset %><%= link_to(otu.dataset_name, csv_dataset_path(otu.csv_dataset)) %><% end %></td>
       <td>
         <div class="btn-group">

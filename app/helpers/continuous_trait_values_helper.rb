@@ -1,0 +1,2 @@
+module ContinuousTraitValuesHelper
+end

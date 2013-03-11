@@ -1,0 +1,2 @@
+class ContinuousTraitValuesController < ApplicationController
+end

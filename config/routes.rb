@@ -1,5 +1,11 @@
 TraitDB::Application.routes.draw do
 
+  resources :continuous_trait_values
+
+
+  resources :categorical_trait_values
+
+
   resources :categorical_trait_categories
   resources :categorical_traits
   resources :continuous_traits

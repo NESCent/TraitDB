@@ -149,9 +149,30 @@ class ImportJob < ActiveRecord::Base
           end
           otu_notes = d[:notes_comments]
           # make an otu
-          Otu.create(:name => otu_name, :taxon => last_parent, :import_job => self)
+          otu = Otu.create(:name => otu_name, :taxon => last_parent, :import_job => self)
           # refs
-          # codings
+          # Categorical Traits
+          d[:qualitative_data].each do |import_trait|
+            # an array of hashes.  Hashes contain :name, :values, and :source
+            # find the trait to attach it to
+            trait = CategoricalTrait.where(:name => import_trait[:name]).first
+            import_trait[:values].each_with_index do |import_value, i|
+              # Now the values
+              category = CategoricalTraitCategory.where(:categorical_trait_id => trait.id, :name => import_value).first
+              value = CategoricalTraitValue.create(:position => i,
+                                                   :categorical_trait_id => trait.id,
+                                                   :categorical_trait_category_id => category.id)
+              otu.categorical_trait_values << value
+              otu.save
+            end
+          end
+          d[:quantitative_data].each do |import_trait|
+            # Array of hashes.  Hashes contain :name and :value
+            trait = ContinuousTrait.where(:name => import_trait[:name]).first
+            value = ContinuousTraitValue.create(:continuous_trait_id => trait.id)
+            otu.continuous_trait_values << value
+            otu.save
+          end
         end
       end #end of datasets.each
   end

@@ -41,6 +41,10 @@
       </div>
     </div>
   </div>
+  <div class="row">
+    <% if notice %><p class="alert alert-info"><%= notice %></p><% end %>
+    <% if alert %><p class="alert alert-error"><%= alert %></p><% end %>
+  </div>
   <%= yield %>
 </div>
 </body>

@@ -25,7 +25,7 @@ class OtusController < ApplicationController
   end
 
   def show
-    otu = Otu.find(params[:id])
+    @otu = Otu.find(params[:id])
   end
 
   def edit

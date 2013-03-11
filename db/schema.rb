@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130311140347) do
+ActiveRecord::Schema.define(:version => 20130311184848) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -134,16 +134,5 @@ ActiveRecord::Schema.define(:version => 20130311140347) do
   end
 
   add_index "taxon_ancestors", ["parent_id", "child_id"], :name => "index_taxon_ancestors_on_parent_id_and_child_id"
-
-  create_table "users", :force => true do |t|
-    t.string   "username",        :limit => 25
-    t.string   "first_name",      :limit => 25
-    t.string   "last_name",       :limit => 50
-    t.string   "email",           :limit => 100, :default => "", :null => false
-    t.string   "hashed_password", :limit => 40
-    t.string   "salt",            :limit => 40
-    t.datetime "created_at",                                     :null => false
-    t.datetime "updated_at",                                     :null => false
-  end
 
 end

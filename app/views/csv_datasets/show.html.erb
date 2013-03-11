@@ -9,7 +9,7 @@
       </tr>
       <tr>
         <th>Project</th>
-        <td><%= @dataset.project.name %></td>
+        <td><% if @dataset.project %><%= @dataset.project.name %><% end %></td>
       </tr>
       <tr>
         <th>Owner</th>

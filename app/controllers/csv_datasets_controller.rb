@@ -11,9 +11,8 @@ class CsvDatasetsController < ApplicationController
 
   def create
     @dataset = CsvDataset.new(params[:dataset])
-    # avoid hardcoding project
-    @dataset.project = Project.first
-    @dataset.user = User.find(session[:user_id])
+    #@dataset.project = Project.first
+    @dataset.user = current_user
     if @dataset.save
       flash[:notice] = 'Dataset created successsfully'
       redirect_to(:action => 'index')

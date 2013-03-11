@@ -13,7 +13,7 @@
     <% @datasets.each do |dataset| %>
     <tr>
       <td><%= dataset.csv_file_file_name %></td>
-      <td><%= dataset.project.name %></td>
+      <td><% if dataset.project %><%= dataset.project.name %><% end %></td>
       <td><%= dataset.user.email %></td>
       <td><%= dataset.created_at %></td>
       <td>

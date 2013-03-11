@@ -6,7 +6,11 @@ class ImportJob < ActiveRecord::Base
   has_many :otus
   attr_accessible :status, :csv_dataset
   attr_accessible :quantitative_header_start, :quantitative_header_end, :qualitative_header_start, :qualitative_header_end
-  # TODO: On creating records in the actual database, relate them to this model object
+
+  def reset
+    self.status = "new"
+    save
+  end
  
   def do_import
     # fail if status is not new

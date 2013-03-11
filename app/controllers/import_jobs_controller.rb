@@ -49,14 +49,32 @@ class ImportJobsController < ApplicationController
     flash[:notice] = 'Job destroyed successfully'
     redirect_to(csv_dataset_import_jobs_path(@dataset))
   end
-  
+
+  # uses delayed job
   def background_import
     import_job = ImportJob.find(params[:id])
     import_job.delay.do_import
     flash[:notice] = 'Import started'
     redirect_to(csv_dataset_import_job_path(@dataset, import_job))
   end
-  
+
+  # Does not use delayed job
+  def import
+    import_job = ImportJob.find(params[:id])
+    if import_job.do_import
+      flash[:notice] = 'Import Succeeded'
+    else
+      flash[:notice] = 'Import Failed'
+    end
+    redirect_to(csv_dataset_import_job_path(@dataset, import_job))
+  end
+
+  def reset_job
+    import_job = ImportJob.find(params[:id])
+    import_job.reset
+    redirect_to(csv_dataset_import_job_path(@dataset, import_job))
+  end
+
   private
   
   def find_dataset

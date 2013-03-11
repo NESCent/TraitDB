@@ -1,37 +1,37 @@
-<% @page_title = @taxon.name %>
+<% @page_title = @otu.name %>
 <div class="row-fluid">
-  <div class="row"><p class="lead">Taxon</p></div>
+  <div class="row"><p class="lead">OTU</p></div>
   <div class="row">
     <table class="table table-striped table-bordered">
       <tr>
         <th>Name</th>
-        <td><%= @taxon.name %></td>
+        <td><%= @otu.name %></td>
       </tr>
       <tr>
-        <th>Parent</th>
+        <th>Taxon</th>
         <td>
-          <% if @taxon.parent %>
-              <%= link_to(@taxon.parent_name, taxon_path(@taxon.parent)) %>
+          <% if @otu.taxon%>
+              <%= link_to(@otu.taxon.name, taxon_path(@otu.taxon)) %>
           <% end %>
         </td>
       </tr>
       <tr>
-        <th>Children</th>
+        <th>Categorical Trait Codings</th>
         <td>
           <ol>
-            <% @taxon.children.each do |child| %>
-              <li><%= link_to(child.name, taxon_path(child)) %></li>
+            <% @otu.categorical_traits.each do |trait| %>
+                <li><%= link_to(trait.name, categorical_trait_path(trait)) %></li>
             <% end %>
           </ol>
         </td>
       </tr>
       <tr>
         <th>Created</th>
-        <td><%= @taxon.created_at %></td>
+        <td><%= @otu.created_at %></td>
       </tr>
       <tr>
         <th>Updated</th>
-        <td><%= @taxon.updated_at %></td>
+        <td><%= @otu.updated_at %></td>
       </tr>
     </table>
   </div>

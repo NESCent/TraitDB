@@ -14,6 +14,10 @@ gem "daemons"
 # devise for user accounts
 gem "devise"
 
+# OmniAuth for open id in devise
+gem 'omniauth'
+gem 'omniauth-openid'
+
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 

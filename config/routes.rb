@@ -1,6 +1,6 @@
 TraitDB::Application.routes.draw do
 
-  devise_for :users
+  devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }
 
   resources :continuous_trait_values
   resources :categorical_trait_values

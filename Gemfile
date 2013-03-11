@@ -10,6 +10,10 @@ gem "paperclip", "~> 3.4.1"
 gem "delayed_job", "~> 3.0.5"
 gem "delayed_job_active_record"
 gem "daemons"
+
+# devise for user accounts
+gem "devise"
+
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 

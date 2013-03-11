@@ -37,7 +37,6 @@ ActiveRecord::Schema.define(:version => 20130311140347) do
   end
 
   create_table "continuous_trait_values", :force => true do |t|
-    t.integer  "position"
     t.integer  "otu_id"
     t.integer  "continuous_trait_id"
     t.datetime "created_at",          :null => false

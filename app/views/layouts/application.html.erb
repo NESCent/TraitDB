@@ -20,6 +20,16 @@
           <!-- Upload will require login -->
           <li><%= link_to("Upload", csv_datasets_path) %></li>
           <% if session[:user_id] %>
+              <li class="dropdown">
+                <a class="dropdown-toggle" href="#" data-toggle="dropdown">Data<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><%=  link_to("Taxa", :controller => 'taxa') %></li>
+                  <li><%=  link_to("OTUs", :controller => 'otus') %></li>
+                  <li class="divider"></li>
+                  <li><%=  link_to("Categorical Traits", :controller => 'categorical_traits') %></li>
+                  <li><%=  link_to("Continuous Traits", :controller => 'continuous_traits') %></li>
+                </ul>
+              </li>
             <li class="dropdown">
               <a class="dropdown-toggle" href="#" data-toggle="dropdown"><%= session[:username] %> <b class="caret"></b></a>
               <ul class="dropdown-menu">

@@ -4,7 +4,7 @@
         max-width: 300px;
         padding: 19px 29px 29px;
         margin: 20px auto 20px;
-        background-color: #fff;
+        background-color: #eee;
         border: 1px solid #e5e5e5;
         -webkit-border-radius: 5px;
         -moz-border-radius: 5px;
@@ -27,10 +27,11 @@
 </style>
 
 <div class="container">
-  <%= form_tag({:action => 'attempt_login'}, {:class => 'form-signin'}) do %>
-      <h2 class="form-signin-heading">Please sign in</h2>
-      <%= text_field_tag(:username, nil, {:class => 'input-block-level', :placeholder => 'Username'}) %>
-      <%= password_field_tag(:password, nil, {:class => 'input-block-level', :placeholder => 'Password' }) %>
-      <%= button_tag("Log In", {:class => 'btn btn-large btn-primary'}) %>
-  <% end %>
+    <%= form_for(resource, :as => resource_name, :url => session_path(resource_name), :html => {:class => 'form-signin'}) do |f| %>
+      <h2 class="form-signin-heading">Sign in</h2>
+      <%= f.email_field :email, :autofocus => true, :class => 'input-block-level', :placeholder => 'Email' %>
+      <%= f.password_field :password, :class=> 'input-block-level', :placeholder => 'Password' %>
+      <%= f.submit "Sign in", :class => 'btn btn-primary pull-right' %>
+    <% end %>
 </div>
+<%= render "devise/shared/links" %>

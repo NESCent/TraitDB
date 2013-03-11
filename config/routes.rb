@@ -1,11 +1,7 @@
 TraitDB::Application.routes.draw do
 
   resources :continuous_trait_values
-
-
   resources :categorical_trait_values
-
-
   resources :categorical_trait_categories
   resources :categorical_traits
   resources :continuous_traits
@@ -19,6 +15,8 @@ TraitDB::Application.routes.draw do
     resources :import_jobs do
       member do
         get 'background_import'
+        post 'import'
+        post 'reset_job'
       end
     end
   end

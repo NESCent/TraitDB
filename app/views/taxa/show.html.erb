@@ -26,6 +26,17 @@
         </td>
       </tr>
       <tr>
+        <th>OTUs</th>
+        <td>
+          <ul>
+            <% @taxon.otus.each do |otu| %>
+              <li><%= link_to(otu.name, otu_path(otu)) %></li>
+            <% end %>
+          </ul>
+        </td>
+
+      </tr>
+      <tr>
         <th>Created</th>
         <td><%= @taxon.created_at %></td>
       </tr>

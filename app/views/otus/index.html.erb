@@ -32,7 +32,7 @@
           pages = (@total / @count) + 1
           pages.times.each do |p|
         %>
-          <li><%= link_to((p+1).to_s, taxa_path({:start => "#{p * @count}" , :count => @count})) %></li>
+          <li><%= link_to((p+1).to_s, otus_path({:start => "#{p * @count}" , :count => @count})) %></li>
         <% end %>
       </ul>
     </div>

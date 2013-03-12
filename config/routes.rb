@@ -10,8 +10,8 @@ TraitDB::Application.routes.draw do
   resources :otus
   resources :taxa
 
-  # access controller
-  match 'access(/:action)' => 'access'
+  match 'search(/:action)(.:format)' => "search"
+
   # import jobs are nested within csv datasets
   resources :csv_datasets do
     resources :import_jobs do

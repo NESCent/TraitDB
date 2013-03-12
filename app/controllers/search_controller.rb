@@ -2,7 +2,7 @@ class SearchController < ApplicationController
   def index
     @taxa = {}
     # Higher taxonomic group
-    @taxa[:htg] = []
+    @taxa[:htg] = htg_taxa
     # Order
     @taxa[:order] = order_taxa
     # Family
@@ -45,6 +45,10 @@ class SearchController < ApplicationController
   end
 
   private
+
+  def htg_taxa
+    return Taxon.ungrouped_taxa.sorted
+  end
 
   def order_taxa
     return Taxon.order_taxa.sorted

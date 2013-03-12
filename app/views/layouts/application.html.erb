@@ -16,7 +16,7 @@
         </ul>
         <ul class="nav pull-right">
           <li><%= link_to("About", :controller => '/about') %></li>
-          <li><%= link_to("Search", "#") %></li>
+          <li><%= link_to("Search", :controller => '/search') %></li>
           <!-- Upload will require login -->
           <li><%= link_to("Upload", csv_datasets_path) %></li>
           <% if user_signed_in? %>

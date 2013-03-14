@@ -1,0 +1,25 @@
+<% @page_title = @categorical_trait_value.categorical_trait_category.name %>
+<div class="row-fluid">
+  <div class="row"><p class="lead">Categorical Trait Value</p></div>
+  <div class="row">
+    <table class="table table-striped table-bordered">
+      <tr>
+        <th>Category Name</th>
+        <td><%= @categorical_trait_value.categorical_trait_category.name %></td>
+      </tr>
+      <tr>
+        <th>Coded OTU</th>
+        <td><%= link_to(@categorical_trait_value.otu.name, otu_path(@categorical_trait_value.otu)) %></td>
+      </tr>
+      <tr>
+        <th>Created</th>
+        <td><%= @categorical_trait_value.created_at %></td>
+      </tr>
+      <tr>
+        <th>Updated</th>
+        <td><%= @categorical_trait_value.updated_at %></td>
+      </tr>
+    </table>
+  </div>
+</div>
+</div>

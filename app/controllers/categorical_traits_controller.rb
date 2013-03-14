@@ -15,7 +15,7 @@ class CategoricalTraitsController < ApplicationController
     else
       @count = 20
     end
-    @total = CategoricalTrait.count
+    @total = CategoricalTrait.where(where_options).count
     @categorical_traits = CategoricalTrait.where(where_options).sorted.limit(@count).offset(@start)
 
   end

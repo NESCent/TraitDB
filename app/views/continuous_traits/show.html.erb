@@ -1,0 +1,31 @@
+<% @page_title = @continuous_trait.name %>
+<div class="row-fluid">
+  <div class="row"><p class="lead">Continuous Trait</p></div>
+  <div class="row">
+    <table class="table table-striped table-bordered">
+      <tr>
+        <th>Name</th>
+        <td><%= @continuous_trait.name %></td>
+      </tr>
+      <tr>
+        <th>Values</th>
+        <td>
+          <ol>
+            <% @continuous_trait.continuous_trait_values.each do |trait_value| %>
+              <li><%= link_to(trait_value.value.to_s, continuous_trait_value_path(trait_value)) %></li>
+            <% end %>
+          </ol>
+        </td>
+      </tr>
+      <tr>
+        <th>Created</th>
+        <td><%= @continuous_trait.created_at %></td>
+      </tr>
+      <tr>
+        <th>Updated</th>
+        <td><%= @continuous_trait.updated_at %></td>
+      </tr>
+    </table>
+  </div>
+</div>
+</div>

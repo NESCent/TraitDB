@@ -19,8 +19,18 @@
         <th>Categorical Trait Codings</th>
         <td>
           <ol>
-            <% @otu.categorical_traits.each do |trait| %>
-                <li><%= link_to(trait.name, categorical_trait_path(trait)) %></li>
+            <% @otu.categorical_trait_values.each do |trait_value| %>
+                <li><%= link_to("#{trait_value.categorical_trait.name}: #{trait_value.categorical_trait_category.name}", categorical_trait_value_path(trait_value)) %></li>
+            <% end %>
+          </ol>
+        </td>
+      </tr>
+      <tr>
+        <th>Continuous Trait Codings</th>
+        <td>
+          <ol>
+            <% @otu.continuous_trait_values.each do |trait_value| %>
+                <li><%= link_to("#{trait_value.continuous_trait.name}: #{trait_value.value}", continuous_trait_value_path(trait_value)) %></li>
             <% end %>
           </ol>
         </td>

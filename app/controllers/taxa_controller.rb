@@ -1,6 +1,5 @@
 class TaxaController < ApplicationController
-
-before_filter :confirm_logged_in, :except => [:index, :show]
+  before_filter :authenticate_user!, :except => [:index, :show]
 
   def index
     parent = Taxon.find(params[:parent_id]) if params[:parent_id]
@@ -26,7 +25,7 @@ before_filter :confirm_logged_in, :except => [:index, :show]
       @total = parent.children.where(where_options).count
       @taxa = parent.children.where(where_options).sorted.limit(@count).offset(@start)
     else
-      @total = Taxon.count
+      @total = Taxon.where(where_options).count
       @taxa = Taxon.where(where_options).sorted.limit(@count).offset(@start)
     end
 

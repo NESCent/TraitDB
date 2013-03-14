@@ -169,7 +169,7 @@ class ImportJob < ActiveRecord::Base
           d[:quantitative_data].each do |import_trait|
             # Array of hashes.  Hashes contain :name and :value
             trait = ContinuousTrait.where(:name => import_trait[:name]).first
-            value = ContinuousTraitValue.create(:continuous_trait_id => trait.id)
+            value = ContinuousTraitValue.create(:continuous_trait_id => trait.id, :value => import_trait[:value])
             otu.continuous_trait_values << value
             otu.save
           end

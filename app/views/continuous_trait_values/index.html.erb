@@ -1,0 +1,38 @@
+<% @page_title = "Continuous Trait Values" %>
+<div class="row-fluid">
+  <div class="row"><p class="lead">Continuous Trait Values</p></div>
+  <div class="row">
+    <table class="table table-bordered table-condensed table-striped" summary="Continuous Trait Value List">
+    <tr class="header">
+      <th>Continuous Trait</th>
+      <th>Value</th>
+      <th>Coded OTU</th>
+      <th>Actions</th>
+    </tr>
+    <% @continuous_trait_values.each do |value| %>
+    <tr>
+      <td><%= link_to(value.continuous_trait.name, continuous_trait_path(value.continuous_trait)) %></td>
+      <td><%= link_to(value.value, continuous_trait_value_path(value)) %></td>
+      <td><%= link_to("#{value.otu.name}", otu_path(value.otu)) %></td>
+      <td>
+        <div class="btn-group">
+          <%= link_to("Show", continuous_trait_value_path(value), :class => 'btn btn-small' ) %>
+        </div>
+      </td>
+    </tr>
+    <% end %>
+    </table>
+	</div>
+	<div class="row">
+    <div class="pagination">
+      <ul>
+        <% 
+          pages = (@total / @count) + 1
+          pages.times.each do |p|
+        %>
+          <li><%= link_to((p+1).to_s, continuous_trait_values_path({:start => "#{p * @count}" , :count => @count})) %></li>
+        <% end %>
+      </ul>
+    </div>
+	</div>
+</div>

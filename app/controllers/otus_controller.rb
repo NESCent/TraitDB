@@ -9,6 +9,7 @@ class OtusController < ApplicationController
     if params[:import_job]
       where_options[:import_job_id] = params[:import_job].to_i
     end
+    # TODO: add trait filters
     if params[:start]
       @start = params[:start].to_i
     else
@@ -19,8 +20,8 @@ class OtusController < ApplicationController
     else
       @count = 20
     end
-      @total = Otu.count
-      @otus = Otu.where(where_options).sorted.limit(@count).offset(@start)
+    @total = Otu.where(where_options).count
+    @otus = Otu.where(where_options).sorted.limit(@count).offset(@start)
 
   end
 

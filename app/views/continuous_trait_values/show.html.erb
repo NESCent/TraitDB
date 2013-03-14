@@ -1,0 +1,25 @@
+<% @page_title = @continuous_trait_value.value %>
+<div class="row-fluid">
+  <div class="row"><p class="lead">Continuous Trait Value</p></div>
+  <div class="row">
+    <table class="table table-striped table-bordered">
+      <tr>
+        <th>Trait Value</th>
+        <td><%= @continuous_trait_value.value %></td>
+      </tr>
+      <tr>
+        <th>Coded OTU</th>
+        <td><%= link_to(@continuous_trait_value.otu.name, otu_path(@continuous_trait_value.otu)) %></td>
+      </tr>
+      <tr>
+        <th>Created</th>
+        <td><%= @continuous_trait_value.created_at %></td>
+      </tr>
+      <tr>
+        <th>Updated</th>
+        <td><%= @continuous_trait_value.updated_at %></td>
+      </tr>
+    </table>
+  </div>
+</div>
+</div>

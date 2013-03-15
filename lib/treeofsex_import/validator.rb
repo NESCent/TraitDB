@@ -44,7 +44,10 @@ module TreeOfSexImport
       if file_usable?
         @csvfile = nil
       else
-        @validation_results[:issues] << {:issue_description => "=== Unable to load CSV file #{path}",}
+        @validation_results[:issues] << {
+            :issue_description => "Unable to load CSV File at #{path}",
+            :suggested_solution => 'Make sure file uploads are configured correctly.'
+            }
         @filepath = nil
       end
     end
@@ -52,7 +55,10 @@ module TreeOfSexImport
     def validate
       read_csv_file
       if @csvfile.nil?
-        @validation_results[:issues] << {:error => 'Unable to read CSV file'}
+        @validation_results[:issues] << {
+            :issue_description => 'Unable to read file as CSV',
+            :suggested_solution => 'Make sure file is a valid Comma-Separated Values file'
+        }
       end
       # read and check the column headers
       read_column_headers
@@ -123,7 +129,10 @@ module TreeOfSexImport
       unless (TAXON_HEADERS-headers).empty?
         missing_headers = TAXON_HEADERS-headers
         missing_headers.each do |missing|
-          @validation_results[:issues] << {:issue_description => 'Missing taxon Header', :column_name => 'missing'}
+          @validation_results[:issues] << {
+              :issue_description => 'Missing taxon Header',
+              :suggested_solution => "Make sure CSV file has column header named '#{missing}'."
+          }
         end
       end
     end
@@ -135,16 +144,26 @@ module TreeOfSexImport
       first = headers.index(@quantitative_header_start)
       last = headers.index(@quantitative_header_end)
       if first.nil?
-        @validation_results[:issues] << {:issue_description => "Did not find first designated quantitative header: #{@quantitative_header_start}"}
+        @validation_results[:issues] << {
+            :issue_description => "Did not find first designated quantitative header: #{@quantitative_header_start}",
+            :suggested_solution => 'Verify the headers you specified for the import or check your CSV file for typos'
+        }
       end
       if last.nil?
-        @validation_results[:issues] << {:issue_description => "Did not find last designated quantitative header: #{@quantitative_header_end}"}
+        @validation_results[:issues] << {
+            :issue_description => "Did not find last designated quantitative header: #{@quantitative_header_end}",
+            :suggested_solution => 'Verify the headers you specified for the import or check your CSV file for typos'
+        }
       end
       if first && last
         quantitative_chr_range = Range.new(first, last)
         @chr_headers[:quantitative] = headers[quantitative_chr_range]
         if @chr_headers[:quantitative].uniq.length != @chr_headers[:quantitative].length
-          @validation_results[:issues] << {:issue_description => 'Quantitative headers are not unique', :column_location => first}
+          @validation_results[:issues] << {
+              :issue_description => 'Quantitative headers are not unique',
+              :column_location => first,
+              :suggested_solution => 'Correct the duplicate column headers in your CSV file'
+          }
         end
       else
         @validation_results[:info] << {:info => 'Quantitative headers are valid'}
@@ -158,10 +177,16 @@ module TreeOfSexImport
       first = headers.index(@qualitative_header_start)
       last = headers.index(@qualitative_header_end)
       if first.nil?
-        @validation_results[:issues] << {:issue_description => "Did not find first designated qualitative header: #{@qualitative_header_start}"}
+        @validation_results[:issues] << {
+            :issue_description => "Did not find first designated qualitative header: #{@qualitative_header_start}",
+            :suggested_solution => 'Verify the headers you specified for the import or check your CSV file for typos'
+        }
       end
       if last.nil?
-        @validation_results[:issues] << {:issue_description => "Did not find last designated qualitative header: #{@qualitative_header_end}"}
+        @validation_results[:issues] << {
+            :issue_description => "Did not find last designated qualitative header: #{@qualitative_header_end}",
+            :suggested_solution => 'Verify the headers you specified for the import or check your CSV file for typos'
+        }
       end
       if first && last
         qualitative_chr_range = Range.new(first, last)
@@ -173,14 +198,24 @@ module TreeOfSexImport
           regex = /\A(.+)\((.+)\)\z/
           matched = regex.match(raw_chr_header)
           if matched.nil?
-            @validation_results[:issues] << {:issue_description => 'Bad format in qualitative character header', :column_name => raw_chr_header, :column_location => first + i}
+            @validation_results[:issues] << {
+                :issue_description => 'Bad format in qualitative character header',
+                :column_name => raw_chr_header,
+                :column_location => first + i,
+                :suggested_solution => "Check your CSV file to make sure the qualitative character header matches the required format: 'name (value1, value2,)'"
+            }
             next
           end
           # Build a chr_header hash with the names and array of possible states
           chr_header = { :raw_header_name => raw_chr_header, :chr_name => matched[1].strip, :chr_states => matched[2].split(',').map{|st| st.strip } }
           # make sure this isn't a duplicate
           unless @chr_headers[:qualitative].detect {|c| c[:chr_name] == chr_header[:chr_name] }.nil?
-            @validation_results[:issues] << {:issue_description => 'Duplicate character state in header', :column_name => raw_chr_header, :column_location => first + i}
+            @validation_results[:issues] << {
+                :issue_description => 'Duplicate character state in header',
+                :column_name => raw_chr_header,
+                :column_location => first + i,
+                :suggested_solution => 'Remove duplicates from the possible states listed in the header'
+            }
             next
           end
           @chr_headers[:qualitative] << chr_header
@@ -192,7 +227,10 @@ module TreeOfSexImport
       if @csvfile.headers.include?(ENTRY_EMAIL_HEADER)
         @validation_results[:info] << {:info => "#{ENTRY_EMAIL_HEADER} header valid"}
       else
-        @validation_results[:issues] << {:issue_description => "Missing #{ENTRY_EMAIL_HEADER}", :column_name => ENTRY_EMAIL_HEADER}
+        @validation_results[:issues] << {
+            :issue_description => "Missing #{ENTRY_EMAIL_HEADER}", :column_name => ENTRY_EMAIL_HEADER,
+            :suggested_solution => "Make sure your CSV file has a column for '#{ENTRY_EMAIL_HEADER}'"
+        }
       end
     end
   
@@ -211,10 +249,18 @@ module TreeOfSexImport
       first = headers.index("#{SOURCE_PREFIX}#{@quantitative_header_start}")
       last = headers.index("#{SOURCE_PREFIX}#{@quantitative_header_end}")
       if first.nil?
-        @validation_results[:issues] << {:issue_description => 'Did not find first designated quantitative source header', :column_name => "#{SOURCE_PREFIX}#{@quantitative_header_start}"}
+        @validation_results[:issues] << {
+            :issue_description => 'Did not find first designated quantitative source header',
+            :column_name => "#{SOURCE_PREFIX}#{@quantitative_header_start}",
+            :suggested_solution => 'Verify the headers you specified for the import or check your CSV file for typos'
+        }
       end
       if last.nil?
-        @validation_results[:issues] << {:issue_description => 'Did not find last designated quantitative source header', :column_name => "#{SOURCE_PREFIX}#{@quantitative_header_end}"}
+        @validation_results[:issues] << {
+            :issue_description => 'Did not find last designated quantitative source header',
+            :column_name => "#{SOURCE_PREFIX}#{@quantitative_header_end}",
+            :suggested_solution => 'Verify the headers you specified for the import or check your CSV file for typos'
+        }
       end
       if first && last
         quantitative_chr_source_range = Range.new(first, last)
@@ -225,11 +271,18 @@ module TreeOfSexImport
 
         missing_source_headers = expected_source_headers - @quantitative_chr_source_headers
         missing_source_headers.each do |missing|
-          @validation_results[:issues] << {:issue_description => 'Missing expected quantitative source header', :column_name => missing}
+          @validation_results[:issues] << {
+              :issue_description => 'Missing expected quantitative source header',
+              :suggested_solution => "Make sure CSV file has a column header named '#{missing}'."
+          }
         end
         extra_source_headers = @quantitative_chr_source_headers - expected_source_headers
         extra_source_headers.each do |extra|
-          @validation_results[:issues] << {:issue_description => 'Found extra quantitative source header', :column_name => extra}
+          @validation_results[:issues] << {
+              :issue_description => "Found extra quantitative source header: '#{extra}'",
+              :column_name => extra,
+              :suggested_solution => 'Remove extra header or correct the import columns you specified'
+          }
         end
         if missing_source_headers.empty? && extra_source_headers.empty?
           @validation_results[:info] << {:info => 'Quantitative source headers are valid'}
@@ -242,10 +295,18 @@ module TreeOfSexImport
       first = headers.index("#{SOURCE_PREFIX}#{@qualitative_header_start}")
       last = headers.index("#{SOURCE_PREFIX}#{@qualitative_header_end}")
       if first.nil?
-        @validation_results[:issues] << {:issue_description => 'Did not find first designated qualitative source header', :column_name => "#{SOURCE_PREFIX}#{@qualitative_header_start}"}
+        @validation_results[:issues] << {
+            :issue_description => 'Did not find first designated qualitative source header',
+            :column_name => "#{SOURCE_PREFIX}#{@qualitative_header_start}",
+            :suggested_solution => 'Verify the headers you specified for the import or check your CSV file for typos'
+        }
       end
       if last.nil?
-        @validation_results[:issues] << {:issue_description => 'Did not find last designated qualitative source header', :column_name => "#{SOURCE_PREFIX}#{@qualitative_header_end}"}
+        @validation_results[:issues] << {
+            :issue_description => 'Did not find last designated qualitative source header',
+            :column_name => "#{SOURCE_PREFIX}#{@qualitative_header_end}",
+            :suggested_solution => 'Verify the headers you specified for the import or check your CSV file for typos'
+        }
 
       end
       if first && last
@@ -258,11 +319,18 @@ module TreeOfSexImport
         expected_source_headers = @chr_headers[:qualitative].map{|h| "#{SOURCE_PREFIX}#{h[:raw_header_name]}" }
         missing_source_headers = expected_source_headers - @qualitative_chr_source_headers
         missing_source_headers.each do |missing|
-          @validation_results[:issues] << {:issue_description => 'Missing expected qualitative source header', :column_name => missing}
+          @validation_results[:issues] << {
+              :issue_description => 'Missing expected qualitative source header',
+              :suggested_solution => "Make sure CSV file has a column header named '#{missing}'."
+          }
         end
         extra_source_headers = @qualitative_chr_source_headers - expected_source_headers
         extra_source_headers.each do |extra|
-          @validation_results[:issues] << {:issue_description => 'Found extra qualitative source header', :column_name => extra}
+          @validation_results[:issues] << {
+              :issue_description => 'Found extra qualitative source header',
+              :column_name => extra,
+              :suggested_solution => 'Remove extra header or correct the import columns you specified'
+          }
         end
         if missing_source_headers.empty? && extra_source_headers.empty?
           @validation_results[:info] << {:info => 'Qualitative source headers are valid'}

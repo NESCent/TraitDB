@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130315152342) do
+ActiveRecord::Schema.define(:version => 20130315172633) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -171,16 +171,14 @@ ActiveRecord::Schema.define(:version => 20130315152342) do
 
   create_table "validation_issues", :force => true do |t|
     t.integer  "import_job_id"
-    t.integer  "row_location",       :null => false
-    t.integer  "column_location",    :null => false
     t.string   "column_name"
     t.string   "issue_description",  :null => false
     t.string   "suggested_solution", :null => false
     t.datetime "created_at",         :null => false
     t.datetime "updated_at",         :null => false
+    t.integer  "column_location"
   end
 
   add_index "validation_issues", ["column_location"], :name => "index_validation_issues_on_column_location"
-  add_index "validation_issues", ["row_location"], :name => "index_validation_issues_on_row_location"
 
 end

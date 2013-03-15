@@ -12,6 +12,23 @@ class ImportJob < ActiveRecord::Base
   IMPORT_STATES = %w(new validating validated validation_failed parsing parsed parse_warnings importing imported import_failed)
   validates_inclusion_of :state, :in => IMPORT_STATES
 
+  def failed?
+    state.include?('fail')
+  end
+
+  def problem?
+    state.include?('warn')
+  end
+
+  # Used to create a new CSV file with just the bad data
+  def problem_rows
+    import_issues.map { |i| i.row_location}.uniq
+  end
+
+  def problem_rows_cols
+    import_issues.map{ |i| {:row => i.row_location, :column => i.column_location }}
+  end
+
   def reset
     self.state = 'new'
     save

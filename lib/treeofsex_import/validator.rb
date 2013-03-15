@@ -22,7 +22,8 @@ module TreeOfSexImport
     attr_reader :datasets, :chr_headers
     attr_accessor :quantitative_header_start, :quantitative_header_end
     attr_accessor :qualitative_header_start, :qualitative_header_end
-    attr_accessor :messages 
+    attr_accessor :validation_results, :parse_results
+    # parse results is not yet implemented
     # Constant Header column names, required
     TAXON_HEADERS = ["Higher taxonomic group", "Order", "Family", "Genus", "species"]
     TAXON_SYMBOLS = [:higher_taxonomic_group, :order, :family, :genus, :species]
@@ -35,23 +36,37 @@ module TreeOfSexImport
   
     # Headers for source columns must consist of the prefix below, followed by a 
     # character name (quantitative or qualitative)
-    SOURCE_PREFIX = "source: "
+    SOURCE_PREFIX = 'source: '
   
     def initialize(path=nil)
       @filepath = path
-      @messages = []
+      @validation_results = {:issues => [], :info => []}
+      @parse_results = {:issues => [], :info => []}
       if file_usable?
-        @messages << "=== Loading CSV file #{path}"
         @csvfile = nil
       else
-        @messages << "=== Unable to load CSV file #{path}"
+        @validation_results[:issues] << {:issue_description => "=== Unable to load CSV file #{path}",}
         @filepath = nil
       end
     end
-  
+
     def validate
+      read_csv_file
+      if @csvfile.nil?
+        @validation_results[:issues] << {:error => 'Unable to read CSV file'}
+      end
+      # read and check the column headers
+      read_column_headers
+      return @validation_results
+    end
+
+    def parse # rethink name
+      read_row_data
+    end
+
+    def validate_old
       begin
-        @messages << "=== Reading CSV file #{@filepath}"
+        #@messages << "=== Reading CSV file #{@filepath}"
         read_csv_file
         raise "Unable to read file" if @csvfile.nil?
         # read and check the column headers
@@ -60,13 +75,13 @@ module TreeOfSexImport
         read_row_data
         return true
       rescue Exception => e
-        @messages << "=== Validation failed: #{e.message}"
+        #@messages << "=== Validation failed: #{e.message}"
         @datasets = []
         @chr_headers = {}
         return false
       end
     end
-    
+
     private
   
     def read_csv_file
@@ -100,11 +115,16 @@ module TreeOfSexImport
     # e.g. Higher taxonomic group, order,...
     def check_taxon_headers
       headers = @csvfile.headers()
-      raise "Unable to read headers from csv" unless headers
-      if (TAXON_HEADERS-headers).empty?
-        @messages << "Taxon Headers are valid"
-      else
-        raise "Missing proper taxon headers"
+      if headers.nil?
+        @validation_results[:issues] << {:issue_description => 'Unable to read headers from CSV'}
+        return
+      end
+      # Quickly check if we're missing any taxon headers
+      unless (TAXON_HEADERS-headers).empty?
+        missing_headers = TAXON_HEADERS-headers
+        missing_headers.each do |missing|
+          @validation_results[:issues] << {:issue_description => 'Missing taxon Header', :column_name => 'missing'}
+        end
       end
     end
   
@@ -114,12 +134,21 @@ module TreeOfSexImport
       headers = @csvfile.headers()
       first = headers.index(@quantitative_header_start)
       last = headers.index(@quantitative_header_end)
-      raise "Did not find first designated quantitative header: #{@quantitative_header_start}" if first.nil?
-      raise "Did not find last designated quantitative header: #{@quantitative_header_end}" if last.nil?
-      quantitative_chr_range = Range.new(first, last)
-      @chr_headers[:quantitative] = headers[quantitative_chr_range]
-      raise "Quantitative headers are not unique" if @chr_headers[:quantitative].uniq.length != @chr_headers[:quantitative].length
-      @messages << "Quantitative headers are valid"
+      if first.nil?
+        @validation_results[:issues] << {:issue_description => "Did not find first designated quantitative header: #{@quantitative_header_start}"}
+      end
+      if last.nil?
+        @validation_results[:issues] << {:issue_description => "Did not find last designated quantitative header: #{@quantitative_header_end}"}
+      end
+      if first && last
+        quantitative_chr_range = Range.new(first, last)
+        @chr_headers[:quantitative] = headers[quantitative_chr_range]
+        if @chr_headers[:quantitative].uniq.length != @chr_headers[:quantitative].length
+          @validation_results[:issues] << {:issue_description => 'Quantitative headers are not unique', :column_location => first}
+        end
+      else
+        @validation_results[:info] << {:info => 'Quantitative headers are valid'}
+      end
     end
   
     # checks for valid qualitative character headers
@@ -128,36 +157,51 @@ module TreeOfSexImport
       headers = @csvfile.headers()
       first = headers.index(@qualitative_header_start)
       last = headers.index(@qualitative_header_end)
-      raise "Did not find first designated qualitative header: #{@qualitative_header_start}" if first.nil?
-      raise "Did not find last designated qualitative header: #{@qualitative_header_end}" if last.nil?
-    
-      qualitative_chr_range = Range.new(first, last)
-      # found qualitative headers, now make sure each contains choices
-      raw_chr_headers = headers[qualitative_chr_range]
-      @chr_headers[:qualitative] = []
-      raw_chr_headers.each do |raw_chr_header|
-        # Test regex for character name (state1, state2, state3)
-        regex = /\A(.+)\((.+)\)\z/
-        matched = regex.match(raw_chr_header)
-        if matched.nil?
-          raise "Bad format in qualitative character header '#{raw_chr_header}'"
+      if first.nil?
+        @validation_results[:issues] << {:issue_description => "Did not find first designated qualitative header: #{@qualitative_header_start}"}
+      end
+      if last.nil?
+        @validation_results[:issues] << {:issue_description => "Did not find last designated qualitative header: #{@qualitative_header_end}"}
+      end
+      if first && last
+        qualitative_chr_range = Range.new(first, last)
+        # found qualitative headers, now make sure each contains choices
+        raw_chr_headers = headers[qualitative_chr_range]
+        @chr_headers[:qualitative] = []
+        raw_chr_headers.each_with_index do |raw_chr_header, i|
+          # Test regex for character name (state1, state2, state3)
+          regex = /\A(.+)\((.+)\)\z/
+          matched = regex.match(raw_chr_header)
+          if matched.nil?
+            @validation_results[:issues] << {:issue_description => 'Bad format in qualitative character header', :column_name => raw_chr_header, :column_location => first + i}
+            next
+          end
+          # Build a chr_header hash with the names and array of possible states
+          chr_header = { :raw_header_name => raw_chr_header, :chr_name => matched[1].strip, :chr_states => matched[2].split(',').map{|st| st.strip } }
+          # make sure this isn't a duplicate
+          unless @chr_headers[:qualitative].detect {|c| c[:chr_name] == chr_header[:chr_name] }.nil?
+            @validation_results[:issues] << {:issue_description => 'Duplicate character state in header', :column_name => raw_chr_header, :column_location => first + i}
+            next
+          end
+          @chr_headers[:qualitative] << chr_header
         end
-        # Build a chr_header hash with the names and array of possible states
-        chr_header = { :raw_header_name => raw_chr_header, :chr_name => matched[1].strip, :chr_states => matched[2].split(',').map{|st| st.strip } }
-        # make sure this isn't a duplicate
-        raise "Duplicate character state in header '#{raw_chr_header}'" unless @chr_headers[:qualitative].detect {|c| c[:chr_name] == chr_header[:chr_name] }.nil?
-        @chr_headers[:qualitative] << chr_header
       end
     end
   
     def check_entry_email_header
-      raise "Missing #{ENTRY_EMAIL_HEADER} header" unless @csvfile.headers.include?(ENTRY_EMAIL_HEADER)
-      @messages << "#{ENTRY_EMAIL_HEADER} header valid"
+      if @csvfile.headers.include?(ENTRY_EMAIL_HEADER)
+        @validation_results[:info] << {:info => "#{ENTRY_EMAIL_HEADER} header valid"}
+      else
+        @validation_results[:issues] << {:issue_description => "Missing #{ENTRY_EMAIL_HEADER}", :column_name => ENTRY_EMAIL_HEADER}
+      end
     end
   
     def check_notes_comments_header
-      raise "Missing #{NOTES_COMMENTS_HEADER} header" unless @csvfile.headers.include?(NOTES_COMMENTS_HEADER)
-      @messages << "#{NOTES_COMMENTS_HEADER} header valid"
+      if @csvfile.headers.include?(NOTES_COMMENTS_HEADER)
+        @validation_results[:info] << {:info => "#{NOTES_COMMENTS_HEADER} header valid"}
+      else
+        @validation_results[:issues] << {:issue_description => "Missing #{NOTES_COMMENTS_HEADER}", :column_name => NOTES_COMMENTS_HEADER}
+      end
     end
   
     # Checks if a source header exists for each quantitative header
@@ -166,65 +210,73 @@ module TreeOfSexImport
       headers = @csvfile.headers()
       first = headers.index("#{SOURCE_PREFIX}#{@quantitative_header_start}")
       last = headers.index("#{SOURCE_PREFIX}#{@quantitative_header_end}")
-      raise "Did not find first designated quantitative source header: '#{SOURCE_PREFIX}#{@quantitative_header_start}'" if first.nil?
-      raise "Did not find last designated quantitative source header: '#{SOURCE_PREFIX}#{@quantitative_header_end}'" if last.nil?
-    
-      quantitative_chr_source_range = Range.new(first, last)
-      @quantitative_chr_source_headers = headers[quantitative_chr_source_range]
-
-      # headers we expect, based on @chr_headers[:quantitative]
-      expected_source_headers = @chr_headers[:quantitative].map{|h| "#{SOURCE_PREFIX}#{h}" }
-    
-      missing_source_headers = expected_source_headers - @quantitative_chr_source_headers
-      unless missing_source_headers.empty?
-        raise "Missing expected quantitative source headers: #{missing_source_headers}"
+      if first.nil?
+        @validation_results[:issues] << {:issue_description => 'Did not find first designated quantitative source header', :column_name => "#{SOURCE_PREFIX}#{@quantitative_header_start}"}
       end
-    
-      extra_source_headers = @quantitative_chr_source_headers - expected_source_headers
-      unless extra_source_headers.empty?
-        raise "Found extra quantitative source headers: #{extra_source_headers}"
+      if last.nil?
+        @validation_results[:issues] << {:issue_description => 'Did not find last designated quantitative source header', :column_name => "#{SOURCE_PREFIX}#{@quantitative_header_end}"}
       end
+      if first && last
+        quantitative_chr_source_range = Range.new(first, last)
+        @quantitative_chr_source_headers = headers[quantitative_chr_source_range]
 
-      @messages << "Quantitative source headers are valid"
+        # headers we expect, based on @chr_headers[:quantitative]
+        expected_source_headers = @chr_headers[:quantitative].map{|h| "#{SOURCE_PREFIX}#{h}" }
+
+        missing_source_headers = expected_source_headers - @quantitative_chr_source_headers
+        missing_source_headers.each do |missing|
+          @validation_results[:issues] << {:issue_description => 'Missing expected quantitative source header', :column_name => missing}
+        end
+        extra_source_headers = @quantitative_chr_source_headers - expected_source_headers
+        extra_source_headers.each do |extra|
+          @validation_results[:issues] << {:issue_description => 'Found extra quantitative source header', :column_name => extra}
+        end
+        if missing_source_headers.empty? && extra_source_headers.empty?
+          @validation_results[:info] << {:info => 'Quantitative source headers are valid'}
+        end
+      end
     end
   
     def read_qualitative_chr_source_headers
       headers = @csvfile.headers()
       first = headers.index("#{SOURCE_PREFIX}#{@qualitative_header_start}")
       last = headers.index("#{SOURCE_PREFIX}#{@qualitative_header_end}")
-      raise "Did not find first designated qualitative source header: '#{SOURCE_PREFIX}#{@qualitative_header_start}'" if first.nil?
-      raise "Did not find last designated qualitative source header: '#{SOURCE_PREFIX}#{@qualitative_header_end}'" if last.nil?
-
-      @qualitative_chr_source_range = Range.new(first, last)
-      # Remember, for qualitative headers, the possible choices are in the header
-      # and captured in the @qualitative_chr_header hashes via :raw_header_name
-      @qualitative_chr_source_headers = headers[@qualitative_chr_source_range]
-
-      # headers we expect, based on @chr_headers[:qualitative]
-      expected_source_headers = @chr_headers[:qualitative].map{|h| "#{SOURCE_PREFIX}#{h[:raw_header_name]}" }
-    
-      missing_source_headers = expected_source_headers - @qualitative_chr_source_headers
-      unless missing_source_headers.empty?
-        raise "Missing expected qualitative source headers: #{missing_source_headers}"
+      if first.nil?
+        @validation_results[:issues] << {:issue_description => 'Did not find first designated qualitative source header', :column_name => "#{SOURCE_PREFIX}#{@qualitative_header_start}"}
       end
-    
-      extra_source_headers = @qualitative_chr_source_headers - expected_source_headers
-      unless extra_source_headers.empty?
-        raise "Found extra quantitative source headers: #{extra_source_headers}"
-      end
+      if last.nil?
+        @validation_results[:issues] << {:issue_description => 'Did not find last designated qualitative source header', :column_name => "#{SOURCE_PREFIX}#{@qualitative_header_end}"}
 
-      @messages << "Qualitative source headers are valid"
+      end
+      if first && last
+        @qualitative_chr_source_range = Range.new(first, last)
+        # Remember, for qualitative headers, the possible choices are in the header
+        # and captured in the @qualitative_chr_header hashes via :raw_header_name
+        @qualitative_chr_source_headers = headers[@qualitative_chr_source_range]
+
+        # headers we expect, based on @chr_headers[:qualitative]
+        expected_source_headers = @chr_headers[:qualitative].map{|h| "#{SOURCE_PREFIX}#{h[:raw_header_name]}" }
+        missing_source_headers = expected_source_headers - @qualitative_chr_source_headers
+        missing_source_headers.each do |missing|
+          @validation_results[:issues] << {:issue_description => 'Missing expected qualitative source header', :column_name => missing}
+        end
+        extra_source_headers = @qualitative_chr_source_headers - expected_source_headers
+        extra_source_headers.each do |extra|
+          @validation_results[:issues] << {:issue_description => 'Found extra qualitative source header', :column_name => extra}
+        end
+        if missing_source_headers.empty? && extra_source_headers.empty?
+          @validation_results[:info] << {:info => 'Qualitative source headers are valid'}
+        end
+      end
     end
     
     def read_row_data
       @datasets = []
-      @messages << "=== Reading row data"
-      # map the raw names to the output names for looking up 
+      # map the raw names to the output names for looking up
       qualitative_chr_header_map = {}
       @chr_headers[:qualitative].each do |h|
         qualitative_chr_header_map[h[:raw_header_name]] = h[:chr_name]
       end
-      row_errors = []
       @csvfile.each_with_index do |row, i|
         dataset = {}
         lineno = i + 2 # i is zero-indexed and the first line is headers

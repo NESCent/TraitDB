@@ -13,7 +13,7 @@
     <% @import_jobs.each do |import_job| %>
     <tr>
       <td><%= import_job.csv_dataset.csv_file_file_name %></td>
-      <td><%= import_job.status %></td>
+      <td><%= import_job.state %></td>
       <td>
         <div class="btn-group row-fluid">
           <%= link_to("Taxa (#{import_job.taxa.count})", taxa_path(:import_job => import_job.id), :class => 'btn btn-small span3') %>
@@ -30,7 +30,7 @@
         </div>
       </td>
       <td>
-        <% if import_job.status == "importing" %>
+        <% if import_job.state == "importing" %>
           <%= link_to("Stop", {:controller => 'import_jobs', :action => 'show', :dataset_id => import_job.csv_dataset.id, :id => import_job.id }, :class => 'btn btn-small btn-info btn-block') %>
         <% else %>
           <%= link_to("Start", {:controller => 'import_jobs', :action => 'background_import', :dataset_id => import_job.csv_dataset.id, :id => import_job.id }, :class => 'btn btn-small btn-info btn-block') %>

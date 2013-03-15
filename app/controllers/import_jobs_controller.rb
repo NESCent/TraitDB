@@ -69,6 +69,12 @@ class ImportJobsController < ApplicationController
     redirect_to(csv_dataset_import_job_path(@dataset, import_job))
   end
 
+  def validate
+    import_job = ImportJob.find(params[:id])
+    import_job.do_validation
+    redirect_to(csv_dataset_import_job_path(@dataset, import_job))
+  end
+
   def reset_job
     import_job = ImportJob.find(params[:id])
     import_job.reset

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130314160135) do
+ActiveRecord::Schema.define(:version => 20130314195945) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -84,9 +84,23 @@ ActiveRecord::Schema.define(:version => 20130314160135) do
     t.datetime "updated_at", :null => false
   end
 
+  create_table "import_issues", :force => true do |t|
+    t.integer  "import_job_id"
+    t.integer  "row_location",       :null => false
+    t.integer  "column_location",    :null => false
+    t.string   "column_name"
+    t.string   "issue_description",  :null => false
+    t.string   "suggested_solution", :null => false
+    t.datetime "created_at",         :null => false
+    t.datetime "updated_at",         :null => false
+  end
+
+  add_index "import_issues", ["column_location"], :name => "index_import_issues_on_column_location"
+  add_index "import_issues", ["row_location"], :name => "index_import_issues_on_row_location"
+
   create_table "import_jobs", :force => true do |t|
     t.integer  "csv_dataset_id"
-    t.string   "status",                    :limit => 25, :default => "new", :null => false
+    t.string   "state",                     :limit => 25, :default => "new", :null => false
     t.datetime "created_at",                                                 :null => false
     t.datetime "updated_at",                                                 :null => false
     t.string   "quantitative_header_start"
@@ -153,5 +167,19 @@ ActiveRecord::Schema.define(:version => 20130314160135) do
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
+
+  create_table "validation_issues", :force => true do |t|
+    t.integer  "import_job_id"
+    t.integer  "row_location",       :null => false
+    t.integer  "column_location",    :null => false
+    t.string   "column_name"
+    t.string   "issue_description",  :null => false
+    t.string   "suggested_solution", :null => false
+    t.datetime "created_at",         :null => false
+    t.datetime "updated_at",         :null => false
+  end
+
+  add_index "validation_issues", ["column_location"], :name => "index_validation_issues_on_column_location"
+  add_index "validation_issues", ["row_location"], :name => "index_validation_issues_on_row_location"
 
 end

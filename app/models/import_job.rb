@@ -4,21 +4,40 @@ class ImportJob < ActiveRecord::Base
   belongs_to :csv_dataset
   has_many :taxa
   has_many :otus
-  attr_accessible :status, :csv_dataset
+  has_many :import_issues, :dependent => :destroy
+  has_many :validation_issues, :dependent => :destroy
+
+  attr_accessible :state, :csv_dataset
   attr_accessible :quantitative_header_start, :quantitative_header_end, :qualitative_header_start, :qualitative_header_end
+  IMPORT_STATES = %w(new validating validated validation_failed importing imported import_failed)
+  validates_inclusion_of :state, :in => IMPORT_STATES
 
   def reset
-    self.status = "new"
+    self.state = 'new'
     save
   end
- 
+
+  # designed to run async via delayed job
+  def do_validation
+    unless state == 'new'
+      return false
+    end
+    self.state = 'validating'
+    if validate_dataset
+      self.state = 'validated'
+    else
+      self.state = 'validation_failed'
+    end
+    save
+  end
+
   def do_import
-    # fail if status is not new
-    unless status == "new"
+    # fail if state is not validated
+    unless state == 'validated'
       return false
     end
 
-    self.status = "importing"
+    self.state = 'importing'
     save
     parsed_datasets, parsed_chrs = validate_dataset
     puts @validator_messages.join("\n")
@@ -46,13 +65,17 @@ class ImportJob < ActiveRecord::Base
     validator.quantitative_header_end = self.quantitative_header_end
     validator.qualitative_header_start = self.qualitative_header_start
     validator.qualitative_header_end = self.qualitative_header_end
-    
-    success = validator.validate
-    @validator_messages = validator.messages
-    if success
-      return [validator.datasets, validator.chr_headers]
+
+    results = validator.validate
+    if results[:issues].empty?
+      # no issues
+      return true
     else
-      return nil
+      results[:issues].each do |issue|
+        self << ImportIssue.create(issue)
+      end
+      self.save
+      return false
     end
   end
 

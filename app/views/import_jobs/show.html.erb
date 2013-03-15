@@ -20,15 +20,18 @@
       </tr>
       <tr>
         <th>Status</th>
-        <td><span class="label"><%= @import_job.status %></span></td>
+        <td><span class="label"><%= @import_job.state %></span></td>
       </tr>
       <tr>
         <th>Job Control</th>
-        <td><% unless @import_job.status == 'new' %>
+        <td><% unless @import_job.state == 'new' %>
           <%= link_to("Reset", {:id => @import_job.id, :action => "reset_job"}, {:class => 'btn btn-warning btn-small', :method => :post})%>
               <% else %>
+              <%= link_to("Validate", {:id => @import_job.id, :action => "validate"}, {:class => 'btn btn-primary btn-small', :method => :post})%>
               <%= link_to("Import", {:id => @import_job.id, :action => "import"}, {:class => 'btn btn-primary btn-small', :method => :post})%>
-              <% end %>
+
+
+        <% end %>
          </td>
       </tr>
       <tr>

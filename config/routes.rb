@@ -18,6 +18,7 @@ TraitDB::Application.routes.draw do
       member do
         get 'background_import'
         post 'import'
+        post 'validate'
         post 'reset_job'
       end
     end

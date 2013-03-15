@@ -1,11 +1,10 @@
 <table class="table table-bordered">
-  <thead>
-    <tr>
+  <tbody>
+    <tr class="header">
       <th>Location</th>
       <th>Problem</th>
       <th>Possible Solution</th>
     </tr>
-  </thead>
   <% issues.each do |issue| %>
   <tr>
     <td><%= issue.location %></td>
@@ -13,4 +12,5 @@
     <td><%= issue.suggested_solution %></td>
   </tr>
   <% end %>
+  </tbody>
 </table>

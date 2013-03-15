@@ -202,7 +202,7 @@ module TreeOfSexImport
                 :issue_description => 'Bad format in qualitative character header',
                 :column_name => raw_chr_header,
                 :column_location => first + i,
-                :suggested_solution => "Check your CSV file to make sure the qualitative character header matches the required format: 'name (value1, value2,)'"
+                :suggested_solution => "Check your CSV file to make sure the qualitative character header matches the required format: 'name (value1, value2, value3)'"
             }
             next
           end

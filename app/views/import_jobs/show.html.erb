@@ -23,7 +23,9 @@
         <td><span class="label"><%= @import_job.state %></span>
           <% case @import_job.state
           when 'parse_warnings' %>
-              <%= render(:partial => "import_jobs/import_issues", :locals => { :import_job => @import_job}) %>
+              <%= render(:partial => "import_jobs/issues", :locals => { :issues => @import_job.import_issues}) %>
+          <% when 'validation_failed' %>
+              <%= render(:partial => "import_jobs/issues", :locals => { :issues => @import_job.validation_issues}) %>
           <% end %>
         </td>
       </tr>

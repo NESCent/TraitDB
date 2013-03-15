@@ -8,4 +8,9 @@ class ImportIssue < ActiveRecord::Base
   validates_presence_of :row_location
   validates_presence_of :issue_description
   validates_presence_of :suggested_solution
+
+  def location
+    "#{issue.row_location}, Column #{issue.column_location} '#{issue.column_name}')"
+  end
+
 end

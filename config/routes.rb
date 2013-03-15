@@ -17,8 +17,9 @@ TraitDB::Application.routes.draw do
     resources :import_jobs do
       member do
         get 'background_import'
-        post 'import'
         post 'validate'
+        post 'parse'
+        post 'import'
         post 'reset_job'
       end
     end

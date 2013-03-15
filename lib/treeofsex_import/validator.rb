@@ -22,7 +22,6 @@ module TreeOfSexImport
     attr_reader :datasets, :chr_headers
     attr_accessor :quantitative_header_start, :quantitative_header_end
     attr_accessor :qualitative_header_start, :qualitative_header_end
-    attr_accessor :validation_results, :parse_results
     # parse results is not yet implemented
     # Constant Header column names, required
     TAXON_HEADERS = ["Higher taxonomic group", "Order", "Family", "Genus", "species"]
@@ -60,15 +59,16 @@ module TreeOfSexImport
       return @validation_results
     end
 
-    def parse # rethink name
+    def parse
       read_row_data
+      @parse_results
     end
 
     def validate_old
       begin
         #@messages << "=== Reading CSV file #{@filepath}"
         read_csv_file
-        raise "Unable to read file" if @csvfile.nil?
+        raise 'Unable to read file' if @csvfile.nil?
         # read and check the column headers
         read_column_headers
         # read the row data
@@ -302,7 +302,14 @@ module TreeOfSexImport
           if (v.is_number?)
             quantitative_data_array << { :name => k, :value => Float(v) }
           else
-            row_errors << "Error on line #{lineno}: Non-numeric value '#{v}' in quantitative data field '#{k}'"
+            @parse_results[:issues] << {
+                :issue_description => 'Non-numeric value in quantitative data field',
+                :row_location => lineno,
+                :column_name => k,
+                :row_name => dataset[:taxon],
+                :column_location => @csvfile.headers.index(k),
+                :suggested_solution => 'Provide a numeric value.'
+            }
           end
         end
 
@@ -324,14 +331,31 @@ module TreeOfSexImport
             # all values in the cell exist in the header
             qualitative_data_array << { :name => name, :values => split_values }
           else
-            row_errors << "Error on line #{lineno}: unrecognized data values: #{split_values}.  Acceptable values are #{@chr_headers[:qualitative][key_index][:chr_states]}"
+            split_values.each do |split_value|
+              @parse_results[:issues] << {
+                  :issue_description => "Unrecognized value '#{split_value}' in qualitative data field",
+                  :row_location => lineno,
+                  :column_name => k,
+                  :row_name => dataset[:taxon],
+                  :column_location => @csvfile.headers.index(k),
+                  :suggested_solution => "Acceptable values are #{@chr_headers[:qualitative][key_index][:chr_states]}"
+              }
+            end
           end
         end
       
         # 4. Email Entry
         dataset[:email_entry] = row[ENTRY_EMAIL_HEADER]
-        row_errors << "Error on line #{lineno}: Missing #{ENTRY_EMAIL_HEADER}" if dataset[:email_entry].nil?
-            
+        if dataset[:email_entry].nil?
+          @parse_results[:issues] << {
+              :issue_description => "Missing #{ENTRY_EMAIL_HEADER}",
+              :row_location => lineno,
+              :column_name => ENTRY_EMAIL_HEADER,
+              :column_location => @csvfile.headers.index(ENTRY_EMAIL_HEADER),
+              :suggested_solution => 'Provide a valid email address'
+          }
+        end
+
         # 5. Notes/comments
         dataset[:notes_comments] = row[NOTES_COMMENTS_HEADER]
 
@@ -342,8 +366,14 @@ module TreeOfSexImport
           expected_name = k.sub(SOURCE_PREFIX,"")
           quantitative_data_hash = quantitative_data_array.find{|q| q[:name] == expected_name }
           if quantitative_data_hash.nil?
-            row_errors << "Error on line #{lineno}: Source '#{v}' provided for '#{expected_name}' but no data for '#{expected_name}'"
-          else					
+            @parse_results[:issues] << {
+                :issue_description => "Source provided for #{expected_name} but no data exists for '#{expected_name}'",
+                :row_location => lineno,
+                :column_name => k,
+                :column_location => @csvfile.headers.index(k),
+                :suggested_solution => "Make sure data is valid for '#{expected_name}' or remove source info from '#{k}'"
+            }
+          else
             quantitative_data_hash[:source] = v
           end
         end
@@ -356,10 +386,24 @@ module TreeOfSexImport
           # quantitative_data_array :names are trimmed.  Don't have (val1,val2,val3) in them.
           # But the qualitative_chr_header_map does
           expected_name = qualitative_chr_header_map[k.sub(SOURCE_PREFIX,"")]
-          row_errors << "Error on line #{lineno}, header name #{k} invalid" if expected_name.nil?
+          if expected_name.nil?
+            @parse_results[:issues] << {
+                :issue_description => "Source header name '#{k}' is not a valid header name",
+                :row_location => lineno,
+                :column_name => k,
+                :column_location => @csvfile.headers.index(k),
+                :suggested_solution => "Make sure header '#{k}' begins with '#{SOURCE_PREFIX}' and ends with a qualitative header name"
+            }
+          end
           qualitative_data_hash = qualitative_data_array.find{|q| q[:name] == expected_name }
           if qualitative_data_hash.nil?
-            row_errors << "Error on line #{lineno}: Source '#{v}' provided for '#{expected_name}' but no data for '#{expected_name}'"
+            @parse_results[:issues] << {
+                :issue_description => "Source provided for #{expected_name} but no data exists for '#{expected_name}'",
+                :row_location => lineno,
+                :column_name => k,
+                :column_location => @csvfile.headers.index(k),
+                :suggested_solution => "Make sure data is valid for '#{expected_name}' or remove source info from '#{k}'"
+            }
           else
             qualitative_data_hash[:source] = v
           end
@@ -367,7 +411,6 @@ module TreeOfSexImport
         dataset[:qualitative_data] = qualitative_data_array
         @datasets << dataset
       end
-      raise row_errors.join("\n") unless row_errors.empty?
     end
   
     def file_usable?

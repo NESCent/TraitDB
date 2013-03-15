@@ -59,19 +59,22 @@ class ImportJobsController < ApplicationController
   end
 
   # Does not use delayed job
-  def import
-    import_job = ImportJob.find(params[:id])
-    if import_job.do_import
-      flash[:notice] = 'Import Succeeded'
-    else
-      flash[:notice] = 'Import Failed'
-    end
-    redirect_to(csv_dataset_import_job_path(@dataset, import_job))
-  end
 
   def validate
     import_job = ImportJob.find(params[:id])
     import_job.do_validation
+    redirect_to(csv_dataset_import_job_path(@dataset, import_job))
+  end
+
+  def parse
+    import_job = ImportJob.find(params[:id])
+    import_job.do_parse
+    redirect_to(csv_dataset_import_job_path(@dataset, import_job))
+  end
+
+  def import
+    import_job = ImportJob.find(params[:id])
+    import_job.do_import
     redirect_to(csv_dataset_import_job_path(@dataset, import_job))
   end
 

@@ -1,0 +1,16 @@
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Location</th>
+      <th>Problem</th>
+      <th>Possible Solution</th>
+    </tr>
+  </thead>
+  <% import_job.import_issues.each do |issue| %>
+  <tr>
+    <td>Row <%= "#{issue.row_location}" -%>, Column <%= "#{issue.column_location} '#{issue.column_name}')"-%></td>
+    <td><%= issue.issue_description %></td>
+    <td><%= issue.suggested_solution %></td>
+  </tr>
+  <% end %>
+</table>

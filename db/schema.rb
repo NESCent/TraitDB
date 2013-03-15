@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130314195945) do
+ActiveRecord::Schema.define(:version => 20130315152342) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -93,6 +93,7 @@ ActiveRecord::Schema.define(:version => 20130314195945) do
     t.string   "suggested_solution", :null => false
     t.datetime "created_at",         :null => false
     t.datetime "updated_at",         :null => false
+    t.string   "row_name"
   end
 
   add_index "import_issues", ["column_location"], :name => "index_import_issues_on_column_location"

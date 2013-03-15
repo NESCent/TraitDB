@@ -9,7 +9,7 @@ class ImportJob < ActiveRecord::Base
 
   attr_accessible :state, :csv_dataset
   attr_accessible :quantitative_header_start, :quantitative_header_end, :qualitative_header_start, :qualitative_header_end
-  IMPORT_STATES = %w(new validating validated validation_failed importing imported import_failed)
+  IMPORT_STATES = %w(new validating validated validation_failed parsing parsed parse_warnings importing imported import_failed)
   validates_inclusion_of :state, :in => IMPORT_STATES
 
   def reset
@@ -19,9 +19,7 @@ class ImportJob < ActiveRecord::Base
 
   # designed to run async via delayed job
   def do_validation
-    unless state == 'new'
-      return false
-    end
+    return false unless state == 'new'
     self.state = 'validating'
     if validate_dataset
       self.state = 'validated'
@@ -31,52 +29,89 @@ class ImportJob < ActiveRecord::Base
     save
   end
 
-  def do_import
+  # designed to run async via delayed job
+  def do_parse
     # fail if state is not validated
-    unless state == 'validated'
-      return false
+    return false unless state == 'validated'
+    self.state = 'parsing'
+    save
+    if parse_dataset
+      self.state = 'parsed'
+    else
+      self.state = 'parse_warnings'
     end
+    save
+  end
 
+  # designed to run async via delayed job
+  def do_import
+    # fail if state is not parsed
+    return false unless state.in? ['parsed', 'parse_warnings']
     self.state = 'importing'
-    save
-    parsed_datasets, parsed_chrs = validate_dataset
-    puts @validator_messages.join("\n")
-    unless parsed_chrs && parsed_datasets
-      self.status = "failed"
-      save
-      return false
+    if import_dataset
+      self.state = 'imported'
+    else
+      self.state = 'import_failed'
     end
-
-    import_chrs_messages = import_chrs(parsed_chrs)
-    puts import_chrs_messages.join("\n")
-    import_datasets_messages = import_datasets(parsed_datasets)
-    puts import_datasets_messages.join("\n")
-    self.status = "imported"
     save
-    true
   end
 
   private
-  
-  def validate_dataset
+
+  # validator is not persisted and state isn't currently saved
+  # since the validate/parse/import is 3 separate steps, this needs to
+  # rebuild the validator each time
+  # This needs refactoring
+
+  def get_validator
     validator = TreeOfSexImport::Validator.new(csv_dataset.csv_file.path)
 
     validator.quantitative_header_start = self.quantitative_header_start
     validator.quantitative_header_end = self.quantitative_header_end
     validator.qualitative_header_start = self.qualitative_header_start
     validator.qualitative_header_end = self.qualitative_header_end
+    validator
 
+  end
+
+  def validate_dataset
+    validator = get_validator
     results = validator.validate
     if results[:issues].empty?
       # no issues
       return true
     else
       results[:issues].each do |issue|
-        self << ImportIssue.create(issue)
+        self.validation_issues << ValidationIssue.create(issue)
       end
       self.save
       return false
     end
+  end
+
+  def parse_dataset
+    validator = get_validator
+    validator.validate
+    results = validator.parse
+    if results[:issues].empty?
+      # no issues,
+      return true
+    else
+      results[:issues].each do |issue|
+        self.import_issues << ImportIssue.create(issue)
+      end
+      self.save
+      return false
+    end
+  end
+
+  def import_dataset
+    validator = get_validator
+    validator.validate
+    validator.parse
+    import_chrs(validator.chr_headers)
+    import_datasets(validator.datasets)
+    true
   end
 
   def import_chrs(chrs)
@@ -97,7 +132,7 @@ class ImportJob < ActiveRecord::Base
       # need a chr model!
       categorical_trait = CategoricalTrait.where(:name => chr_hash[:chr_name]).first_or_create do |trait|
         messages << "Adding categorical character #{chr_hash[:chr_name]}"
-        trait.import_job = self;
+        trait.import_job = self
       end
       chr_hash[:chr_states].each do |state_name|
         categorical_trait.categorical_trait_categories.where(:name => state_name).first_or_create do |category|

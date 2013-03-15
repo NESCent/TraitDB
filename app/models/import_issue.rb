@@ -10,7 +10,7 @@ class ImportIssue < ActiveRecord::Base
   validates_presence_of :suggested_solution
 
   def location
-    "#{issue.row_location}, Column #{issue.column_location} '#{issue.column_name}')"
+    "Row #{row_location}, Column #{column_location} '#{column_name}'"
   end
 
 end

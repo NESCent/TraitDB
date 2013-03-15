@@ -1,13 +1,13 @@
-<% @page_title = "Import Dataset" %>
+<% @page_title = "New Import Job" %>
 <div class="row-fluid">
   <div class="row"><p class="lead">New Import Job</p></div>
   <div class="row">
     <%= form_for(:import_job, {:url => csv_dataset_import_jobs_path(@dataset.id), :html => { :multipart => 'true', :class =>"upload_form" }}) do |f| %>
     <%= render(:partial => "form", :locals => { :f => f}) %>
     <div class="form-buttons">
-    <%= submit_tag("Import dataset", :class => 'btn btn-primary') %>
+    <%= submit_tag("Create Import Job", :class => 'btn btn-primary') %>
     </div>
     <% end %>
   </div>
-  <div class="row"><%= link_to("<< Back", csv_dataset_import_jobs_path(@dataset), :class => 'btn') %>
+  <div class="row"><%= link_to("<< Back", csv_dataset_import_jobs_path(@dataset), :class => 'btn') %></div>
 </div>

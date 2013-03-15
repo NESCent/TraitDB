@@ -6,9 +6,11 @@ class ImportJob < ActiveRecord::Base
   has_many :otus
   has_many :import_issues, :dependent => :destroy
   has_many :validation_issues, :dependent => :destroy
+  before_create :count_rows
 
   attr_accessible :state, :csv_dataset
   attr_accessible :quantitative_header_start, :quantitative_header_end, :qualitative_header_start, :qualitative_header_end
+  attr_readonly :csv_row_count
   IMPORT_STATES = %w(new validating validated validation_failed parsing parsed parse_warnings importing imported import_failed)
   validates_inclusion_of :state, :in => IMPORT_STATES
 
@@ -75,7 +77,11 @@ class ImportJob < ActiveRecord::Base
 
   private
 
-  # validator is not persisted and state isn't currently saved
+  def count_rows
+    self.csv_row_count = CSV.read(csv_dataset.csv_file.path).length - 1
+  end
+
+    # validator is not persisted and state isn't currently saved
   # since the validate/parse/import is 3 separate steps, this needs to
   # rebuild the validator each time
   # This needs refactoring

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130315172633) do
+ActiveRecord::Schema.define(:version => 20130315190808) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -108,6 +108,7 @@ ActiveRecord::Schema.define(:version => 20130315172633) do
     t.string   "quantitative_header_end"
     t.string   "qualitative_header_start"
     t.string   "qualitative_header_end"
+    t.integer  "csv_row_count"
   end
 
   create_table "otus", :force => true do |t|

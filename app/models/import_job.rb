@@ -4,7 +4,7 @@ class ImportJob < ActiveRecord::Base
   belongs_to :csv_dataset
   has_many :taxa
   has_many :otus
-  has_many :import_issues, :dependent => :destroy
+  has_many :parse_issues, :dependent => :destroy
   has_many :validation_issues, :dependent => :destroy
   before_create :count_rows
 
@@ -24,11 +24,11 @@ class ImportJob < ActiveRecord::Base
 
   # Used to create a new CSV file with just the bad data
   def problem_rows
-    import_issues.map { |i| i.row_location}.uniq
+    parse_issues.map { |i| i.row_location}.uniq
   end
 
   def problem_rows_cols
-    import_issues.map{ |i| {:row => i.row_location, :column => i.column_location }}
+    parse_issues.map{ |i| {:row => i.row_location, :column => i.column_location }}
   end
 
   def reset
@@ -121,7 +121,7 @@ class ImportJob < ActiveRecord::Base
       return true
     else
       results[:issues].each do |issue|
-        self.import_issues << ImportIssue.create(issue)
+        self.parse_issues << ParseIssue.create(issue)
       end
       self.save
       return false

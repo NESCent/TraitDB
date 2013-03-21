@@ -1,4 +1,4 @@
-# This class is identical to ImportIssue, see how to combine them
+# This class is identical to ParseIssue, see how to combine them
 
 class ValidationIssue < ActiveRecord::Base
   attr_accessible :column_name, :column_location, :issue_description, :suggested_solution

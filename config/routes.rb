@@ -1,7 +1,9 @@
 TraitDB::Application.routes.draw do
 
+  # Devise, an auth framework
   devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }
 
+  # Resourceful routes
   resources :continuous_trait_values
   resources :categorical_trait_values
   resources :categorical_trait_categories
@@ -9,8 +11,6 @@ TraitDB::Application.routes.draw do
   resources :continuous_traits
   resources :otus
   resources :taxa
-
-  match 'search(/:action)(.:format)' => "search"
   resources :source_references
 
   # import jobs are nested within csv datasets
@@ -25,7 +25,9 @@ TraitDB::Application.routes.draw do
       end
     end
   end
-  
+
+  # Non-resourceful routes
+  match 'search(/:action)(.:format)' => "search"
   match 'about' => 'about#index'
 
   root :to => "about#index"

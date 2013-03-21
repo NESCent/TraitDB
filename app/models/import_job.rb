@@ -230,7 +230,7 @@ class ImportJob < ActiveRecord::Base
           end
           otu_notes = d[:notes_comments]
           # make an otu
-          otu = Otu.create(:name => otu_name, :taxon => last_parent, :import_job => self)
+          otu = Otu.create(:name => otu_name, :taxon => last_parent, :import_job => self, :notes => otu_notes)
           # refs
           # Categorical Traits
           d[:qualitative_data].each do |import_trait|

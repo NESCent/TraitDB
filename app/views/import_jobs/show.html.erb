@@ -34,7 +34,7 @@
            when 'parse_warnings' %>
           <tr>
             <th>Import Issues</th>
-            <td><%= render(:partial => "import_jobs/issues", :locals => { :issues => @import_job.import_issues}) %></td>
+            <td><%= render(:partial => "import_jobs/issues", :locals => { :issues => @import_job.parse_issues}) %></td>
           </tr>
       <% when 'validation_failed' %>
           <tr>

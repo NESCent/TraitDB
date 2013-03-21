@@ -12,6 +12,10 @@
         <td><%= link_to(@categorical_trait_value.otu.name, otu_path(@categorical_trait_value.otu)) %></td>
       </tr>
       <tr>
+        <th>Source</th>
+        <td><%= @categorical_trait_value.source_reference %></td>
+      </tr>
+      <tr>
         <th>Created</th>
         <td><%= @categorical_trait_value.created_at %></td>
       </tr>

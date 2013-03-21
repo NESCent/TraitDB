@@ -6,8 +6,7 @@
 # https://www.nescent.org/wg/treeofsex/images/4/4e/Instructions_for_import.docx
 #
 # The goal of this is to return a ruby object that contains the parsed data
-# which can then be moved into NeXML or imported into mx
-# So we need a model object of some kind...
+# which can then be moved into NeXML or imported into a trait database
 
 require 'CSV'
 
@@ -442,7 +441,7 @@ module TreeOfSexImport
                 :suggested_solution => "Make sure data is valid for '#{expected_name}' or remove source info from '#{k}'"
             }
           else
-            quantitative_data_hash[:source] = v
+            quantitative_data_hash[:source] = source_string_to_hash(v)
           end
         end
         dataset[:quantitative_data] = quantitative_data_array
@@ -473,11 +472,31 @@ module TreeOfSexImport
                 :suggested_solution => "Make sure data is valid for '#{expected_name}' or remove source info from '#{k}'"
             }
           else
-            qualitative_data_hash[:source] = v
+            qualitative_data_hash[:source] = source_string_to_hash(v)
           end
         end
         dataset[:qualitative_data] = qualitative_data_array
         @datasets << dataset
+      end
+    end
+
+    def uri?(string)
+      uri = URI.parse(string)
+      %w( http https ).include?(uri.scheme)
+    rescue URI::BadURIError
+      false
+    rescue URI::InvalidURIError
+      false
+    end
+
+    def source_string_to_hash(string)
+      if uri?(string)
+        {:url => string, :title => string}
+      elsif string.match(/\|/)
+        a = string.split('|')
+        {:last_name => a[0], :first_name => a[1], :year => a[2], :title => a[3]}
+      else
+        {:title => string}
       end
     end
   

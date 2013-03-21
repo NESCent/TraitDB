@@ -11,6 +11,7 @@ TraitDB::Application.routes.draw do
   resources :taxa
 
   match 'search(/:action)(.:format)' => "search"
+  resources :source_references
 
   # import jobs are nested within csv datasets
   resources :csv_datasets do

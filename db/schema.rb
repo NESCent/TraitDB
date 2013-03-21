@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130321145925) do
+ActiveRecord::Schema.define(:version => 20130321185415) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -27,6 +27,7 @@ ActiveRecord::Schema.define(:version => 20130321145925) do
     t.integer  "categorical_trait_category_id"
     t.datetime "created_at",                    :null => false
     t.datetime "updated_at",                    :null => false
+    t.integer  "source_reference_id"
   end
 
   create_table "categorical_traits", :force => true do |t|
@@ -42,6 +43,7 @@ ActiveRecord::Schema.define(:version => 20130321145925) do
     t.datetime "created_at",          :null => false
     t.datetime "updated_at",          :null => false
     t.float    "value"
+    t.integer  "source_reference_id"
   end
 
   create_table "continuous_traits", :force => true do |t|
@@ -134,6 +136,16 @@ ActiveRecord::Schema.define(:version => 20130321145925) do
 
   add_index "projects_users", ["project_id", "user_id"], :name => "index_projects_users_on_project_id_and_user_id"
   add_index "projects_users", ["user_id", "project_id"], :name => "index_projects_users_on_user_id_and_project_id"
+
+  create_table "source_references", :force => true do |t|
+    t.string   "last_name"
+    t.string   "first_name"
+    t.integer  "year"
+    t.string   "title"
+    t.string   "url"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "taxa", :force => true do |t|
     t.string   "name"

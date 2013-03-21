@@ -234,23 +234,44 @@ class ImportJob < ActiveRecord::Base
           # refs
           # Categorical Traits
           d[:qualitative_data].each do |import_trait|
+            # skip if source is not provided
+            next if import_trait[:source].nil?
             # an array of hashes.  Hashes contain :name, :values, and :source
             # find the trait to attach it to
             trait = CategoricalTrait.where(:name => import_trait[:name]).first
+            # This will result in erroneous references if source is nil, because where(nil) returns everything!
+            source_reference = SourceReference.where(import_trait[:source]).first_or_create do |ref|
+              import_datasets_messages << "Adding Source Reference #{ref[:title]}"
+            end
+
             import_trait[:values].each_with_index do |import_value, i|
               # Now the values
               category = CategoricalTraitCategory.where(:categorical_trait_id => trait.id, :name => import_value).first
               value = CategoricalTraitValue.create(:position => i,
                                                    :categorical_trait_id => trait.id,
-                                                   :categorical_trait_category_id => category.id)
+                                                   :categorical_trait_category_id => category.id,
+                                                   :source_reference_id => source_reference.id)
+              source_reference.categorical_trait_values << value
               otu.categorical_trait_values << value
               otu.save
             end
+            source_reference.save
           end
           d[:quantitative_data].each do |import_trait|
-            # Array of hashes.  Hashes contain :name and :value
+            # skip if source is not provided
+            next if import_trait[:source].nil?
+            # Array of hashes.  Hashes contain :name, :value, and :source
             trait = ContinuousTrait.where(:name => import_trait[:name]).first
-            value = ContinuousTraitValue.create(:continuous_trait_id => trait.id, :value => import_trait[:value])
+            # This will result in erroneous references if source is nil, because where(nil) returns everything!
+            source_reference = SourceReference.where(import_trait[:source]).first_or_create do |ref|
+              import_datasets_messages << "Adding Source Reference #{ref[:title]}"
+            end
+
+            value = ContinuousTraitValue.create(:continuous_trait_id => trait.id,
+                                                :value => import_trait[:value],
+                                                :source_reference_id => source_reference.id)
+            source_reference.continuous_trait_values << value
+            source_reference.save
             otu.continuous_trait_values << value
             otu.save
           end

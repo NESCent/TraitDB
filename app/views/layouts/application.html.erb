@@ -7,10 +7,10 @@
   <%= csrf_meta_tags %>
 </head>
 <body style="padding-top: 40px;">
-<div class="container">
+<div class="container-fluid">
   <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
-      <div class="container">
+      <div class="container-fluid">
         <%= link_to("TraitDB", root_path, :class => :brand) %>
         <ul class="nav pull-left">
         </ul>
@@ -41,7 +41,7 @@
       </div>
     </div>
   </div>
-  <div class="row">
+  <div class="row-fluid">
     <% if notice %><p class="alert alert-info"><%= notice %></p><% end %>
     <% if alert %><p class="alert alert-error"><%= alert %></p><% end %>
   </div>

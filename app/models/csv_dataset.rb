@@ -9,4 +9,20 @@ class CsvDataset < ActiveRecord::Base
   def self.fields
     @@fields
   end
+
+  def status
+    import_jobs.last.state
+  end
+
+  def problem?
+    import_jobs.last.problem?
+  end
+
+  def failed?
+    import_jobs.last.failed?
+  end
+  def imported?
+    true unless problem? || failed?
+  end
+
 end

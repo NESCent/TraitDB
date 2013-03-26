@@ -29,7 +29,7 @@ TraitDB::Application.routes.draw do
   # Non-resourceful routes
   match 'search(/:action)(.:format)' => "search"
   match 'about' => 'about#index'
-  match 'upload(/:action)(.:format)' => 'upload'
+  match 'upload(/:action)(/:id)(.:format)' => 'upload'
 
   root :to => "about#index"
 

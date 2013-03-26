@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130321185415) do
+ActiveRecord::Schema.define(:version => 20130326131518) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -19,6 +19,8 @@ ActiveRecord::Schema.define(:version => 20130321185415) do
     t.datetime "created_at",           :null => false
     t.datetime "updated_at",           :null => false
   end
+
+  add_index "categorical_trait_categories", ["categorical_trait_id"], :name => "index_categorical_trait_categories_on_categorical_trait_id"
 
   create_table "categorical_trait_values", :force => true do |t|
     t.integer  "position"
@@ -30,12 +32,20 @@ ActiveRecord::Schema.define(:version => 20130321185415) do
     t.integer  "source_reference_id"
   end
 
+  add_index "categorical_trait_values", ["categorical_trait_category_id"], :name => "index_categorical_trait_values_on_categorical_trait_category_id"
+  add_index "categorical_trait_values", ["categorical_trait_id"], :name => "index_categorical_trait_values_on_categorical_trait_id"
+  add_index "categorical_trait_values", ["otu_id"], :name => "index_categorical_trait_values_on_otu_id"
+  add_index "categorical_trait_values", ["source_reference_id"], :name => "index_categorical_trait_values_on_source_reference_id"
+
   create_table "categorical_traits", :force => true do |t|
     t.string   "name"
     t.integer  "import_job_id"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
   end
+
+  add_index "categorical_traits", ["import_job_id"], :name => "index_categorical_traits_on_import_job_id"
+  add_index "categorical_traits", ["name"], :name => "index_categorical_traits_on_name"
 
   create_table "continuous_trait_values", :force => true do |t|
     t.integer  "otu_id"
@@ -46,12 +56,19 @@ ActiveRecord::Schema.define(:version => 20130321185415) do
     t.integer  "source_reference_id"
   end
 
+  add_index "continuous_trait_values", ["continuous_trait_id"], :name => "index_continuous_trait_values_on_continuous_trait_id"
+  add_index "continuous_trait_values", ["otu_id"], :name => "index_continuous_trait_values_on_otu_id"
+  add_index "continuous_trait_values", ["source_reference_id"], :name => "index_continuous_trait_values_on_source_reference_id"
+
   create_table "continuous_traits", :force => true do |t|
     t.string   "name"
     t.integer  "import_job_id"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
   end
+
+  add_index "continuous_traits", ["import_job_id"], :name => "index_continuous_traits_on_import_job_id"
+  add_index "continuous_traits", ["name"], :name => "index_continuous_traits_on_name"
 
   create_table "csv_datasets", :force => true do |t|
     t.string   "csv_file_file_name"
@@ -63,6 +80,8 @@ ActiveRecord::Schema.define(:version => 20130321185415) do
     t.datetime "created_at",            :null => false
     t.datetime "updated_at",            :null => false
   end
+
+  add_index "csv_datasets", ["user_id"], :name => "index_csv_datasets_on_user_id"
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0
@@ -80,23 +99,41 @@ ActiveRecord::Schema.define(:version => 20130321185415) do
 
   add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
 
+  create_table "headers", :force => true do |t|
+    t.string   "column_name"
+    t.integer  "import_job_id"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+  end
+
+  add_index "headers", ["column_name"], :name => "index_headers_on_column_name"
+  add_index "headers", ["import_job_id"], :name => "index_headers_on_import_job_id"
+
   create_table "iczn_groups", :force => true do |t|
     t.string   "name",       :null => false
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
 
+  add_index "iczn_groups", ["name"], :name => "index_iczn_groups_on_name"
+
   create_table "import_jobs", :force => true do |t|
     t.integer  "csv_dataset_id"
-    t.string   "state",                     :limit => 25, :default => "new", :null => false
-    t.datetime "created_at",                                                 :null => false
-    t.datetime "updated_at",                                                 :null => false
-    t.string   "quantitative_header_start"
-    t.string   "quantitative_header_end"
-    t.string   "qualitative_header_start"
-    t.string   "qualitative_header_end"
+    t.string   "state",                        :limit => 25, :default => "new", :null => false
+    t.datetime "created_at",                                                    :null => false
+    t.datetime "updated_at",                                                    :null => false
     t.integer  "csv_row_count"
+    t.integer  "quantitative_header_start_id"
+    t.integer  "quantitative_header_end_id"
+    t.integer  "qualitative_header_start_id"
+    t.integer  "qualitative_header_end_id"
   end
+
+  add_index "import_jobs", ["csv_dataset_id"], :name => "index_import_jobs_on_csv_dataset_id"
+  add_index "import_jobs", ["qualitative_header_end_id"], :name => "index_import_jobs_on_qualitative_header_end_id"
+  add_index "import_jobs", ["qualitative_header_start_id"], :name => "index_import_jobs_on_qualitative_header_start_id"
+  add_index "import_jobs", ["quantitative_header_end_id"], :name => "index_import_jobs_on_quantitative_header_end_id"
+  add_index "import_jobs", ["quantitative_header_start_id"], :name => "index_import_jobs_on_quantitative_header_start_id"
 
   create_table "otus", :force => true do |t|
     t.string   "name"
@@ -107,6 +144,10 @@ ActiveRecord::Schema.define(:version => 20130321185415) do
     t.datetime "updated_at",    :null => false
     t.text     "notes"
   end
+
+  add_index "otus", ["import_job_id"], :name => "index_otus_on_import_job_id"
+  add_index "otus", ["name"], :name => "index_otus_on_name"
+  add_index "otus", ["taxon_id"], :name => "index_otus_on_taxon_id"
 
   create_table "parse_issues", :force => true do |t|
     t.integer  "import_job_id"
@@ -121,6 +162,7 @@ ActiveRecord::Schema.define(:version => 20130321185415) do
   end
 
   add_index "parse_issues", ["column_location"], :name => "index_import_issues_on_column_location"
+  add_index "parse_issues", ["import_job_id"], :name => "index_parse_issues_on_import_job_id"
   add_index "parse_issues", ["row_location"], :name => "index_import_issues_on_row_location"
 
   create_table "projects", :force => true do |t|
@@ -147,6 +189,10 @@ ActiveRecord::Schema.define(:version => 20130321185415) do
     t.datetime "updated_at", :null => false
   end
 
+  add_index "source_references", ["last_name", "first_name", "year", "title", "url"], :name => "by_ln_fn_year_title_url"
+  add_index "source_references", ["title"], :name => "index_source_references_on_title"
+  add_index "source_references", ["url"], :name => "index_source_references_on_url"
+
   create_table "taxa", :force => true do |t|
     t.string   "name"
     t.string   "uri"
@@ -155,6 +201,10 @@ ActiveRecord::Schema.define(:version => 20130321185415) do
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
   end
+
+  add_index "taxa", ["iczn_group_id"], :name => "index_taxa_on_iczn_group_id"
+  add_index "taxa", ["import_job_id"], :name => "index_taxa_on_import_job_id"
+  add_index "taxa", ["name"], :name => "index_taxa_on_name"
 
   create_table "taxon_ancestors", :force => true do |t|
     t.integer  "parent_id",  :null => false
@@ -194,5 +244,6 @@ ActiveRecord::Schema.define(:version => 20130321185415) do
   end
 
   add_index "validation_issues", ["column_location"], :name => "index_validation_issues_on_column_location"
+  add_index "validation_issues", ["import_job_id"], :name => "index_validation_issues_on_import_job_id"
 
 end

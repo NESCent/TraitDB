@@ -4,7 +4,7 @@ class SearchController < ApplicationController
     # Higher taxonomic group
     @taxa[:htg] = htg_taxa
     # Order
-    @taxa[:order] = order_taxa
+    @taxa[:order] = order_taxa_in_htg(@taxa[:htg].first)
     # Family
     @taxa[:family] = family_taxa_in_order(@taxa[:order].first)
     # Genus
@@ -14,8 +14,13 @@ class SearchController < ApplicationController
     @trait_values = trait_values_for_trait(@trait_names.first)
   end
 
+  def list_htg
+    @higher_group_list = htg_taxa
+    render :json => @higher_group_list
+  end
+
   def list_order
-    @order_list = order_taxa
+    @order_list = order_taxa_in_htg(params[:htg_id])
     render :json => @order_list
   end
 
@@ -50,8 +55,12 @@ class SearchController < ApplicationController
     return Taxon.ungrouped_taxa.sorted
   end
 
-  def order_taxa
-    return Taxon.order_taxa.sorted
+  def order_taxa_in_htg(htg_id)
+    if htg_id
+      return Taxon.find(htg_id).children.order_taxa.sorted
+    else
+      return Taxon.order_taxa.sorted
+    end
   end
 
   def family_taxa_in_order(order_id)

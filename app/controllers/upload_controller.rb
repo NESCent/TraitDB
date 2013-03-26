@@ -126,6 +126,9 @@ class UploadController < ApplicationController
       # if validation failed, show message
       flash[:alert] = "#{@import_job.file_name} cannot be imported, please review the errors below"
       flash[:notice] = nil
+    elsif @import_job.parse_warnings?
+      flash[:notice] = nil
+      flash[:alert] = nil
     else
       flash[:notice] = "#{@import_job.file_name} is being parsed, please reload to check status"
       @import_job.delay.do_parse

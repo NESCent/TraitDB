@@ -6,7 +6,7 @@ class ImportJobsController < ApplicationController
   
   # add a method to run the import
   def index
-    @import_jobs = @dataset.import_jobs.order('created_at DESC')
+    @import_jobs = [@dataset.import_job]
   end
 
   def new

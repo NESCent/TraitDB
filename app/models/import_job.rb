@@ -10,7 +10,7 @@ class ImportJob < ActiveRecord::Base
 
   attr_accessible :state, :csv_dataset
   attr_accessible :quantitative_header_start_id, :quantitative_header_end_id, :qualitative_header_start_id, :qualitative_header_end_id
-  attr_readonly :csv_row_count
+  
   IMPORT_STATES = %w(new reading_headers read_headers headers_failed count_failed counted_rows validating validated validation_failed parsing parsed parse_warnings importing imported import_failed)
   validates_inclusion_of :state, :in => IMPORT_STATES
   def file_name

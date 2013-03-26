@@ -1,20 +1,25 @@
 <%= error_messages_for(@import_job) %>
-<% fields_array = CsvDataset.fields.map { |field| [field, field] } %>
-  <table>
-    <tr>
-      <th><%= f.label(:quantitative_header_start, "First Quantitative Header") %></th>
-      <td><%= f.select(:quantitative_header_start, options_for_select(fields_array)) %></td>
-    </tr>
-    <tr>
-      <th><%= f.label(:quantitative_header_end, "Last Quantitative Header") %></th>
-      <td><%= f.select(:quantitative_header_end, options_for_select(fields_array)) %></td>
-    </tr>
-    <tr>
-      <th><%= f.label(:qualitative_header_start, "First Qualitative Header") %></th>
-      <td><%= f.select(:qualitative_header_start, options_for_select(fields_array)) %></td>
-    </tr>
-    <tr>
-      <th><%= f.label(:qualitative_header_end, "Last Qualitative Header") %></th>
-      <td><%= f.select(:qualitative_header_end, options_for_select(fields_array)) %></td>
-    </tr>
-  </table>
+<div class="control-group">
+  <%= f.label(:quantitative_header_start_id, "First Quantitative Header") %>
+  <div class="controls">
+    <%= f.select(:quantitative_header_start_id, options_from_collection_for_select(@import_job.headers, 'id', 'column_name', :selected => @import_job.quantitative_header_start_id)) %>
+  </div>
+</div>
+<div class="control-group">
+  <%= f.label(:quantitative_header_end_id, "Last Quantitative Header") %>
+  <div class="controls">
+    <%= f.select(:quantitative_header_end_id, options_from_collection_for_select(@import_job.headers, 'id', 'column_name', :selected => @import_job.quantitative_header_end_id)) %>
+  </div>
+</div>
+<div class="control-group">
+  <%= f.label(:qualitative_header_start_id, "First Qualitative Header") %>
+  <div class="controls">
+    <%= f.select(:qualitative_header_start_id, options_from_collection_for_select(@import_job.headers, 'id', 'column_name', :selected => @import_job.qualitative_header_start_id)) %>
+  </div>
+</div>
+<div class="control-group">
+  <%= f.label(:qualitative_header_end_id, "Last Qualitative Header") %>
+  <div class="controls">
+    <%= f.select(:qualitative_header_end_id, options_from_collection_for_select(@import_job.headers, 'id', 'column_name', :selected => @import_job.qualitative_header_end_id)) %>
+  </div>
+</div>

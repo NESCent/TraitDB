@@ -3,10 +3,26 @@ class CsvDataset < ActiveRecord::Base
   has_attached_file :csv_file
   belongs_to :project
   belongs_to :user
-  has_many :import_jobs, :dependent => :destroy
-  
-  @@fields = ["chromosome number (female)","c-value","predicted ploidy (1n, 2n, 3n, 4n)","molecular basis (dosage, Y dominant, W dominant)","gametophytic chromosome number (minimum)","sporophytic chromosome number (mean)","Hybrid (no, yes)","molecular basis (dosage, Y dominant, W dominant, DM-W)"]
-  def self.fields
-    @@fields
+  has_one :import_job, :dependent => :destroy
+
+  def status
+    return 'new' if import_job.nil?
+    import_job.state
   end
+
+  def problem?
+    return false if import_job.nil?
+    import_job.parse_warnings?
+  end
+
+  def failed?
+    return false if import_job.nil?
+    import_job.failed?
+  end
+
+  def imported?
+    return false if import_job.nil? || problem? || failed?
+    true
+  end
+
 end

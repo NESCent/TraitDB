@@ -11,8 +11,8 @@ class CsvDataset < ActiveRecord::Base
   end
 
   def problem?
-    return false if import_job.nil
-    import_job.problem?
+    return false if import_job.nil?
+    import_job.parse_warnings?
   end
 
   def failed?
@@ -24,6 +24,5 @@ class CsvDataset < ActiveRecord::Base
     return false if import_job.nil? || problem? || failed?
     true
   end
-
 
 end

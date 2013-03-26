@@ -11,10 +11,10 @@
         <th>Character Header Field bookends</th>
         <td>
           <ul>
-            <li><%= @import_job.quantitative_header_start %></li>
-            <li><%= @import_job.quantitative_header_end %></li>
-            <li><%= @import_job.qualitative_header_start %></li>
-            <li><%= @import_job.qualitative_header_end %></li>
+            <li><%= @import_job.quantitative_header_start.column_name %></li>
+            <li><%= @import_job.quantitative_header_end.column_name %></li>
+            <li><%= @import_job.qualitative_header_start.column_name %></li>
+            <li><%= @import_job.qualitative_header_end.column_name %></li>
           </ul>
         </td>
       </tr>
@@ -26,7 +26,7 @@
         <th>Status</th>
         <td>
           <span class="label <%= "label-important" if @import_job.failed? %>"><%= @import_job.state %></span>
-          <% if @import_job.problem? %>
+          <% if @import_job.parse_warnings? %>
               <span><%= "#{@import_job.problem_rows.count} / #{@import_job.csv_row_count}" %> rows had problems</span><% end %>
         </td>
       </tr>

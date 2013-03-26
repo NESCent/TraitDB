@@ -6,6 +6,7 @@
   <div class="row-fluid">
     <div class="well">
       <%= form_for(:dataset, :url => {:action => 'create'}, :html => { :multipart => 'true', :class =>'form form-horizontal' }) do |f| %>
+        <%= error_messages_for(@dataset) %>
         <div class="control-group">
           <%= f.label(:csv_file, "Select your CSV file:", :class => 'control-label') %>
           <div class="controls">
@@ -28,19 +29,28 @@
   <div class="row-fluid">
     <table class="table table-bordered table-condensed table-striped" summary="Dataset List">
       <tr class="header">
-        <th>Download</th>
+        <th>&nbsp;</th>
         <th>Filename</th>
         <th>Upload Date</th>
         <th>Uploader</th>
         <th>Status</th>
       </tr>
       <% @datasets.each do |dataset| %>
-          <tr>
+        <%
+           if dataset.imported?
+            row_class = ''
+           elsif dataset.problem?
+            row_class = 'warning'
+           elsif dataset.failed?
+            row_class = 'error'
+           end
+        %>
+          <tr class="<%= row_class%>">
             <td><%= link_to(raw("<i class=\"icon-download-alt\"></i>"),dataset.csv_file.url, :class => 'btn btn-small') %></td>
             <td><%= dataset.csv_file_file_name %></td>
             <td><%= dataset.created_at %></td>
             <td><%= dataset.user.email %></td>
-            <td><%= dataset.status %></td>
+            <td><%= link_to_current_status(dataset) %></td>
           </tr>
       <% end %>
     </table>

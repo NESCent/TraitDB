@@ -2,7 +2,7 @@
 <div class="row-fluid">
   <div class="row"><p class="lead">Update Import Job:</p></div>
   <div class="row">
-    <%= form_for(:import_job, {:method => :put, :url => csv_dataset_import_jobs_path(@dataset.id), }) do |f| %>
+    <%= form_for( @import_job, {:method => :put, :url => csv_dataset_import_job_path(@dataset.id, @import_job.id), }) do |f| %>
       <%= render(:partial => "form", :locals => { :f => f}) %>
       <div class="form-buttons">
         <%= submit_tag("Update import job", :class => 'btn btn-primary') %>

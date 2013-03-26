@@ -6,20 +6,47 @@ class ImportJob < ActiveRecord::Base
   has_many :otus
   has_many :parse_issues, :dependent => :destroy
   has_many :validation_issues, :dependent => :destroy
-  before_create :count_rows
+  has_many :headers, :dependent => :destroy
 
   attr_accessible :state, :csv_dataset
-  attr_accessible :quantitative_header_start, :quantitative_header_end, :qualitative_header_start, :qualitative_header_end
+  attr_accessible :quantitative_header_start_id, :quantitative_header_end_id, :qualitative_header_start_id, :qualitative_header_end_id
   attr_readonly :csv_row_count
-  IMPORT_STATES = %w(new validating validated validation_failed parsing parsed parse_warnings importing imported import_failed)
+  IMPORT_STATES = %w(new reading_headers read_headers headers_failed count_failed counted_rows validating validated validation_failed parsing parsed parse_warnings importing imported import_failed)
   validates_inclusion_of :state, :in => IMPORT_STATES
-
-  def failed?
-    state.include?('fail')
+  def file_name
+    csv_dataset.csv_file_file_name
   end
 
-  def problem?
-    state.include?('warn')
+  def validation_failed?
+    state == 'validation_failed'
+  end
+
+  def failed?
+    state.include?('failed')
+  end
+
+  def imported?
+    state == 'imported'
+  end
+
+  def parse_warnings?
+    state.include?('warnings')
+  end
+
+  def parsed_rows?
+    %w(parsed parse_warnings).include?('state')
+  end
+
+  def running?
+    %w(validating parsing importing).include?(state)
+  end
+
+  def validated_headers?
+    state == 'validated'
+  end
+
+  def new?
+    state == 'new'
   end
 
   # Used to create a new CSV file with just the bad data
@@ -36,9 +63,36 @@ class ImportJob < ActiveRecord::Base
     save
   end
 
+  def read_headers
+    return false unless state == 'new'
+    begin
+      headers.clear
+      CSV.read(csv_dataset.csv_file.path, :headers => true).headers.each do |h|
+        headers << Header.new(:column_name => h)
+      end
+      self.state = 'read_headers'
+      save
+    rescue # file is not a CSV
+      self.state = 'headers_failed'
+      save
+    end
+  end
+
+  def count_rows
+    return false unless state == 'read_headers'
+    begin
+      self.csv_row_count = CSV.read(csv_dataset.csv_file.path, :headers => true).length
+      self.state = 'counted_rows'
+    rescue # file is not a CSV
+      self.state = 'count_failed'
+    end
+    save
+  end
+
+
   # designed to run async via delayed job
   def do_validation
-    return false unless state == 'new'
+    return false unless state == 'counted_rows'
     self.state = 'validating'
     if validate_dataset
       self.state = 'validated'
@@ -75,24 +129,36 @@ class ImportJob < ActiveRecord::Base
     save
   end
 
-  private
-
-  def count_rows
-    self.csv_row_count = CSV.read(csv_dataset.csv_file.path).length - 1
+  # These methods are a workaround for has_one and has_many in the same model
+  def quantitative_header_start
+    headers.find(quantitative_header_start_id)
   end
 
-    # validator is not persisted and state isn't currently saved
-  # since the validate/parse/import is 3 separate steps, this needs to
-  # rebuild the validator each time
-  # This needs refactoring
+  def quantitative_header_end
+    headers.find(quantitative_header_end_id)
+  end
+
+  def qualitative_header_start
+    headers.find(qualitative_header_start_id)
+  end
+
+  def qualitative_header_end
+    headers.find(qualitative_header_end_id)
+  end
+
+  private
+
+  # The validator is a non-rails ruby class.  It is not persisted and its state isn't
+  # serializable.  Since the validate/parse/import is several steps, we need to be able to
+  # reconstructa validator each time.  Would be nice to refactor this.
 
   def get_validator
     validator = TreeOfSexImport::Validator.new(csv_dataset.csv_file.path)
 
-    validator.quantitative_header_start = self.quantitative_header_start
-    validator.quantitative_header_end = self.quantitative_header_end
-    validator.qualitative_header_start = self.qualitative_header_start
-    validator.qualitative_header_end = self.qualitative_header_end
+    validator.quantitative_header_start = self.quantitative_header_start.column_name
+    validator.quantitative_header_end = self.quantitative_header_end.column_name
+    validator.qualitative_header_start = self.qualitative_header_start.column_name
+    validator.qualitative_header_end = self.qualitative_header_end.column_name
     validator
 
   end

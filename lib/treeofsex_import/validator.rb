@@ -8,7 +8,7 @@
 # The goal of this is to return a ruby object that contains the parsed data
 # which can then be moved into NeXML or imported into a trait database
 
-require 'CSV'
+require 'csv'
 
 class String
   def is_number?

@@ -7,27 +7,28 @@
   <div class="row-fluid">
     <%= form_for(@import_job, :url => {:action => 'start_validation', :id => @import_job.csv_dataset.id}, :html => {:class =>'form form-horizontal'}) do |f| %>
       <%= error_messages_for(@import_job) %>
+      <div class="span9 offset1 well">
 
       <div class="control-group">
-        <%= f.label(:quantitative_header_start_id, "First Quantitative Header") %>
+        <%= f.label(:quantitative_header_start_id, "First Quantitative Header", :class => 'control-label') %>
         <div class="controls">
           <%= f.select(:quantitative_header_start_id, options_from_collection_for_select(@import_job.headers, 'id', 'column_name')) %>
         </div>
        </div>
       <div class="control-group">
-        <%= f.label(:quantitative_header_end_id, "Last Quantitative Header") %>
+        <%= f.label(:quantitative_header_end_id, "Last Quantitative Header", :class => 'control-label') %>
         <div class="controls">
           <%= f.select(:quantitative_header_end_id, options_from_collection_for_select(@import_job.headers, 'id', 'column_name')) %>
         </div>
       </div>
       <div class="control-group">
-        <%= f.label(:qualitative_header_start_id, "First Qualitative Header") %>
+        <%= f.label(:qualitative_header_start_id, "First Qualitative Header", :class => 'control-label') %>
         <div class="controls">
           <%= f.select(:qualitative_header_start_id, options_from_collection_for_select(@import_job.headers, 'id', 'column_name')) %>
         </div>
       </div>
       <div class="control-group">
-        <%= f.label(:qualitative_header_end_id, "Last Qualitative Header") %>
+        <%= f.label(:qualitative_header_end_id, "Last Qualitative Header", :class => 'control-label') %>
         <div class="controls">
           <%= f.select(:qualitative_header_end_id, options_from_collection_for_select(@import_job.headers, 'id', 'column_name')) %>
         </div>
@@ -36,6 +37,7 @@
         <div class="controls">
           <%= button_tag("Check Headers", :type => 'submit', :class => 'btn btn-primary') %>
         </div>
+      </div>
       </div>
     <% end %>
   </div>

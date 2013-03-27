@@ -1,8 +1,20 @@
+var uniqueRowId = 1;
+
 function addTaxonFilterRow() {
     // User has clicked to add another taxon row
     var lastTaxonFilterRow = $('.taxon-filter-row').last();
     // Create an element
     var el = lastTaxonFilterRow.clone(true);
+    // update the ids
+    uniqueRowId++;
+    var htgId = "htg_" + uniqueRowId;
+    var orderId = "order_" + uniqueRowId;
+    var familyId = "family_" + uniqueRowId;
+    var genusId = "genus_" + uniqueRowId;
+    el.find('select.htg').attr('id',htgId).attr('name','htg[' + uniqueRowId + ']');
+    el.find('select.order').attr('id',orderId).attr('name','order[' + uniqueRowId + ']');
+    el.find('select.family').attr('id',familyId).attr('name','family[' + uniqueRowId + ']');
+    el.find('select.genus').attr('id',genusId).attr('name','genus[' + uniqueRowId + ']');
     lastTaxonFilterRow.after(el)
 }
 
@@ -11,6 +23,14 @@ function addTraitFilterRow() {
     var lastTraitFilterRow = $('.trait-filter-row').last();
     // Create an element
     var el = lastTraitFilterRow.clone(true);
+    // update the ids
+    uniqueRowId++;
+    var traitGroupId = "trait_group_" + uniqueRowId;
+    var traitNameId = "trait_name_" + uniqueRowId;
+    var traitValuesId = "trait_values_" + uniqueRowId;
+    el.find('select.trait_group').attr('id',traitGroupId).attr('name','trait_group[' + uniqueRowId + ']');
+    el.find('select.trait_name').attr('id',traitNameId).attr('name','trait_name[' + uniqueRowId + ']');
+    el.find('select.trait_values').attr('id',traitValuesId).attr('name','trait_values[' + uniqueRowId + ']');
     lastTraitFilterRow.after(el)
 }
 
@@ -39,7 +59,7 @@ function updateOrderList(higherGroupElement, orderList) {
     var orderElement = $(higherGroupElement).siblings(".order");
     // remove all options from the element
     orderElement.find('option').remove();
-    orderElement.append($('<option></option>'));
+    orderElement.append($('<option value>-- Select --</option>'));
     for(var order in orderList) {
         var obj = orderList[order];
         // now make a new select option and append it
@@ -55,7 +75,7 @@ function updateFamilyList(orderElement, familyList) {
     var familyElement = $(orderElement).siblings(".family");
     // remove all options from the element
     familyElement.find('option').remove();
-    familyElement.append($('<option></option>'));
+    familyElement.append($('<option value>-- Select --</option>'));
 
     for(var family in familyList) {
         var obj = familyList[family];
@@ -71,7 +91,7 @@ function updateGenusList(familyElement, genusList) {
     var genusElement = $(familyElement).siblings(".genus");
     // remove all options from the genus element
     genusElement.find('option').remove();
-    genusElement.append($('<option></option>'));
+    genusElement.append($('<option value>-- Select --</option>'));
     for(var genus in genusList) {
         var obj = genusList[genus];
         console.log("name: " + obj.name + " id: " + obj.id);
@@ -86,6 +106,7 @@ function updateTraitNames(traitGroupElement, traitList) {
     var traitElement = $(traitGroupElement).siblings(".trait_name");
     // remove all options from the select
     traitElement.find('option').remove();
+    traitElement.append($('<option value>-- Select --</option>'));
     for(var trait in traitList) {
         var obj = traitList[trait].chr;
         console.log("name: " + obj.name + " id: " + obj.id + " continuous: " + obj.is_continuous);
@@ -100,6 +121,7 @@ function updateTraitValues(traitElement, valueList) {
     var traitValuesElement = $(traitElement).siblings(".trait_values");
     // remove all options from the select
     traitValuesElement.find('option').remove();
+    traitValuesElement.append($('<option value>-- Select --</option>'));
     for(var traitValue in valueList) {
         var obj = valueList[traitValue];
         var optionElement = $('<option>', {value: obj.id}).text(obj.name);

@@ -2,11 +2,11 @@
   <div class="offset1 span10">
     <div class="row-fluid">
       <h2>Search</h2>
-      <p class="lead">Number of records available: <span id="available"><%= 5 -%></span> out of <span id="total"><%= 423 %></span></p>
+      <!--<p class="lead">Number of records available: <span id="available"><%= 5  -%></span> out of <span id="total"><%= 423 %></span></p>-->
     </div>
     <div class="row-fluid">
       <div id="searchform" class="well">
-        <%= form_tag '#do_search', { :class => 'form' } do -%>
+        <%= form_tag '/search/results', { :class => 'form' } do -%>
             <!-- taxon selection, should be a partial? -->
             <div id="taxa">
               <h3>Taxonomy</h3>
@@ -27,7 +27,7 @@
                 <div class="span10">
                   <div class="row-fluid">
                     <% ids.each_with_index do |id,i| %>
-                        <%= select_tag(id, options_from_collection_for_select(@taxa[id], 'id', 'name'), :class => ['span3',id]) %>
+                        <%= select_tag("#{id}[0]", options_from_collection_for_select(@taxa[id], 'id', 'name'), :prompt => '-- Select --', :class => ['span3',id]) %>
                     <% end %>
                   </div>
                 </div>
@@ -42,9 +42,9 @@
               <div class="row-fluid trait-filter-row">
                 <div class="span10">
                   <div class="row-fluid">
-                    <%= select_tag(:trait_group, options_from_collection_for_select(@trait_groups, 'id', 'name'), :class => 'span4 trait_group') %>
-                    <%= select_tag(:trait_name, options_from_collection_for_select(@trait_names, 'id', 'name'), :class => 'span4 trait_name') %>
-                    <%= select_tag(:trait_values, options_from_collection_for_select(@trait_values, 'id','name'), :class => 'span4 trait_values') %>
+                    <%= select_tag("#{:trait_group}[0]", options_from_collection_for_select(@trait_groups, 'id', 'name'), :prompt => '-- Select --', :class => 'span4 trait_group') %>
+                    <%= select_tag(:"#{:trait_name}[0]", options_from_collection_for_select(@trait_names, 'id', 'name'), :prompt => '-- Select --', :class => 'span4 trait_name') %>
+                    <%= select_tag("#{:trait_values}[0]", options_from_collection_for_select(@trait_values, 'id','name'), :prompt => '-- Select --', :class => 'span4 trait_values') %>
                   </div>
                 </div>
                 <div class="span2">

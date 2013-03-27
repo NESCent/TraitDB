@@ -49,6 +49,53 @@ class SearchController < ApplicationController
     render :json => @trait_values
   end
 
+  def results
+    # Rows are determined by selected taxa
+    # params = {'htg' => {'0' => '21043', '2' => ''}}
+    taxa_ids = []
+
+    params['htg'].reject{|k,v| v.empty?}.each do |k,v|
+      # Start with the higher group and narrow if specified
+      lowest_id =  Integer(v)
+      if params['order'] && params['order'][k]
+        lowest_id = Integer(params['order'][k]) unless params['order'][k].blank?
+      end
+      if params['family'] && params['family'][k]
+        lowest_id = Integer(params['family'][k]) unless params['family'][k].blank?
+      end
+      if params['genus'] && params['genus'][k]
+        lowest_id = Integer(params['genus'][k]) unless params['genus'][k].blank?
+      end
+      taxa_ids << lowest_id
+    end
+
+    @otus = []
+    taxa_ids.each do |taxa_id|
+      @otus += Taxon.find(taxa_id).descendant_otus
+    end
+
+    trait_category_ids = []
+    trait_ids = []
+    # Columns are determined by selected traits
+    params['trait_name'].reject{|k,v| v.empty?}.each do |k,v|
+      trait_ids << Integer(v)
+      if(params['trait_values'][k])
+        unless params['trait_values'][k].blank?
+          trait_category_ids << Integer(params['trait_values'][k])
+        end
+      end
+    end
+
+    @categorical_trait_values = CategoricalTraitValue.where(:categorical_trait_category_id=> trait_category_ids)
+    @categorical_traits = CategoricalTrait.where(:id => trait_ids)
+
+    # Now reduce the OTUs to the ones that match the values
+    @otus.reject! do |otu|
+      (@categorical_trait_values & otu.categorical_trait_values).empty?
+    end
+
+  end
+
   private
 
   def htg_taxa

@@ -32,4 +32,17 @@ class Taxon < ActiveRecord::Base
     parent.name if parent
   end
 
+  def descendant_taxa
+    descendants = []
+    children.each do |c|
+      descendants << c.id
+      descendants += c.descendant_taxa
+    end
+    return descendants
+  end
+
+  def descendant_otus
+    Otu.where(:taxon_id => descendant_taxa)
+  end
+
 end

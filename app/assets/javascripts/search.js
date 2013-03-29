@@ -15,7 +15,9 @@ function addTaxonFilterRow() {
     el.find('select.order').attr('id',orderId).attr('name','order[' + uniqueRowId + ']');
     el.find('select.family').attr('id',familyId).attr('name','family[' + uniqueRowId + ']');
     el.find('select.genus').attr('id',genusId).attr('name','genus[' + uniqueRowId + ']');
-    lastTaxonFilterRow.after(el)
+    el.hide();
+    lastTaxonFilterRow.after(el);
+    el.show('fast');
 }
 
 function addTraitFilterRow() {
@@ -31,7 +33,9 @@ function addTraitFilterRow() {
     el.find('select.trait_group').attr('id',traitGroupId).attr('name','trait_group[' + uniqueRowId + ']');
     el.find('select.trait_name').attr('id',traitNameId).attr('name','trait_name[' + uniqueRowId + ']');
     el.find('select.trait_values').attr('id',traitValuesId).attr('name','trait_values[' + uniqueRowId + ']');
-    lastTraitFilterRow.after(el)
+    el.hide();
+    lastTraitFilterRow.after(el);
+    el.show('fast');
 }
 
 function addButtonHandlers() {
@@ -41,7 +45,10 @@ function addButtonHandlers() {
     $('.remove_taxon').bind('click', function() {
         if ($(".taxon-filter-row").length > 1) {
             // Don't remove the only row
-            $(this).parents(".taxon-filter-row").remove();
+            $(this).parents(".taxon-filter-row").hide('fast', function () {
+                this.remove();
+            });
+
         }
     });
     $('.add_trait').bind('click',function() {
@@ -50,7 +57,9 @@ function addButtonHandlers() {
     $('.remove_trait').bind('click', function() {
         if ($(".trait-filter-row").length > 1) {
             // Don't remove the only row
-            $(this).parents(".trait-filter-row").remove();
+            $(this).parents(".trait-filter-row").hide('fast', function () {
+                this.remove();
+            });
         }
     });
 }

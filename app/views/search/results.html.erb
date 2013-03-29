@@ -1,0 +1,44 @@
+<div class="row-fluid">
+  <div class="offset1 span10">
+    <div class="row-fluid">
+      <h2>Search Results: (<%= pluralize(@otus.count, 'row')%>)</h2>
+    </div>
+    <div class="row-fluid">
+      <table class="table table-condensed table-bordered table-striped table-hover ">
+        <tr>
+          <th>Species Name</th>
+          <% @categorical_traits.each do |trait| %>
+          <th><%= trait.name %></th>
+          <% end %>
+          <th>Notes</th>
+        </tr>
+        <% @otus.each do |otu| %>
+        <tr>
+          <td><%= otu.name %></td>
+          <% @categorical_traits.each do |trait| %>
+            <td>
+              <%
+                 categorical_value = otu.categorical_trait_values.find_by_categorical_trait_id(trait.id)
+                 if categorical_value
+              %>
+                <%= categorical_value.categorical_trait_category.name %>
+              <% end %>
+            </td>
+          <% end %>
+          <td><span class="notes_popover" rel="popover" data-content="<%= otu.notes %>" data-original-title="Notes">
+            <%= truncate(otu.notes) %>
+          </span></td>
+        </tr>
+        <% end %>
+      </table>
+    </div>
+   </div>
+</div>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('.notes_popover').popover({trigger: 'hover', html: true, placement: 'bottom', delay: {hide: 100} });
+// add button handlers
+    //addButtonHandlers();
+    //addSelectionChangeListeners();
+  });
+</script>

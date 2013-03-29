@@ -52,6 +52,8 @@ class SearchController < ApplicationController
   def results
     # Rows are determined by selected taxa
     # params = {'htg' => {'0' => '21043', '2' => ''}}
+
+    # Collect the IDs of the selected taxa
     taxa_ids = []
 
     params['htg'].reject{|k,v| v.empty?}.each do |k,v|
@@ -69,29 +71,46 @@ class SearchController < ApplicationController
       taxa_ids << lowest_id
     end
 
+    # Now get all the children OTUs from the taxa IDs
     @otus = []
     taxa_ids.each do |taxa_id|
       @otus += Taxon.find(taxa_id).descendant_otus
     end
 
+    # Categorical traits are selected.
+    # These become columns in the output
     trait_category_ids = []
-    trait_ids = []
-    # Columns are determined by selected traits
+
+    # If a value is selected for the trait, filter the OTUs to the matching rows
+    # But keep in mind that multiple values may be selected here, so we need to collect them all
+    @trait_value_map = {}
     params['trait_name'].reject{|k,v| v.empty?}.each do |k,v|
-      trait_ids << Integer(v)
+      trait_id = Integer(v)
+      trait_category_ids = @trait_value_map[trait_id] || []
       if(params['trait_values'][k])
         unless params['trait_values'][k].blank?
           trait_category_ids << Integer(params['trait_values'][k])
         end
       end
+      @trait_value_map[trait_id] = trait_category_ids
     end
 
-    @categorical_trait_values = CategoricalTraitValue.where(:categorical_trait_category_id=> trait_category_ids)
-    @categorical_traits = CategoricalTrait.where(:id => trait_ids)
+    @categorical_traits = CategoricalTrait.where(:id => @trait_value_map.keys)
 
-    # Now reduce the OTUs to the ones that match the values
-    @otus.reject! do |otu|
-      (@categorical_trait_values & otu.categorical_trait_values).empty?
+    # Filter out OTUs that were not coded at all if a trait value was chosen
+    unless @trait_value_map.values.flatten.empty?
+      # trait values were selected, OTUs that don't have them.
+      @otus.reject! do |otu|
+        remove = true
+        @trait_value_map.each do |trait_id, trait_value_id|
+          leftovers = otu.categorical_trait_categories.map{|c| c.id} - trait_value_id
+          if leftovers.size < otu.categorical_trait_categories.size
+            # keep this otu since it has a coding that matches the filter
+            remove = false
+          end
+        end
+        remove
+      end
     end
 
   end

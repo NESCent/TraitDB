@@ -4,7 +4,7 @@
       <h2>Search Results: (<%= pluralize(@otus.count, 'row')%>)</h2>
     </div>
     <div class="row-fluid">
-      <table class="table table-condensed table-striped table-hover ">
+      <table class="table table-condensed table-bordered table-striped table-hover ">
         <tr>
           <th>Species Name</th>
           <% @categorical_traits.each do |trait| %>
@@ -25,8 +25,9 @@
               <% end %>
             </td>
           <% end %>
-
-          <td><%= otu.notes %></td>
+          <td><span class="notes_popover" rel="popover" data-content="<%= otu.notes %>" data-original-title="Notes">
+            <%= truncate(otu.notes) %>
+          </span></td>
         </tr>
         <% end %>
       </table>
@@ -35,7 +36,8 @@
 </div>
 <script type="text/javascript">
   $(document).ready(function() {
-    // add button handlers
+    $('.notes_popover').popover({trigger: 'hover', html: true, placement: 'bottom', delay: {hide: 100} });
+// add button handlers
     //addButtonHandlers();
     //addSelectionChangeListeners();
   });

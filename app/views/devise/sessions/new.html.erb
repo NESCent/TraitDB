@@ -2,7 +2,7 @@
 <style type="text/css">
     .form-signin {
         max-width: 300px;
-        padding: 19px 29px 29px;
+        padding: 19px 29px 49px;
         margin: 20px auto 20px;
         background-color: #eee;
         border: 1px solid #e5e5e5;
@@ -26,7 +26,7 @@
     }
 </style>
 
-<div class="container">
+<div class="row-fluid">
     <%= form_for(resource, :as => resource_name, :url => session_path(resource_name), :html => {:class => 'form-signin'}) do |f| %>
       <h2 class="form-signin-heading">Sign in</h2>
       <%= f.email_field :email, :autofocus => true, :class => 'input-block-level', :placeholder => 'Email' %>

@@ -90,15 +90,17 @@ class SearchController < ApplicationController
     # If a value is selected for the trait, filter the OTUs to the matching rows
     # But keep in mind that multiple values may be selected here, so we need to collect them all
     categorical_trait_value_map = {}
-    params['categorical_trait_name'].reject{|k,v| v.empty?}.each do |k,v|
-      trait_id = Integer(v)
-      trait_category_ids = categorical_trait_value_map[trait_id] || []
-      if params['categorical_trait_values'][k]
-        unless params['categorical_trait_values'][k].blank?
-          trait_category_ids << Integer(params['categorical_trait_values'][k])
+    if params['categorical_trait_name']
+        params['categorical_trait_name'].reject{|k,v| v.empty?}.each do |k,v|
+        trait_id = Integer(v)
+        trait_category_ids = categorical_trait_value_map[trait_id] || []
+        if params['categorical_trait_values'][k]
+          unless params['categorical_trait_values'][k].blank?
+            trait_category_ids << Integer(params['categorical_trait_values'][k])
+          end
         end
+        categorical_trait_value_map[trait_id] = trait_category_ids
       end
-      categorical_trait_value_map[trait_id] = trait_category_ids
     end
 
     categorical_traits = CategoricalTrait.where(:id => categorical_trait_value_map.keys)
@@ -126,28 +128,30 @@ class SearchController < ApplicationController
 
     # Continuous Trait Values
     continuous_trait_predicate_map = {}
-    params['continuous_trait_name'].reject{|k,v| v.empty?}.each do |k,v|
-      trait_id = Integer(v)
-      trait_value_ids = continuous_trait_predicate_map[trait_id] || []
+    if params['continuous_trait_name']
+      params['continuous_trait_name'].reject{|k,v| v.empty?}.each do |k,v|
+        trait_id = Integer(v)
+        trait_value_ids = continuous_trait_predicate_map[trait_id] || []
 
-      # Check for the equals/less than/etc
-      # get the predicate for this row
-      if params['continuous_trait_value_predicates'][k] && params['continuous_trait_entries'][k]
-        unless params['continuous_trait_entries'][k].blank?
-          field_value = Float(params['continuous_trait_entries'][k])
-          case params['continuous_trait_value_predicates'][k]
-            when 'gt'
-              trait_value_ids << ['value > ?', field_value]
-            when 'lt'
-              trait_value_ids << ['value < ?', field_value]
-            when 'eq'
-              trait_value_ids << ['value = ?', field_value]
-            when 'ne'
-              trait_value_ids << ['value != ?', field_value]
+        # Check for the equals/less than/etc
+        # get the predicate for this row
+        if params['continuous_trait_value_predicates'][k] && params['continuous_trait_entries'][k]
+          unless params['continuous_trait_entries'][k].blank?
+            field_value = Float(params['continuous_trait_entries'][k])
+            case params['continuous_trait_value_predicates'][k]
+              when 'gt'
+                trait_value_ids << ['value > ?', field_value]
+              when 'lt'
+                trait_value_ids << ['value < ?', field_value]
+              when 'eq'
+                trait_value_ids << ['value = ?', field_value]
+              when 'ne'
+                trait_value_ids << ['value != ?', field_value]
+            end
           end
         end
+        continuous_trait_predicate_map[trait_id] = trait_value_ids
       end
-      continuous_trait_predicate_map[trait_id] = trait_value_ids
     end
 
     # This just gets the headers

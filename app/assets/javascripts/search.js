@@ -150,10 +150,10 @@ function updateContinuousTraitValuePredicates(traitElement) {
     var traitValuesElement = $(traitElement).siblings(".continuous_trait_value_predicates");
     traitValuesElement.find('option').remove();
     traitValuesElement.append($('<option value>-- All Values --</option>'));
-    traitValuesElement.append($('<option value="eq">Equals</option>'));
-    traitValuesElement.append($('<option value="ne">Does not equal</option>'));
-    traitValuesElement.append($('<option value="gt">Is greater than</option>'));
-    traitValuesElement.append($('<option value="lt">Is less than</option>'));
+    traitValuesElement.append($('<option value="eq">= (Equals)</option>'));
+    traitValuesElement.append($('<option value="ne">!= (Does not equal)</option>'));
+    traitValuesElement.append($('<option value="gt">&gt; (Is greater than)</option>'));
+    traitValuesElement.append($('<option value="lt">&lt; (Is less than)</option>'));
     updateContinuousTraitEntries(traitValuesElement);
 }
 

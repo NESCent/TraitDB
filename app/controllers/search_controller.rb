@@ -105,6 +105,11 @@ class SearchController < ApplicationController
 
     @categorical_traits = CategoricalTrait.where(:id => @categorical_trait_value_map.keys)
 
+    # If only_rows_with_data was checked, remove OTUs that were not coded for the trait
+    if (@categorical_traits.count > 0) && params['only_rows_with_data']
+      @otus.reject! {|otu| (otu.categorical_traits & @categorical_traits).empty? }
+    end
+
     # Filter out OTUs that were not coded at all if a trait value was chosen
     unless @categorical_trait_value_map.values.flatten.empty?
       # trait values were selected, OTUs that don't have them.
@@ -149,6 +154,11 @@ class SearchController < ApplicationController
 
     # This just gets the headers
     @continuous_traits = ContinuousTrait.where(:id => @continuous_trait_predicate_map.keys)
+
+    # If only_rows_with_data was checked, remove OTUs that were not coded for the trait
+    if (@continuous_traits.count > 0) && params['only_rows_with_data']
+      @otus.reject! {|otu| (otu.continuous_traits & @continuous_traits).empty? }
+    end
 
     # Filter out OTUs that were not coded at all if a trait value was chosen
     unless @continuous_trait_predicate_map.values.flatten.empty?

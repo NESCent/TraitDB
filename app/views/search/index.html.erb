@@ -63,11 +63,23 @@
                   <a href="#" class="btn remove_trait"><i class="icon-minus-sign"></i></a>
                 </div>
               </div>
-              <div class="form-actions">
-                <button type="submit" class="btn btn-primary pull-right">Search <i class="icon-search icon-white"></i></button>
-              </div>
+            </div>
+          <div id="options">
+            <div class="row-fluid options-row">
+              <label class="checkbox inline">
+                <input type="checkbox" id="only_rows_with_data" name="only_rows_with_data">Only include rows with data for chosen traits
+              </label>
+            </div>
+            <div class="row-fluid options-row">
+              <label class="checkbox inline">
+                <input type="checkbox" id="include_references" name="include_references" checked>Include references
+              </label>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary pull-right">Search <i class="icon-search icon-white"></i></button>
+          </div>
         <% end %>
-        </div>
       </div>
     </div>
   </div>

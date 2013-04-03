@@ -54,7 +54,7 @@ function addButtonHandlers() {
         if ($(".taxon-filter-row").length > 1) {
             // Don't remove the only row
             $(this).parents(".taxon-filter-row").hide('fast', function () {
-                this.remove();
+                $(this).remove();
             });
 
         }
@@ -66,7 +66,7 @@ function addButtonHandlers() {
         if ($(".trait-filter-row").length > 1) {
             // Don't remove the only row
             $(this).parents(".trait-filter-row").hide('fast', function () {
-                this.remove();
+                $(this).remove();
             });
         }
     });

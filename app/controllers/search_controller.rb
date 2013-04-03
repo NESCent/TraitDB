@@ -80,42 +80,40 @@ class SearchController < ApplicationController
     end
 
     # Now get all the children OTUs from the taxa IDs
-    @otus = []
+    otus = []
     taxa_ids.each do |taxa_id|
-      @otus += Taxon.find(taxa_id).descendant_otus
+      otus += Taxon.find(taxa_id).descendant_otus
     end
 
-    # Categorical traits are selected.
-    # These become columns in the output
-    trait_category_ids = []
+    # Traits - become columns in output
 
     # If a value is selected for the trait, filter the OTUs to the matching rows
     # But keep in mind that multiple values may be selected here, so we need to collect them all
-    @categorical_trait_value_map = {}
+    categorical_trait_value_map = {}
     params['categorical_trait_name'].reject{|k,v| v.empty?}.each do |k,v|
       trait_id = Integer(v)
-      trait_category_ids = @categorical_trait_value_map[trait_id] || []
+      trait_category_ids = categorical_trait_value_map[trait_id] || []
       if params['categorical_trait_values'][k]
         unless params['categorical_trait_values'][k].blank?
           trait_category_ids << Integer(params['categorical_trait_values'][k])
         end
       end
-      @categorical_trait_value_map[trait_id] = trait_category_ids
+      categorical_trait_value_map[trait_id] = trait_category_ids
     end
 
-    @categorical_traits = CategoricalTrait.where(:id => @categorical_trait_value_map.keys)
+    categorical_traits = CategoricalTrait.where(:id => categorical_trait_value_map.keys)
 
     # If only_rows_with_data was checked, remove OTUs that were not coded for the trait
-    if (@categorical_traits.count > 0) && params['only_rows_with_data']
-      @otus.reject! {|otu| (otu.categorical_traits & @categorical_traits).empty? }
+    if (categorical_traits.count > 0) && params['only_rows_with_data']
+      otus.reject! {|otu| (otu.categorical_traits & categorical_traits).empty? }
     end
 
     # Filter out OTUs that were not coded at all if a trait value was chosen
-    unless @categorical_trait_value_map.values.flatten.empty?
+    unless categorical_trait_value_map.values.flatten.empty?
       # trait values were selected, OTUs that don't have them.
-      @otus.reject! do |otu|
+      otus.reject! do |otu|
         remove = true
-        @categorical_trait_value_map.each do |trait_id, trait_value_id|
+        categorical_trait_value_map.each do |trait_id, trait_value_id|
           leftovers = otu.categorical_trait_categories.map{|c| c.id} - trait_value_id
           if leftovers.size < otu.categorical_trait_categories.size
             # keep this otu since it has a coding that matches the filter
@@ -127,10 +125,10 @@ class SearchController < ApplicationController
     end
 
     # Continuous Trait Values
-    @continuous_trait_predicate_map = {}
+    continuous_trait_predicate_map = {}
     params['continuous_trait_name'].reject{|k,v| v.empty?}.each do |k,v|
       trait_id = Integer(v)
-      trait_value_ids = @continuous_trait_predicate_map[trait_id] || []
+      trait_value_ids = continuous_trait_predicate_map[trait_id] || []
 
       # Check for the equals/less than/etc
       # get the predicate for this row
@@ -149,24 +147,24 @@ class SearchController < ApplicationController
           end
         end
       end
-      @continuous_trait_predicate_map[trait_id] = trait_value_ids
+      continuous_trait_predicate_map[trait_id] = trait_value_ids
     end
 
     # This just gets the headers
-    @continuous_traits = ContinuousTrait.where(:id => @continuous_trait_predicate_map.keys)
+    continuous_traits = ContinuousTrait.where(:id => continuous_trait_predicate_map.keys)
 
     # If only_rows_with_data was checked, remove OTUs that were not coded for the trait
-    if (@continuous_traits.count > 0) && params['only_rows_with_data']
-      @otus.reject! {|otu| (otu.continuous_traits & @continuous_traits).empty? }
+    if (continuous_traits.count > 0) && params['only_rows_with_data']
+      otus.reject! {|otu| (otu.continuous_traits & continuous_traits).empty? }
     end
 
     # Filter out OTUs that were not coded at all if a trait value was chosen
-    unless @continuous_trait_predicate_map.values.flatten.empty?
+    unless continuous_trait_predicate_map.values.flatten.empty?
       # At least one predicate was chosen, filter out OTUs that don't match
-      @otus.reject! do |otu|
+      otus.reject! do |otu|
         remove = true
         matched_values = []
-        @continuous_trait_predicate_map.each do |trait_id, predicates_array|
+        continuous_trait_predicate_map.each do |trait_id, predicates_array|
           matched_values = otu.continuous_trait_values.where(:continuous_trait_id => trait_id)
           predicates_array.each do |predicate|
             matched_values = matched_values.where(predicate)
@@ -176,6 +174,13 @@ class SearchController < ApplicationController
         matched_values.empty?
       end
     end
+
+    # data to return to view
+    @results = {}
+    @results[:include_references] = !params['include_references'].nil?
+    @results[:otus] = otus
+    @results[:categorical_traits] = categorical_traits
+    @results[:continuous_traits] = continuous_traits
 
   end
 

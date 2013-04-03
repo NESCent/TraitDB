@@ -35,7 +35,7 @@
             <% if @results[:include_references] %>
             <td>
               <% if categorical_value %>
-                  <span class="notes_popover" rel="popover" data-content="<%= categorical_value.source_reference %>" data-original-title="Source">
+                  <span class="source_popover" rel="popover" data-content="<%= categorical_value.source_reference %>" data-original-title="Source">
                   <%= truncate(categorical_value.source_reference.to_s) %>
               <% end %>
             </td>
@@ -52,7 +52,7 @@
             <% if @results[:include_references] %>
               <td>
                 <% if continuous_value %>
-                  <span class="notes_popover" rel="popover" data-content="<%= continuous_value.source_reference %>" data-original-title="Source">
+                  <span class="source_popover" rel="popover" data-content="<%= continuous_value.source_reference %>" data-original-title="Source">
                   <%= truncate(continuous_value.source_reference.to_s) %>
                 <% end %>
               </td>
@@ -69,9 +69,6 @@
 </div>
 <script type="text/javascript">
   $(document).ready(function() {
-    $('.notes_popover').popover({trigger: 'hover', html: true, placement: 'bottom', delay: {hide: 100} });
-// add button handlers
-    //addButtonHandlers();
-    //addSelectionChangeListeners();
+    $('.notes_popover, .source_popover').popover({trigger: 'hover', html: true, placement: 'bottom', delay: {hide: 100} });
   });
 </script>

@@ -44,7 +44,8 @@
             <td>
               <% if categorical_value %>
                   <span class="source_popover" rel="popover" data-content="<%= categorical_value.source_reference %>" data-original-title="Source">
-                  <%= truncate(categorical_value.source_reference.to_s) %>
+                    <%= truncate(categorical_value.source_reference.to_s) %>
+                  </span>
               <% end %>
             </td>
             <% end %>
@@ -61,7 +62,8 @@
               <td>
                 <% if continuous_value %>
                   <span class="source_popover" rel="popover" data-content="<%= continuous_value.source_reference %>" data-original-title="Source">
-                  <%= truncate(continuous_value.source_reference.to_s) %>
+                    <%= truncate(continuous_value.source_reference.to_s) %>
+                  </span>
                 <% end %>
               </td>
             <% end %>

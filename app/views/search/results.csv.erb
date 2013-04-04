@@ -1,0 +1,53 @@
+<%-
+  headers = ['Species Name']
+  @results[:categorical_traits].each do |trait|
+    headers << trait.name
+    if @results[:include_references]
+      headers << "Source: #{trait.name}"
+    end
+  end
+  @results[:continuous_traits].each do |trait|
+    headers << trait.name
+    if @results[:include_references]
+      headers << "Source: #{trait.name}"
+    end
+  end
+  headers << 'Notes'
+-%>
+<%= CSV.generate_line headers -%>
+<%-
+    @results[:otus].each do |otu|
+      row = []
+      row << otu.name
+      @results[:categorical_traits].each do |trait|
+        categorical_value = otu.categorical_trait_values.find_by_categorical_trait_id(trait.id)
+        if categorical_value
+          row << categorical_value.categorical_trait_category.name
+          if @results[:include_references]
+            row << categorical_value.source_reference.to_s
+          end
+        else
+          row << nil
+          if @results[:include_references]
+            row << nil
+          end
+        end
+      end
+      @results[:continuous_traits].each do |trait|
+        continuous_value = otu.continuous_trait_values.find_by_continuous_trait_id(trait.id)
+        if continuous_value
+          row << continuous_value.value
+          if @results[:include_references]
+            row << continuous_value.continuous_value.source_reference.to_s
+          end
+        else
+          row << nil
+          if @results[:include_references]
+            row << nil
+          end
+        end
+      end
+      row << otu.notes.to_s
+-%>
+<%= CSV.generate_line(row).html_safe -%>
+<%- end -%>

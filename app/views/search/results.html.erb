@@ -1,8 +1,16 @@
 <div class="row-fluid">
   <div class="offset1 span10">
+    <div class="row-fluid">&nbsp;</div>
     <div class="row-fluid">
-      <h2>Search Results: (<%= pluralize(@results[:otus].count, 'row')%>)</h2>
+      <div class="pull-left">
+        <p class="lead">Search Results: (<%= pluralize(@results[:otus].count, 'row')%>)</p>
+      </div>
+      <div class="btn-group pull-right">
+        <%= link_to('Link to this Search', params_for_search(params), :class => 'btn btn-small') %>
+        <%= link_to('Download Results (CSV)', params_for_search(params).merge({:format => :csv}), :class => 'btn btn-small btn-primary') %>
+      </div>
     </div>
+    <div class="row-fluid">&nbsp;</div>
     <div class="row-fluid">
       <table class="table table-condensed table-bordered table-striped table-hover ">
         <tr>
@@ -23,7 +31,7 @@
         </tr>
         <% @results[:otus].each do |otu| %>
         <tr>
-          <td><%= otu.name %></td>
+          <th><%= otu.name %></th>
           <% @results[:categorical_traits].each do |trait|
             # This should not be done in the view
             categorical_value = otu.categorical_trait_values.find_by_categorical_trait_id(trait.id) %>

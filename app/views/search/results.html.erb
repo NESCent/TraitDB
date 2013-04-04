@@ -1,29 +1,62 @@
 <div class="row-fluid">
   <div class="offset1 span10">
     <div class="row-fluid">
-      <h2>Search Results: (<%= pluralize(@otus.count, 'row')%>)</h2>
+      <h2>Search Results: (<%= pluralize(@results[:otus].count, 'row')%>)</h2>
     </div>
     <div class="row-fluid">
       <table class="table table-condensed table-bordered table-striped table-hover ">
         <tr>
           <th>Species Name</th>
-          <% @categorical_traits.each do |trait| %>
-          <th><%= trait.name %></th>
+          <% @results[:categorical_traits].each do |trait| %>
+            <th><%= trait.name %></th>
+            <% if @results[:include_references] %>
+              <th>Source:<%= trait.name %></th>
+            <% end %>
+          <% end %>
+          <% @results[:continuous_traits].each do |trait| %>
+            <th><%= trait.name %></th>
+            <% if @results[:include_references] %>
+              <th>Source:<%= trait.name %></th>
+            <% end %>
           <% end %>
           <th>Notes</th>
         </tr>
-        <% @otus.each do |otu| %>
+        <% @results[:otus].each do |otu| %>
         <tr>
           <td><%= otu.name %></td>
-          <% @categorical_traits.each do |trait| %>
+          <% @results[:categorical_traits].each do |trait|
+            # This should not be done in the view
+            categorical_value = otu.categorical_trait_values.find_by_categorical_trait_id(trait.id) %>
             <td>
-              <%
-                 categorical_value = otu.categorical_trait_values.find_by_categorical_trait_id(trait.id)
-                 if categorical_value
-              %>
+              <% if categorical_value %>
                 <%= categorical_value.categorical_trait_category.name %>
               <% end %>
             </td>
+            <% if @results[:include_references] %>
+            <td>
+              <% if categorical_value %>
+                  <span class="source_popover" rel="popover" data-content="<%= categorical_value.source_reference %>" data-original-title="Source">
+                  <%= truncate(categorical_value.source_reference.to_s) %>
+              <% end %>
+            </td>
+            <% end %>
+          <% end %>
+          <% @results[:continuous_traits].each do |trait|
+               # This should not be done in the view
+               continuous_value = otu.continuous_trait_values.find_by_continuous_trait_id(trait.id) %>
+            <td>
+              <% if continuous_value %>
+                <%= continuous_value.value %>
+              <% end %>
+            </td>
+            <% if @results[:include_references] %>
+              <td>
+                <% if continuous_value %>
+                  <span class="source_popover" rel="popover" data-content="<%= continuous_value.source_reference %>" data-original-title="Source">
+                  <%= truncate(continuous_value.source_reference.to_s) %>
+                <% end %>
+              </td>
+            <% end %>
           <% end %>
           <td><span class="notes_popover" rel="popover" data-content="<%= otu.notes %>" data-original-title="Notes">
             <%= truncate(otu.notes) %>
@@ -36,9 +69,6 @@
 </div>
 <script type="text/javascript">
   $(document).ready(function() {
-    $('.notes_popover').popover({trigger: 'hover', html: true, placement: 'bottom', delay: {hide: 100} });
-// add button handlers
-    //addButtonHandlers();
-    //addSelectionChangeListeners();
+    $('.notes_popover, .source_popover').popover({trigger: 'hover', html: true, placement: 'bottom', delay: {hide: 100} });
   });
 </script>

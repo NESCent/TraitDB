@@ -12,6 +12,10 @@ class Otu < ActiveRecord::Base
     categorical_trait_categories.map{|x| x.categorical_trait}.uniq
   end
 
+  def continuous_traits
+    continuous_trait_values.map{|x| x.continuous_trait}.uniq
+  end
+
   def dataset_name
     csv_dataset.csv_file_file_name if csv_dataset
   end

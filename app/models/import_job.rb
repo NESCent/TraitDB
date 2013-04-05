@@ -8,10 +8,12 @@ class ImportJob < ActiveRecord::Base
   has_many :validation_issues, :dependent => :destroy
   has_many :headers, :dependent => :destroy
 
+  before_save :update_trait_headers_state
+
   attr_accessible :state, :csv_dataset
   attr_accessible :quantitative_header_start_id, :quantitative_header_end_id, :qualitative_header_start_id, :qualitative_header_end_id
   
-  IMPORT_STATES = %w(new reading_headers read_headers headers_failed count_failed counted_rows validating validated validation_failed parsing parsed parse_warnings importing imported import_failed)
+  IMPORT_STATES = %w(new reading_headers read_headers headers_failed count_failed counted_rows selecting_trait_headers selected_trait_headers validating validated validation_failed parsing parsed parse_warnings importing imported import_failed)
   validates_inclusion_of :state, :in => IMPORT_STATES
   def file_name
     csv_dataset.csv_file_file_name
@@ -30,19 +32,31 @@ class ImportJob < ActiveRecord::Base
   end
 
   def parse_warnings?
-    state.include?('warnings')
+    state == 'parse_warnings'
   end
 
   def parsed_rows?
-    %w(parsed parse_warnings).include?('state')
+    IMPORT_STATES.index(state) >= IMPORT_STATES.index('parsed')
   end
 
   def running?
     %w(validating parsing importing).include?(state)
   end
 
+  def read_headers?
+    IMPORT_STATES.index(state) >= IMPORT_STATES.index('read_headers')
+  end
+
+  def counted_rows?
+    IMPORT_STATES.index(state) >= IMPORT_STATES.index('counted_rows')
+  end
+
+  def selected_trait_headers?
+    IMPORT_STATES.index(state) >= IMPORT_STATES.index('selected_trait_headers')
+  end
+
   def validated_headers?
-    state == 'validated'
+    IMPORT_STATES.index(state) >= IMPORT_STATES.index('validated')
   end
 
   def new?
@@ -89,10 +103,18 @@ class ImportJob < ActiveRecord::Base
     save
   end
 
+  def update_trait_headers_state
+    if state =='counted_rows'
+      if quantitative_header_start_id && quantitative_header_end_id && qualitative_header_start_id && qualitative_header_end_id
+        self.state = 'selected_trait_headers'
+      end
+    end
+  end
+
 
   # designed to run async via delayed job
   def do_validation
-    return false unless state == 'counted_rows'
+    return false unless state == 'selected_trait_headers'
     self.state = 'validating'
     if validate_dataset
       self.state = 'validated'

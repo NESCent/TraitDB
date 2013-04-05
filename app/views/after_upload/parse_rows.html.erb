@@ -1,0 +1,38 @@
+<% @page_title = 'Parse Rows' %>
+<%
+   valid_record_count = @import_job.csv_row_count - @import_job.problem_rows.count
+   problem_record_count = @import_job.problem_rows.count
+   total_record_count = @import_job.csv_row_count
+   button_message = "Import #{valid_record_count} of #{pluralize(total_record_count, 'valid record')}"
+   download_message = "Download #{pluralize(problem_record_count, 'problematic record')}"
+   if @import_job.running? || (@import_job.parsed_rows? == false && @import_job.parse_warnings? ==false) %>
+  <div class="row-fluid">
+    <p class="alert alert-info">Parsing rows in <%= @import_job.file_name %>, reload to check status</p>
+  </div>
+  <div class="row-fluid">
+    <%= link_to("Reload",wizard_path, :class => 'btn') %>
+  </div>
+  <% else %>
+    <% if @import_job.parse_warnings? %>
+    <div class="row-fluid">
+      <p class="alert alert-warning">
+        <%= "Found #{problem_record_count} of #{pluralize(total_record_count, 'record')}" %> with issues.  You can download the problematic <%= "#{pluralize(problem_record_count, 'record')}" %> and import the remaining <%= "#{pluralize(valid_record_count, 'record')}" %>.
+      </p>
+    </div>
+    <div class="row-fluid">
+      <%= render(:partial => "import_jobs/issues", :locals => { :issues => @import_job.parse_issues}) %>
+    </div>
+    <div class="row-fluid">
+      <%= link_to_if(@import_job.parse_warnings?, download_message, {:action => 'download_problematic_rows', :id => @import_job.csv_dataset.id}, :class => 'btn btn-warning') %>
+      <%= link_to(button_message, next_wizard_path, :class => 'btn btn-primary') %>
+    </div>
+    <% elsif @import_job.parsed_rows? %>
+      <% button_message = "Import #{pluralize(@import_job.csv_row_count, 'record')}" %>
+        <div class="row-fluid">
+          <p class="alert alert-success">No issues were found in the dataset.</p>
+        </div>
+        <div class="row-fluid">
+          <%= link_to(button_message, next_wizard_path, :class => 'btn btn-primary') %>
+        </div>
+    <% end %>
+  <% end %>

@@ -22,6 +22,6 @@ module UploadHelper
     else
       link_text, action = ACTIONS_FOR_STATES[dataset.import_job.state]
     end
-    link_to(link_text, {:action => action, :id => dataset.id})
+    link_to(link_text, :controller => 'after_upload', :import_job_id => dataset.import_job.id)
   end
 end

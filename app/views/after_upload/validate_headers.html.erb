@@ -1,0 +1,21 @@
+<% @page_title = 'Check Headers' %>
+<% if @import_job.failed? %>
+<div class="row-fluid">
+  <%= render(:partial => "import_jobs/issues", :locals => { :issues => @import_job.validation_issues}) %>
+</div>
+<% elsif @import_job.validated_headers? %>
+<div class="row-fluid">
+  <p class="alert alert-success">Headers are valid in <%= @import_job.file_name %>, continue to parse rows</p>
+</div>
+<div class="row-fluid">
+  <%= link_to("Next", next_wizard_path, :class => 'btn') %>
+</div>
+<% elsif @import_job.running? || @import_job.counted_rows? %>
+<div class="row-fluid">
+  <p class="alert alert-info">Validating Headers, reload to check status</p>
+</div>
+<div class="row-fluid">
+  <%= link_to("Reload", wizard_path, :class => 'btn') %>
+</div>
+<% end %>
+

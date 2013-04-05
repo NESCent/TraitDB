@@ -1,4 +1,4 @@
-source 'https://rubygems.org'
+source 'http://rubygems.org'
 
 gem 'rails', '3.2.12'
 
@@ -17,6 +17,9 @@ gem "devise"
 # OmniAuth for open id in devise
 gem 'omniauth'
 gem 'omniauth-openid'
+
+# Wicked for step-by-step wizard in data upload
+gem 'wicked'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'

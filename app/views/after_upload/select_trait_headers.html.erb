@@ -1,0 +1,44 @@
+<% @page_title = 'Select Headers' %>
+<div class="row-fluid">
+  <div class="row-fluid">
+    <p class="lead">Select Headers:</p>
+    <p>Please select the column names containing the trait values:</p>
+  </div>
+  <div class="row-fluid">
+    <%= form_for(@import_job, :url => next_wizard_path, :html => {:class =>'form form-horizontal'}) do |f| %>
+      <%= error_messages_for(@import_job) %>
+      <div class="span9 offset1 well">
+
+        <div class="control-group">
+          <%= f.label(:quantitative_header_start_id, "First Quantitative Header", :class => 'control-label') %>
+          <div class="controls">
+            <%= f.select(:quantitative_header_start_id, options_from_collection_for_select(@import_job.headers, 'id', 'column_name')) %>
+          </div>
+        </div>
+        <div class="control-group">
+          <%= f.label(:quantitative_header_end_id, "Last Quantitative Header", :class => 'control-label') %>
+          <div class="controls">
+            <%= f.select(:quantitative_header_end_id, options_from_collection_for_select(@import_job.headers, 'id', 'column_name')) %>
+          </div>
+        </div>
+        <div class="control-group">
+          <%= f.label(:qualitative_header_start_id, "First Qualitative Header", :class => 'control-label') %>
+          <div class="controls">
+            <%= f.select(:qualitative_header_start_id, options_from_collection_for_select(@import_job.headers, 'id', 'column_name')) %>
+          </div>
+        </div>
+        <div class="control-group">
+          <%= f.label(:qualitative_header_end_id, "Last Qualitative Header", :class => 'control-label') %>
+          <div class="controls">
+            <%= f.select(:qualitative_header_end_id, options_from_collection_for_select(@import_job.headers, 'id', 'column_name')) %>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="controls">
+            <%= button_tag("Check Headers", :type => 'submit', :class => 'btn btn-primary') %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

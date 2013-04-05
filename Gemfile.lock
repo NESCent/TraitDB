@@ -1,5 +1,5 @@
 GEM
-  remote: https://rubygems.org/
+  remote: http://rubygems.org/
   specs:
     actionmailer (3.2.12)
       actionpack (= 3.2.12)
@@ -148,6 +148,9 @@ GEM
       multi_json (~> 1.0, >= 1.0.2)
     warden (1.2.1)
       rack (>= 1.0)
+    wicked (0.6.0)
+      activesupport (>= 3.0.7)
+      rails (>= 3.0.7)
 
 PLATFORMS
   ruby
@@ -168,3 +171,4 @@ DEPENDENCIES
   sass-rails (~> 3.2.3)
   therubyracer
   uglifier (>= 1.0.3)
+  wicked

@@ -15,7 +15,8 @@ class UploadController < ApplicationController
     if @dataset.save
       flash[:notice] = "#{@dataset.csv_file_file_name} has been uploaded"
       flash[:alert] = nil
-      redirect_to(:action => 'select_headers', :id => @dataset.id)
+      @dataset.create_import_job
+      redirect_to :controller => 'after_upload', :import_job_id => @dataset.import_job.id
     else
       render('index')
     end

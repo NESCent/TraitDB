@@ -30,7 +30,13 @@ TraitDB::Application.routes.draw do
   match 'search(/:action)(.:format)' => "search"
   match 'about' => 'about#index'
   match 'upload(/:action)(/:id)(.:format)' => 'upload'
-
+  resources :import_jobs do
+    resources :after_upload, :controller => 'after_upload' do
+      member do
+        get 'download_problematic_rows'
+      end
+    end
+  end
   root :to => "about#index"
 
   # The priority is based upon order of creation:

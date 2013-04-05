@@ -38,7 +38,7 @@
         if continuous_value
           row << continuous_value.value
           if @results[:include_references]
-            row << continuous_value.continuous_value.source_reference.to_s
+            row << continuous_value.source_reference.to_s
           end
         else
           row << nil

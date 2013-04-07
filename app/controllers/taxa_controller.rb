@@ -1,5 +1,6 @@
 class TaxaController < ApplicationController
   before_filter :authenticate_user!, :except => [:index, :show]
+  before_filter :verify_is_admin, :except => [:index, :show]
 
   def index
     parent = Taxon.find(params[:parent_id]) if params[:parent_id]

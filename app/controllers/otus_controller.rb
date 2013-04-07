@@ -1,6 +1,6 @@
 class OtusController < ApplicationController
   before_filter :authenticate_user!, :except => [:index, :show]
-
+  before_filter :verify_is_admin, :except => [:index, :show]
   def index
     where_options = {}
     if params[:taxon]

@@ -2,6 +2,7 @@ class ImportJobsController < ApplicationController
   # A Job to import a dataset
   # nested within CsvDataset?
   before_filter :authenticate_user!
+  before_filter :verify_is_admin
   before_filter :find_dataset
   
   # add a method to run the import

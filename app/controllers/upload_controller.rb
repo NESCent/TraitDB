@@ -2,6 +2,7 @@
 
 class UploadController < ApplicationController
   before_filter :authenticate_user!
+  before_filter :verify_is_admin
 
   def index
     # show the uploaded datasets
@@ -43,6 +44,5 @@ class UploadController < ApplicationController
   def new
     @dataset = CsvDataset.new
   end
-
 
 end

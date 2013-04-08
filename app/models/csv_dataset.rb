@@ -4,6 +4,9 @@ class CsvDataset < ActiveRecord::Base
   belongs_to :project
   belongs_to :user
   has_one :import_job, :dependent => :destroy
+  validates_attachment_presence :csv_file
+  validates_attachment_size :csv_file, :greater_than => 0.bytes, :unless => Proc.new { |imports| imports.csv_file_file_name.blank? }
+  validates_attachment_content_type :csv_file, :content_type => 'text/csv'
 
   def status
     return 'new' if import_job.nil?

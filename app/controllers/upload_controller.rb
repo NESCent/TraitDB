@@ -19,6 +19,7 @@ class UploadController < ApplicationController
       @dataset.create_import_job
       redirect_to :controller => 'after_upload', :import_job_id => @dataset.import_job.id
     else
+      @datasets = CsvDataset.order('created_at DESC')
       render('index')
     end
   end

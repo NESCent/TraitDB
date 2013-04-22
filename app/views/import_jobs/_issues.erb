@@ -1,13 +1,15 @@
 <table class="table table-bordered">
   <tbody>
     <tr class="header">
-      <th>Location</th>
+      <th>Species Name</th>
+      <th>CSV Location</th>
       <th>Problem</th>
       <th>Possible Solution</th>
     </tr>
   <% issues.each do |issue| %>
   <tr>
-    <td><%= issue.location %></td>
+    <td><%= issue.row_name[:genus] %> <%= issue.row_name[:species] %></td>
+    <td><%= issue.location %> </td>
     <td><%= issue.issue_description %></td>
     <td><%= issue.suggested_solution %></td>
   </tr>

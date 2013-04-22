@@ -347,6 +347,7 @@ module TreeOfSexImport
       @csvfile.each_with_index do |row, i|
         dataset = {}
         lineno = i + 2 # i is zero-indexed and the first line is headers
+        problematic_row = false
         # Datasets have
         # 1. taxa
         taxon_hash = row.to_hash.select{|k,v| TAXON_HEADERS.include?(k)}
@@ -369,6 +370,7 @@ module TreeOfSexImport
           if (v.is_number?)
             quantitative_data_array << { :name => k, :value => Float(v) }
           else
+            problematic_row = true
             @parse_results[:issues] << {
                 :issue_description => 'Non-numeric value in quantitative data field',
                 :row_location => lineno,
@@ -399,6 +401,7 @@ module TreeOfSexImport
             qualitative_data_array << { :name => name, :values => split_values }
           else
             split_values.each do |split_value|
+              problematic_row = true
               @parse_results[:issues] << {
                   :issue_description => "Unrecognized value '#{split_value}' in qualitative data field",
                   :row_location => lineno,
@@ -414,6 +417,7 @@ module TreeOfSexImport
         # 4. Email Entry
         dataset[:email_entry] = row[ENTRY_EMAIL_HEADER]
         if dataset[:email_entry].nil?
+          problematic_row = true
           @parse_results[:issues] << {
               :issue_description => "Missing #{ENTRY_EMAIL_HEADER}",
               :row_location => lineno,
@@ -433,6 +437,7 @@ module TreeOfSexImport
           expected_name = k.sub(SOURCE_PREFIX,"")
           quantitative_data_hash = quantitative_data_array.find{|q| q[:name] == expected_name }
           if quantitative_data_hash.nil?
+            problematic_row = true
             @parse_results[:issues] << {
                 :issue_description => "Source provided for #{expected_name} but no data exists for '#{expected_name}'",
                 :row_location => lineno,
@@ -454,6 +459,7 @@ module TreeOfSexImport
           # But the qualitative_chr_header_map does
           expected_name = qualitative_chr_header_map[k.sub(SOURCE_PREFIX,"")]
           if expected_name.nil?
+            problematic_row = true
             @parse_results[:issues] << {
                 :issue_description => "Source header name '#{k}' is not a valid header name",
                 :row_location => lineno,
@@ -464,6 +470,7 @@ module TreeOfSexImport
           end
           qualitative_data_hash = qualitative_data_array.find{|q| q[:name] == expected_name }
           if qualitative_data_hash.nil?
+            problematic_row = true
             @parse_results[:issues] << {
                 :issue_description => "Source provided for #{expected_name} but no data exists for '#{expected_name}'",
                 :row_location => lineno,
@@ -476,7 +483,9 @@ module TreeOfSexImport
           end
         end
         dataset[:qualitative_data] = qualitative_data_array
-        @datasets << dataset
+        unless problematic_row
+          @datasets << dataset
+        end
       end
     end
 

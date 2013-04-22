@@ -72,6 +72,21 @@ class ImportJob < ActiveRecord::Base
     parse_issues.map{ |i| {:row => i.row_location, :column => i.column_location }}
   end
 
+  def problem_rows_csv_string
+    row_indices = problem_rows
+    output_csv_string = CSV.generate do |csv|
+      i = 0
+      CSV.foreach(csv_dataset.csv_file.path) do |row|
+        # rows are not escaped properly
+        if i == 0 || row_indices.include?(i)
+          csv << row
+        end
+        i += 1
+      end
+    end
+    output_csv_string
+  end
+
   def reset
     self.state = 'new'
     save

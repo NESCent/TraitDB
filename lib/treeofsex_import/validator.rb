@@ -422,6 +422,7 @@ module TreeOfSexImport
               :issue_description => "Missing #{ENTRY_EMAIL_HEADER}",
               :row_location => lineno,
               :column_name => ENTRY_EMAIL_HEADER,
+              :row_name => dataset[:taxon],
               :column_location => @csvfile.headers.index(ENTRY_EMAIL_HEADER),
               :suggested_solution => 'Provide a valid email address'
           }
@@ -442,6 +443,7 @@ module TreeOfSexImport
                 :issue_description => "Source provided for #{expected_name} but no data exists for '#{expected_name}'",
                 :row_location => lineno,
                 :column_name => k,
+                :row_name => dataset[:taxon],
                 :column_location => @csvfile.headers.index(k),
                 :suggested_solution => "Make sure data is valid for '#{expected_name}' or remove source info from '#{k}'"
             }
@@ -464,6 +466,7 @@ module TreeOfSexImport
                 :issue_description => "Source header name '#{k}' is not a valid header name",
                 :row_location => lineno,
                 :column_name => k,
+                :row_name => dataset[:taxon],
                 :column_location => @csvfile.headers.index(k),
                 :suggested_solution => "Make sure header '#{k}' begins with '#{SOURCE_PREFIX}' and ends with a qualitative header name"
             }
@@ -475,6 +478,7 @@ module TreeOfSexImport
                 :issue_description => "Source provided for #{expected_name} but no data exists for '#{expected_name}'",
                 :row_location => lineno,
                 :column_name => k,
+                :row_name => dataset[:taxon],
                 :column_location => @csvfile.headers.index(k),
                 :suggested_solution => "Make sure data is valid for '#{expected_name}' or remove source info from '#{k}'"
             }

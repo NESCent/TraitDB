@@ -4,6 +4,7 @@
 class ParseIssue < ActiveRecord::Base
   attr_accessible :column_location, :column_name, :row_location, :row_name, :issue_description, :suggested_solution
   belongs_to :import_job
+  serialize :row_name
   validates_presence_of :column_location
   validates_presence_of :row_location
   validates_presence_of :issue_description

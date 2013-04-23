@@ -72,6 +72,21 @@ class ImportJob < ActiveRecord::Base
     parse_issues.map{ |i| {:row => i.row_location, :column => i.column_location }}
   end
 
+  def problem_rows_csv_string
+    row_indices = problem_rows
+    output_csv_string = CSV.generate do |csv|
+      i = 0
+      CSV.foreach(csv_dataset.csv_file.path) do |row|
+        # rows are not escaped properly
+        if i == 0 || row_indices.include?(i)
+          csv << row
+        end
+        i += 1
+      end
+    end
+    output_csv_string
+  end
+
   def reset
     self.state = 'new'
     save
@@ -86,8 +101,10 @@ class ImportJob < ActiveRecord::Base
       end
       self.state = 'read_headers'
       save
-    rescue # file is not a CSV
+    rescue Exception => e
+      # file is not a CSV
       self.state = 'headers_failed'
+      self.validation_issues.create({:issue_description => e.message, :suggested_solution => 'Please upload a valid CSV file with UTF encoding'})
       save
     end
   end
@@ -97,8 +114,11 @@ class ImportJob < ActiveRecord::Base
     begin
       self.csv_row_count = CSV.read(csv_dataset.csv_file.path, :headers => true).length
       self.state = 'counted_rows'
-    rescue # file is not a CSV
+    rescue Exception => e
+     # file is not a CSV
       self.state = 'count_failed'
+      self.validation_issues.create({:issue_description => e.message, :suggested_solution => 'Please upload a valid CSV file with UTF encoding'})
+
     end
     save
   end

@@ -20,17 +20,13 @@
       row = []
       row << otu.name
       @results[:categorical_traits].each do |trait|
-        categorical_value = otu.categorical_trait_values.find_by_categorical_trait_id(trait.id)
-        if categorical_value
-          row << categorical_value.categorical_trait_category.name
-          if @results[:include_references]
-            row << categorical_value.source_reference.to_s
-          end
-        else
+        categorical_trait_values = otu.categorical_trait_values.where(:categorical_trait_id => trait.id)
+        if categorical_trait_values.empty?
           row << nil
-          if @results[:include_references]
-            row << nil
-          end
+          row << nil if @results[:include_references]
+        else
+          row << categorical_trait_values.map{|c| c.categorical_trait_category.name}.join('|')
+          row << categorical_trait_values.first.source_reference.to_s if @results[:include_references]
         end
       end
       @results[:continuous_traits].each do |trait|

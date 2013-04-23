@@ -32,22 +32,19 @@
         <% @results[:otus].each do |otu| %>
         <tr>
           <th><%= otu.name %></th>
-          <% @results[:categorical_traits].each do |trait|
-            # This should not be done in the view
-            categorical_value = otu.categorical_trait_values.find_by_categorical_trait_id(trait.id) %>
-            <td>
-              <% if categorical_value %>
-                <%= categorical_value.categorical_trait_category.name %>
-              <% end %>
-            </td>
-            <% if @results[:include_references] %>
-            <td>
-              <% if categorical_value %>
-                  <span class="source_popover" rel="popover" data-content="<%= categorical_value.source_reference %>" data-original-title="Source">
-                    <%= truncate(categorical_value.source_reference.to_s) %>
-                  </span>
-              <% end %>
-            </td>
+            <% @results[:categorical_traits].each do |trait|
+               categorical_trait_values = otu.categorical_trait_values.where(:categorical_trait_id => trait.id) %>
+              <td>
+                <%= categorical_trait_values.map{|c| c.categorical_trait_category.name}.join(', ') %>
+              </td>
+              <% if @results[:include_references] %>
+                <td>
+                  <% if categorical_trait_values.first %>
+                    <span class="source_popover" rel="popover" data-content="<%= categorical_trait_values.first.source_reference %>" data-original-title="Source">
+                      <%= truncate(categorical_trait_values.first.source_reference.to_s) %>
+                    </span>
+                  <% end %>
+              </td>
             <% end %>
           <% end %>
           <% @results[:continuous_traits].each do |trait|

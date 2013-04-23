@@ -101,8 +101,10 @@ class ImportJob < ActiveRecord::Base
       end
       self.state = 'read_headers'
       save
-    rescue # file is not a CSV
+    rescue Exception => e
+      # file is not a CSV
       self.state = 'headers_failed'
+      self.validation_issues.create({:issue_description => e.message, :suggested_solution => 'Please upload a valid CSV file with UTF encoding'})
       save
     end
   end
@@ -112,8 +114,11 @@ class ImportJob < ActiveRecord::Base
     begin
       self.csv_row_count = CSV.read(csv_dataset.csv_file.path, :headers => true).length
       self.state = 'counted_rows'
-    rescue # file is not a CSV
+    rescue Exception => e
+     # file is not a CSV
       self.state = 'count_failed'
+      self.validation_issues.create({:issue_description => e.message, :suggested_solution => 'Please upload a valid CSV file with UTF encoding'})
+
     end
     save
   end

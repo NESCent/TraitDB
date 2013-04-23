@@ -1,7 +1,14 @@
 <% @page_title = 'Count Rows' %>
 <% if @import_job.failed? %>
 <div class="row-fluid">
-  <p class="alert alert-error">Unable to count rows in <%= @import_job.file_name %></p>
+  <div class="alert alert-error">
+    <p>Failed to count rows in <%= @import_job.file_name %>:</p>
+    <ul>
+      <% @import_job.validation_issues.each do |issue| %>
+        <li><%= issue.issue_description %>: <%=  issue.suggested_solution %></li>
+      <% end %>
+    </ul>
+  </div>
 </div>
 <% elsif @import_job.counted_rows? %>
 <div class="row-fluid">

@@ -1,7 +1,7 @@
 <% @page_title = 'Check Headers' %>
 <% if @import_job.failed? %>
 <div class="row-fluid">
-  <%= render(:partial => "import_jobs/issues", :locals => { :issues => @import_job.validation_issues}) %>
+  <%= render(:partial => "import_jobs/issues", :locals => { :issues => @import_job.validation_issues, :issue_type => :headers}) %>
 </div>
 <% elsif @import_job.validated_headers? %>
 <div class="row-fluid">

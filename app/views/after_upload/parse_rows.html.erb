@@ -20,7 +20,7 @@
       </p>
     </div>
     <div class="row-fluid">
-      <%= render(:partial => "import_jobs/issues", :locals => { :issues => @import_job.parse_issues}) %>
+      <%= render(:partial => "import_jobs/issues", :locals => { :issues => @import_job.parse_issues, :issue_type => :parse}) %>
     </div>
     <div class="row-fluid">
       <%= link_to_if(@import_job.parse_warnings?, download_message, {:action => 'download_problematic_rows', :id => @import_job.csv_dataset.id, :format => 'csv'}, :class => 'btn btn-warning') %>

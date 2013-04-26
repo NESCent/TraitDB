@@ -1,14 +1,18 @@
 <table class="table table-bordered">
   <tbody>
     <tr class="header">
-      <th>Species Name</th>
+      <% if issue_type == :parse %>
+        <th>Species Name</th>
+      <% end %>
       <th>CSV Location</th>
       <th>Problem</th>
       <th>Possible Solution</th>
     </tr>
   <% issues.each do |issue| %>
   <tr>
-    <td><%= issue.row_name[:genus] %> <%= issue.row_name[:species] %></td>
+    <% if issue_type == :parse %>
+      <td><%= issue.row_name[:genus] %> <%= issue.row_name[:species] %></td>
+    <% end %>
     <td><%= issue.location %> </td>
     <td><%= issue.issue_description %></td>
     <td><%= issue.suggested_solution %></td>

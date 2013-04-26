@@ -13,5 +13,4 @@ class ParseIssue < ActiveRecord::Base
   def location
     "Row #{row_location}, Column #{column_location} '#{column_name}'"
   end
-
 end

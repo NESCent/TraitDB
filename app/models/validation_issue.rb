@@ -7,6 +7,15 @@ class ValidationIssue < ActiveRecord::Base
   validates_presence_of :suggested_solution
 
   def location
-    "#{column_location} #{column_name}"
+    if column_location.nil?
+      "Headers"
+    else
+      "Column #{column_location}: #{column_name}"
+    end
+
+  end
+
+  def row_name
+    {}
   end
 end

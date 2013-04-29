@@ -348,12 +348,14 @@ module TreeOfSexImport
         dataset = {}
         lineno = i + 2 # i is zero-indexed and the first line is headers
         problematic_row = false
+        next if row.nil? || row.empty?
         # Datasets have
         # 1. taxa
         taxon_hash = row.to_hash.select{|k,v| TAXON_HEADERS.include?(k)}
+        next if taxon_hash.nil? || taxon_hash.empty?
         # Need to make sure symbols are ordered the same way
         dataset[:taxon] = Hash[[TAXON_SYMBOLS, taxon_hash.values].transpose]
-        # Need to symbolicate taxon headers 
+        # Need to symbolicate taxon headers
         # Species names have rules for -1, -2
         # How are these actually implemented?
         

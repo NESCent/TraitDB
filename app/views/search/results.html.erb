@@ -14,7 +14,11 @@
     <div class="row-fluid">
       <table class="table table-condensed table-bordered table-striped table-hover ">
         <tr>
-          <th>Species Name</th>
+          <th>Higher Group</th>
+          <th>Family</th>
+          <th>Order</th>
+          <th>Genus</th>
+          <th>Species</th>
           <% @results[:categorical_traits].each do |trait| %>
             <th><%= trait.name %></th>
             <% if @results[:include_references] %>
@@ -31,7 +35,11 @@
         </tr>
         <% @results[:otus].each do |otu| %>
         <tr>
-          <th><%= otu.name %></th>
+          <td><%= otu.htg_name %></td>
+          <td><%= otu.family_name %></td>
+          <td><%= otu.order_name %></td>
+          <td><%= otu.genus_name %></td>
+          <td><%= otu.species_name %></td>
             <% @results[:categorical_traits].each do |trait|
                categorical_trait_values = otu.categorical_trait_values.where(:categorical_trait_id => trait.id) %>
               <td>

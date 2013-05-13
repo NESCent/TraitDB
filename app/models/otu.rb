@@ -19,4 +19,25 @@ class Otu < ActiveRecord::Base
   def dataset_name
     csv_dataset.csv_file_file_name if csv_dataset
   end
+
+  def species_name
+    taxon.ancestor_with_iczn_group_name("species").name
+  end
+
+  def genus_name
+    taxon.ancestor_with_iczn_group_name("genus").name
+  end
+
+  def family_name
+    taxon.ancestor_with_iczn_group_name("family").name
+  end
+
+  def order_name
+    taxon.ancestor_with_iczn_group_name("order").name
+  end
+
+  def htg_name
+    taxon.ancestor_with_iczn_group_name(nil).name
+  end
+
 end

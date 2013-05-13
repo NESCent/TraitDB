@@ -45,4 +45,14 @@ class Taxon < ActiveRecord::Base
     Otu.where(:taxon_id => descendant_taxa)
   end
 
+  def ancestor_with_iczn_group_name(name)
+    if iczn_group_name == name
+      return self
+    elsif parent
+      return parent.ancestor_with_iczn_group_name(name)
+    else
+      return nil
+    end
+  end
+
 end

@@ -295,33 +295,40 @@ class ImportJob < ActiveRecord::Base
     # need to make an otu out of each or detect if it exists
       datasets.each do |d|
         taxon = d[:taxon]
-        otu_name = "#{taxon[:genus].strip} #{taxon[:species].strip}"
         # Find or create an OTU for this row
         
         # find from parent
         # consider iczn_group names
         # Do we need a root taxon for the project or should there be htg in each
         # project
-        
+
         last_parent = nil
+        htg_taxon = nil
+        order_taxon = nil
+        family_taxon = nil
+        genus_taxon = nil
+        species_taxon = nil
+
         
         if taxon[:higher_taxonomic_group]
           # Search for Taxon with this name and no parent
-          last_parent = Taxon.where(:name => taxon[:higher_taxonomic_group].strip).first_or_create(:import_job => self)
+          htg_taxon = Taxon.where(:name => taxon[:higher_taxonomic_group].strip).first_or_create(:import_job => self)
+          last_parent = htg_taxon
         end
         
         # order
         if taxon[:order]
-          last_parent = last_parent.children.where(:name => taxon[:order].strip).first_or_create do |t|
+          order_taxon = last_parent.children.where(:name => taxon[:order].strip).first_or_create do |t|
             t.parent = last_parent
             t.import_job = self
             t.iczn_group = IcznGroup.find_by_name("order")
           end
+          last_parent = order_taxon
         end
         
         # family
         if taxon[:family]
-          last_parent = last_parent.children.where(:name => taxon[:family].strip).first_or_create do |t|
+          family_taxon = last_parent.children.where(:name => taxon[:family].strip).first_or_create do |t|
             t.parent = last_parent
             t.import_job = self
             t.iczn_group = IcznGroup.find_by_name("family")
@@ -330,11 +337,12 @@ class ImportJob < ActiveRecord::Base
         
         # genus
         if taxon[:genus]
-          last_parent = last_parent.children.where(:name => taxon[:genus].strip).first_or_create do |t|
+          genus_taxon = last_parent.children.where(:name => taxon[:genus].strip).first_or_create do |t|
             t.parent = last_parent
             t.import_job = self
             t.iczn_group = IcznGroup.find_by_name("genus")
           end
+          last_parent = genus_taxon
         end
         
         # species
@@ -342,14 +350,21 @@ class ImportJob < ActiveRecord::Base
         # what about subspecies?
         # can taxonifi help with this?
         if taxon[:species]
-          last_parent = last_parent.children.where(:name => taxon[:species].strip).first_or_create do |t|
+          species_taxon = last_parent.children.where(:name => taxon[:species].strip).first_or_create do |t|
             t.parent = last_parent
             t.import_job = self
             t.iczn_group = IcznGroup.find_by_name("species")
           end
+          last_parent = species_taxon
           otu_notes = d[:notes_comments]
           # make an otu
-          otu = Otu.create(:name => otu_name, :taxon => last_parent, :import_job => self, :notes => otu_notes)
+          otu = Otu.create(:species_taxon => species_taxon,
+                           :genus_taxon => genus_taxon,
+                           :family_taxon => family_taxon,
+                           :order_taxon => order_taxon,
+                           :htg_taxon => htg_taxon,
+                           :import_job => self,
+                           :notes => otu_notes)
           # refs
           # Categorical Traits
           d[:qualitative_data].each do |import_trait|

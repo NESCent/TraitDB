@@ -1,5 +1,5 @@
 class Otu < ActiveRecord::Base
-  attr_accessible :author, :species_taxon_id, :genus_taxon_id, :family_taxon_id, :order_taxon_id, :import_job, :notes
+  attr_accessible :author, :species_taxon, :genus_taxon, :family_taxon, :order_taxon, :htg_taxon, :import_job, :notes
   belongs_to :species_taxon, :class_name => 'Taxon', :foreign_key => 'species_taxon_id'
   belongs_to :genus_taxon, :class_name => 'Taxon', :foreign_key => 'genus_taxon_id'
   belongs_to :family_taxon, :class_name => 'Taxon', :foreign_key => 'family_taxon_id'
@@ -42,23 +42,23 @@ class Otu < ActiveRecord::Base
   end
 
   def species_name
-    species_taxon.name
+    species_taxon ? species_taxon.name : nil
   end
 
   def genus_name
-    genus_taxon.name
+    genus_taxon ? genus_taxon.name : nil
   end
 
   def family_name
-    family_taxon.name
+    family_taxon ? family_taxon.name : nil
   end
 
   def order_name
-    order_taxon.name
+    order_taxon ? order_taxon.name : nil
   end
 
   def htg_name
-    htg_taxon.name
+    htg_taxon ? htg_taxon.name : nil
   end
 
 end

@@ -4,7 +4,7 @@ class Taxon < ActiveRecord::Base
 
   belongs_to :import_job
   has_one :csv_dataset, :through => :import_job
-  has_many :otus, :dependent => :destroy
+  has_many :otus, :dependent => :destroy, :foreign_key => :species_taxon_id
 
   has_many :child_taxa, :class_name => 'TaxonAncestor', :foreign_key => 'parent_id'
   has_many :children, :through => :child_taxa, :dependent => :destroy

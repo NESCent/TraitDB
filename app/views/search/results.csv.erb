@@ -1,5 +1,5 @@
 <%-
-  headers = ['Species Name']
+  headers = ['Higher Taxonomic Group','Order','Family','Genus','Species']
   @results[:categorical_traits].each do |trait|
     headers << trait.name
     if @results[:include_references]
@@ -18,7 +18,11 @@
 <%-
     @results[:otus].each do |otu|
       row = []
-      row << otu.name
+      row << otu.htg_name
+      row << otu.order_name
+      row << otu.family_name
+      row << otu.genus_name
+      row << otu.species_name
       @results[:categorical_traits].each do |trait|
         categorical_trait_values = otu.categorical_trait_values.where(:categorical_trait_id => trait.id)
         if categorical_trait_values.empty?

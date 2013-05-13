@@ -69,24 +69,6 @@ module TreeOfSexImport
       @parse_results
     end
 
-    def validate_old
-      begin
-        #@messages << "=== Reading CSV file #{@filepath}"
-        read_csv_file
-        raise 'Unable to read file' if @csvfile.nil?
-        # read and check the column headers
-        read_column_headers
-        # read the row data
-        read_row_data
-        return true
-      rescue Exception => e
-        #@messages << "=== Validation failed: #{e.message}"
-        @datasets = []
-        @chr_headers = {}
-        return false
-      end
-    end
-
     private
   
     def read_csv_file

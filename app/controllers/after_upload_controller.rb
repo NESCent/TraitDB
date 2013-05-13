@@ -31,6 +31,7 @@ class AfterUploadController < Wicked::WizardController
     render_wizard
   end
 
+  # Download the rows from this dataset that cannot be imported as a csv
   def download_problematic_rows
     import_job = ImportJob.find(params[:import_job_id])
     @output_csv_string = import_job.problem_rows_csv_string
@@ -50,6 +51,28 @@ class AfterUploadController < Wicked::WizardController
       end
     end
   end
+
+  # Download the parse issues as a CSV file
+  def download_issues
+    import_job = ImportJob.find(params[:import_job_id])
+    @output_csv_string = import_job.download_issues_csv_string
+    respond_to do |format|
+      format.csv do
+        filename = "#{File.basename(import_job.file_name, '.csv')}-import_issues_report-#{Time.now.strftime("%Y%m%d")}.csv"
+        if request.env['HTTP_USER_AGENT'] =~ /msie/i
+          headers['Pragma'] = 'public'
+          headers["Content-type"] = "text/plain"
+          headers['Cache-Control'] = 'no-cache, must-revalidate, post-check=0, pre-check=0'
+          headers['Content-Disposition'] = "attachment; filename=\"#{filename}\""
+          headers['Expires'] = "0"
+        else
+          headers["Content-Type"] ||= 'text/csv'
+          headers["Content-Disposition"] = "attachment; filename=\"#{filename}\""
+        end
+      end
+    end
+  end
+
   private
 
   def handle_step

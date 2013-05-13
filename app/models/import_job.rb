@@ -87,6 +87,10 @@ class ImportJob < ActiveRecord::Base
     output_csv_string
   end
 
+  def download_issues_csv_string
+    ''
+  end
+
   def reset
     self.state = 'new'
     save

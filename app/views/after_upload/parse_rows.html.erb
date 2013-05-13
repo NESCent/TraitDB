@@ -23,7 +23,8 @@
       <%= render(:partial => "import_jobs/issues", :locals => { :issues => @import_job.parse_issues, :issue_type => :parse}) %>
     </div>
     <div class="row-fluid">
-      <%= link_to_if(@import_job.parse_warnings?, download_message, {:action => 'download_problematic_rows', :id => @import_job.csv_dataset.id, :format => 'csv'}, :class => 'btn btn-warning') %>
+      <%= link_to('Download Issues as CSV', {:action => 'download_issues', :id => @import_job.csv_dataset.id, :format => 'csv'}, :class => 'btn btn-warning') %>
+      <%= link_to(download_message, {:action => 'download_problematic_rows', :id => @import_job.csv_dataset.id, :format => 'csv'}, :class => 'btn btn-warning') %>
       <%= link_to(button_message, next_wizard_path, :class => 'btn btn-primary') %>
       <%= link_to("Discard Dataset", {:controller => 'upload', :action => 'delete', :id => @import_job.csv_dataset.id}, :class => 'btn btn-danger', :method => :delete) %>
     </div>

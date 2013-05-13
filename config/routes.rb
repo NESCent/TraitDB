@@ -34,6 +34,7 @@ TraitDB::Application.routes.draw do
     resources :after_upload, :controller => 'after_upload' do
       member do
         get 'download_problematic_rows'
+        get 'download_issues'
       end
     end
   end

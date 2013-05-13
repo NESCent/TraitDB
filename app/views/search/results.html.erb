@@ -15,8 +15,8 @@
       <table class="table table-condensed table-bordered table-striped table-hover ">
         <tr>
           <th>Higher Group</th>
-          <th>Family</th>
           <th>Order</th>
+          <th>Family</th>
           <th>Genus</th>
           <th>Species</th>
           <% @results[:categorical_traits].each do |trait| %>
@@ -36,8 +36,8 @@
         <% @results[:otus].each do |otu| %>
         <tr>
           <td><%= otu.htg_name %></td>
-          <td><%= otu.family_name %></td>
           <td><%= otu.order_name %></td>
+          <td><%= otu.family_name %></td>
           <td><%= otu.genus_name %></td>
           <td><%= otu.species_name %></td>
             <% @results[:categorical_traits].each do |trait|

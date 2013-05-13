@@ -32,6 +32,7 @@ class Taxon < ActiveRecord::Base
     parent.name if parent
   end
 
+  # No longer used anywhere
   def descendant_taxa
     descendants = []
     children.each do |c|
@@ -42,7 +43,7 @@ class Taxon < ActiveRecord::Base
   end
 
   def descendant_otus
-    Otu.where(:taxon_id => descendant_taxa)
+    Otu.where(:species_taxon_id => descendant_taxa)
   end
 
   def ancestor_with_iczn_group_name(name)

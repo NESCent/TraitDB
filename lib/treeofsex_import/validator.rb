@@ -72,7 +72,11 @@ module TreeOfSexImport
     private
   
     def read_csv_file
-      @csvfile = CSV.read(@filepath, :headers => true)
+      @csvfile = CSV.read(@filepath,
+                          :headers => true,
+                          :header_converters => lambda{|f| f.strip },
+                          :converters => lambda{|f| f ? f.strip : nil}
+      )
     end
   
     def validate_simple_properties

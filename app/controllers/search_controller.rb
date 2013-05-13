@@ -62,28 +62,38 @@ class SearchController < ApplicationController
     # params = {'htg' => {'0' => '21043', '2' => ''}}
 
     # Collect the IDs of the selected taxa
-    taxa_ids = []
+    otus = []
 
     params['htg'].reject{|k,v| v.empty?}.each do |k,v|
       # Start with the higher group and narrow if specified
       lowest_id =  Integer(v)
+      lowest_group = 'htg'
       if params['order'] && params['order'][k]
-        lowest_id = Integer(params['order'][k]) unless params['order'][k].blank?
+        unless params['order'][k].blank?
+          lowest_id = Integer(params['order'][k])
+          lowest_group = 'order'
+        end
       end
       if params['family'] && params['family'][k]
-        lowest_id = Integer(params['family'][k]) unless params['family'][k].blank?
+        unless params['family'][k].blank?
+          lowest_id = Integer(params['family'][k])
+          lowest_group = 'family'
+        end
       end
       if params['genus'] && params['genus'][k]
-        lowest_id = Integer(params['genus'][k]) unless params['genus'][k].blank?
+        unless params['genus'][k].blank?
+          lowest_id = Integer(params['genus'][k])
+          lowest_group = 'genus'
+        end
       end
-      taxa_ids << lowest_id
+
+      # Find all OTUs with the corresponding level
+      otus += Otu.in_taxon(lowest_id, lowest_group)
     end
 
-    # Now get all the children OTUs from the taxa IDs
-    otus = []
-    taxa_ids.each do |taxa_id|
-      otus += Taxon.find(taxa_id).descendant_otus
-    end
+    # sort the otus
+    # Sorting by sort_name takes a long time, leaving this to sort by id!
+    otus.sort!
 
     # Traits - become columns in output
 

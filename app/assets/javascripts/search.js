@@ -1,6 +1,8 @@
 var uniqueRowId = 1;
 
-function addTaxonFilterRow() {
+function addTaxonFilterRow(animation) {
+    animation = typeof animation !== 'undefined' ? animation : 'fast';
+
     // User has clicked to add another taxon row
     var lastTaxonFilterRow = $('.taxon-filter-row').last();
     // Create an element
@@ -17,10 +19,11 @@ function addTaxonFilterRow() {
     el.find('select.genus').attr('id',genusId).attr('name','genus[' + uniqueRowId + ']');
     el.hide();
     lastTaxonFilterRow.after(el);
-    el.show('fast');
+    el.show(animation);
 }
 
-function addTraitFilterRow() {
+function addTraitFilterRow(animation) {
+    animation = typeof animation !== 'undefined' ? animation : 'fast';
     // User has clicked to add another trait row
     var lastTraitFilterRow = $('.trait-filter-row').last();
     // Create an element
@@ -43,7 +46,25 @@ function addTraitFilterRow() {
     el.find('input.continuous_trait_entries').attr('id',continuousTraitEntriesId).attr('name','continuous_trait_entries[' + uniqueRowId + ']');
     el.hide();
     lastTraitFilterRow.after(el);
-    el.show('fast');
+    el.show(animation);
+}
+
+function removeTaxonFilterRow(removeButton) {
+    if ($(".taxon-filter-row").length > 1) {
+        // Don't remove the only row
+        $(removeButton).parents(".taxon-filter-row").hide('fast', function () {
+            $(this).remove();
+        });
+    }
+}
+
+function removeTraitFilterRow(removeButton) {
+    if ($(".trait-filter-row").length > 1) {
+        // Don't remove the only row
+        $(removeButton).parents(".trait-filter-row").hide('fast', function () {
+            $(this).remove();
+        });
+    }
 }
 
 function addButtonHandlers() {
@@ -51,24 +72,16 @@ function addButtonHandlers() {
         addTaxonFilterRow();
     });
     $('.remove_taxon').bind('click', function() {
-        if ($(".taxon-filter-row").length > 1) {
-            // Don't remove the only row
-            $(this).parents(".taxon-filter-row").hide('fast', function () {
-                $(this).remove();
-            });
-
-        }
+        removeTaxonFilterRow(this);
     });
     $('.add_trait').bind('click',function() {
         addTraitFilterRow();
     });
     $('.remove_trait').bind('click', function() {
-        if ($(".trait-filter-row").length > 1) {
-            // Don't remove the only row
-            $(this).parents(".trait-filter-row").hide('fast', function () {
-                $(this).remove();
-            });
-        }
+        removeTraitFilterRow(this);
+    });
+    $('#reset_search').bind('click', function() {
+        resetSearchForm();
     });
 }
 
@@ -280,4 +293,21 @@ function hideContinuousFields() {
     $('select.continuous_trait_name').hide();
     $('select.continuous_trait_value_predicates').hide();
     $('input.continuous_trait_entries').hide();
+}
+
+function resetSearchForm() {
+    var taxon_row_count = $('.taxon-filter-row').length;
+    var trait_row_count = $('.trait-filter-row').length;
+
+    addTaxonFilterRow(0); // animation speed
+    addTraitFilterRow(0); // animation speed
+    $('form')[0].reset();
+
+    for(var i=0; i < taxon_row_count; i++) {
+        $('.taxon-filter-row').first().remove();
+    }
+    for(var i=0; i < trait_row_count; i++) {
+        $('.trait-filter-row').first().remove();
+    }
+    return false;
 }

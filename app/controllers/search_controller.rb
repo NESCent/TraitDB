@@ -1,4 +1,5 @@
 class SearchController < ApplicationController
+  OPERATORS = { :or => 'or', :and => 'and' }
   def index
     @taxa = {}
     # Higher taxonomic group
@@ -58,6 +59,125 @@ class SearchController < ApplicationController
   end
 
   def results
+    # Continuous Trait Values
+    continuous_trait_predicate_map = {}
+    if params['continuous_trait_name']
+      params['continuous_trait_name'].reject{|k,v| v.empty?}.each do |k,v|
+        trait_id = Integer(v)
+        trait_value_ids = continuous_trait_predicate_map[trait_id] || []
+
+        # Check for the equals/less than/etc
+        # get the predicate for this row
+        if params['continuous_trait_value_predicates'][k] && params['continuous_trait_entries'][k]
+          unless params['continuous_trait_entries'][k].blank?
+            field_value = Float(params['continuous_trait_entries'][k])
+            case params['continuous_trait_value_predicates'][k]
+              when 'gt'
+                trait_value_ids << ['value > ?', field_value]
+              when 'lt'
+                trait_value_ids << ['value < ?', field_value]
+              when 'eq'
+                trait_value_ids << ['value = ?', field_value]
+              when 'ne'
+                trait_value_ids << ['value != ?', field_value]
+            end
+          end
+        end
+        continuous_trait_predicate_map[trait_id] = trait_value_ids
+      end
+    end
+
+    # This just gets the headers
+    continuous_traits = ContinuousTrait.where(:id => continuous_trait_predicate_map.keys)
+
+    otus = []
+    # AND or OR
+    trait_operator = params['trait_operator'] || OPERATORS[:or]
+
+    params['htg'].reject{|k,v| v.empty?}.each do |k,v|
+      # Extract the taxon_id from each Taxonomy dropdown
+      lowest_id =  Integer(v)
+      lowest_group = 'htg'
+      if params['order'] && params['order'][k]
+        unless params['order'][k].blank?
+          lowest_id = Integer(params['order'][k])
+          lowest_group = 'order'
+        end
+      end
+      if params['family'] && params['family'][k]
+        unless params['family'][k].blank?
+          lowest_id = Integer(params['family'][k])
+          lowest_group = 'family'
+        end
+      end
+      if params['genus'] && params['genus'][k]
+        unless params['genus'][k].blank?
+          lowest_id = Integer(params['genus'][k])
+          lowest_group = 'genus'
+        end
+      end
+
+      # Assemble a set of Otus for this selected row
+      Otu.in_taxon(lowest_id, lowest_group).each do |otu|
+        # for each Otu in the list, see if it has the specified trait values
+        matched_trait_otu_count = 0
+        continuous_trait_predicate_map.each do |trait_id, predicates_array|
+          matched_values = otu.continuous_trait_values.where(:continuous_trait_id => trait_id)
+          predicates_array.each do |predicate|
+            matched_values = matched_values.where(predicate)
+          end
+          # If this OTU had a trait value that met the criteria, increment our counter
+          unless matched_values.nil? || matched_values.empty?
+            # Keep track of how many traits matched to determine if AND was successful
+            matched_trait_otu_count += 1
+          end
+        end
+
+        # for the case of AND, matched_trait_otu_count must equal continuous_trait_predicate_map.length
+        if trait_operator == OPERATORS[:and]
+          if matched_trait_otu_count == continuous_trait_predicate_map.length
+            otus << otu
+          end
+        else
+          # OR, just make sure matched_trait_otu_count > 0
+          if matched_trait_otu_count > 0
+            otus << otu
+          end
+        end
+        # TODO: render matched_values into the output dataset
+      end
+    end
+    otus.sort!
+
+    # TODO: categorical traits
+    categorical_traits = []
+    # data to return to view
+    @results = {}
+    @results[:include_references] = !params['include_references'].nil?
+    @results[:otus] = otus
+    @results[:categorical_traits] = categorical_traits
+    @results[:continuous_traits] = continuous_traits
+
+    respond_to do |format|
+      format.csv do
+        filename = "results-#{Time.now.strftime("%Y%m%d")}.csv"
+        if request.env['HTTP_USER_AGENT'] =~ /msie/i
+          headers['Pragma'] = 'public'
+          headers["Content-type"] = "text/plain"
+          headers['Cache-Control'] = 'no-cache, must-revalidate, post-check=0, pre-check=0'
+          headers['Content-Disposition'] = "attachment; filename=\"#{filename}\""
+          headers['Expires'] = "0"
+        else
+          headers["Content-Type"] ||= 'text/csv'
+          headers["Content-Disposition"] = "attachment; filename=\"#{filename}\""
+        end
+      end
+      format.html
+    end
+  end
+
+
+  def results2
     # Rows are determined by selected taxa
     # params = {'htg' => {'0' => '21043', '2' => ''}}
 

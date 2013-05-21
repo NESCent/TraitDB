@@ -60,11 +60,11 @@ class SearchController < ApplicationController
 
   def results
     # Continuous Trait Values
-    continuous_trait_predicate_map = {}
+    continuous_trait_predicate_map = {} # Map of continuous_trait_ids to array of value predicates
     if params['continuous_trait_name']
       params['continuous_trait_name'].reject{|k,v| v.empty?}.each do |k,v|
         trait_id = Integer(v)
-        trait_value_ids = continuous_trait_predicate_map[trait_id] || []
+        trait_predicate = continuous_trait_predicate_map[trait_id] || []
 
         # Check for the equals/less than/etc
         # get the predicate for this row
@@ -73,22 +73,40 @@ class SearchController < ApplicationController
             field_value = Float(params['continuous_trait_entries'][k])
             case params['continuous_trait_value_predicates'][k]
               when 'gt'
-                trait_value_ids << ['value > ?', field_value]
+                trait_predicate << ['value > ?', field_value]
               when 'lt'
-                trait_value_ids << ['value < ?', field_value]
+                trait_predicate << ['value < ?', field_value]
               when 'eq'
-                trait_value_ids << ['value = ?', field_value]
+                trait_predicate << ['value = ?', field_value]
               when 'ne'
-                trait_value_ids << ['value != ?', field_value]
+                trait_predicate << ['value != ?', field_value]
             end
           end
         end
-        continuous_trait_predicate_map[trait_id] = trait_value_ids
+        continuous_trait_predicate_map[trait_id] = trait_predicate
       end
     end
 
     # This just gets the headers
     continuous_traits = ContinuousTrait.where(:id => continuous_trait_predicate_map.keys)
+
+    # Categorical Trait Values
+    categorical_trait_category_map = {} # Map of categorical_trait_ids to arrays of categorical_trait_category_ids
+    if params['categorical_trait_name']
+      params['categorical_trait_name'].reject{|k,v| v.empty?}.each do |k,v|
+        trait_id = Integer(v)
+        trait_category_ids = categorical_trait_category_map[trait_id] || []
+
+        if params['categorical_trait_values'][k]
+          unless params['categorical_trait_values'][k].blank?
+            trait_category_ids << Integer(params['categorical_trait_values'][k])
+          end
+        end
+        categorical_trait_category_map[trait_id] = trait_category_ids
+      end
+    end
+
+    categorical_traits = CategoricalTrait.where(:id => categorical_trait_category_map.keys)
 
     otus = []
     # AND or OR
@@ -133,9 +151,18 @@ class SearchController < ApplicationController
           end
         end
 
+        total_queried_categorical_values = 0
+        categorical_trait_category_map.each do |trait_id, category_ids|
+          total_queried_categorical_values += category_ids.count
+          matched_values = otu.categorical_trait_values.where(:categorical_trait_id => trait_id).where(:categorical_trait_category_id => category_ids)
+          unless matched_values.nil? || matched_values.empty?
+            matched_trait_otu_count += matched_values.count
+          end
+        end
+
         # for the case of AND, matched_trait_otu_count must equal continuous_trait_predicate_map.length
         if trait_operator == OPERATORS[:and]
-          if matched_trait_otu_count == continuous_trait_predicate_map.length
+          if matched_trait_otu_count == (continuous_trait_predicate_map.length + total_queried_categorical_values)
             otus << otu
           end
         else
@@ -144,13 +171,11 @@ class SearchController < ApplicationController
             otus << otu
           end
         end
-        # TODO: render matched_values into the output dataset
+        # TODO: inject trait values and headers into the output dataset, instead of the template doing this
       end
     end
     otus.sort!
 
-    # TODO: categorical traits
-    categorical_traits = []
     # data to return to view
     @results = {}
     @results[:include_references] = !params['include_references'].nil?

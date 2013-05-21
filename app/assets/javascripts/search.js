@@ -325,7 +325,7 @@ function updateTraitFilterOperatorVisibility() {
     $('.trait_operator').remove();
     if(trait_row_count > 1) {
         // insert a new element
-        var operatorElement = $('<select></select>');
+        var operatorElement = $('<select id="trait_operator" name="trait_operator"></select>');
         operatorElement.addClass("trait_operator").addClass("span12");
         operatorElement.append($('<option value="or">OR</option>'));
         operatorElement.append($('<option value="and">AND</option>'));

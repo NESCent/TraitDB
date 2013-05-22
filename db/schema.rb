@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130513182721) do
+ActiveRecord::Schema.define(:version => 20130520201959) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -50,9 +50,9 @@ ActiveRecord::Schema.define(:version => 20130513182721) do
   create_table "continuous_trait_values", :force => true do |t|
     t.integer  "otu_id"
     t.integer  "continuous_trait_id"
-    t.datetime "created_at",          :null => false
-    t.datetime "updated_at",          :null => false
-    t.float    "value"
+    t.datetime "created_at",                                         :null => false
+    t.datetime "updated_at",                                         :null => false
+    t.decimal  "value",               :precision => 10, :scale => 2
     t.integer  "source_reference_id"
   end
 

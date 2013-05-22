@@ -48,6 +48,7 @@
             </td>
             <% if @results[:include_references] %>
               <td>
+                <%= categorical_trait_values[:sources].first if categorical_trait_values %>
               </td>
             <% end %>
           <% end %>
@@ -58,6 +59,7 @@
             </td>
             <% if @results[:include_references] %>
               <td>
+                <%= continuous_trait_values[:sources].first if continuous_trait_values %>
               </td>
             <% end %>
           <% end %>

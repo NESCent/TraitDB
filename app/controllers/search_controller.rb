@@ -184,7 +184,8 @@ class SearchController < ApplicationController
           matched_count = matched_values.count
           unless matched_values.empty?
             values = matched_values.map{|continuous_trait_value| continuous_trait_value.value}
-            continuous_trait_values << {:continuous_trait_id => trait_id, :values => values }
+            sources = matched_values.map{|continuous_trait_value| continuous_trait_value.source_reference.to_s }
+            continuous_trait_values << {:continuous_trait_id => trait_id, :values => values, :sources => sources }
           end
           # requested count is 1 because predicates for continuous are either met or not met
           match_map[:continuous] << {:trait_id => trait_id, :coded_count => coded_count,
@@ -206,7 +207,8 @@ class SearchController < ApplicationController
           matched_count = matched_values.count
           unless matched_values.empty?
             values = matched_values.map{|categorical_trait_value| categorical_trait_value.categorical_trait_category.name }
-            categorical_trait_values << {:categorical_trait_id => trait_id, :values => values }
+            sources = matched_values.map{|categorical_trait_value| categorical_trait_value.source_reference.to_s }
+            categorical_trait_values << {:categorical_trait_id => trait_id, :values => values, :sources => sources }
           end
           match_map[:categorical] << {:trait_id => trait_id, :coded_count => coded_count,
                                       :requested_count => requested_count,

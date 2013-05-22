@@ -420,6 +420,22 @@ module TreeOfSexImport
         dataset[:notes_comments] = row[NOTES_COMMENTS_HEADER]
 
         # 6. Sources - for quantitative data
+        # Warn if no source is specified
+        quantitative_data_array.each do |quantitative_data_hash|
+          expected_header_name = "#{SOURCE_PREFIX}#{quantitative_data_hash[:name]}"
+          if row.to_hash[expected_header_name].nil? || row.to_hash[expected_header_name].empty?
+            problematic_row = true
+            @parse_results[:issues] << {
+              :issue_description => "No source provided for #{quantitative_data_hash[:name]}",
+              :row_location => lineno,
+              :column_name => expected_header_name,
+              :row_name => dataset[:taxon],
+              :column_location => @csvfile.headers.index(expected_header_name),
+              :suggested_solution => 'Provide source information for this value'
+            }
+          end
+        end
+        # Warn if source specified but no data
         row.to_hash.select{|k,v| @quantitative_chr_source_headers.include?(k)}.each do |k,v|
           next if v.nil?
           # find the existing hash {:name => xx, :value => yy} to inject the source
@@ -442,10 +458,26 @@ module TreeOfSexImport
         dataset[:quantitative_data] = quantitative_data_array
       
         # 7. Sources - for qualitative data
+        # Warn if no source is specified
+        qualitative_data_array.each do |qualitative_data_hash|
+          expected_header_name = "#{SOURCE_PREFIX}#{qualitative_chr_header_map.find{|k,v| v == qualitative_data_hash[:name]}.first}"
+          if row.to_hash[expected_header_name].nil? || row.to_hash[expected_header_name].empty?
+            problematic_row = true
+            @parse_results[:issues] << {
+              :issue_description => "No source provided for #{qualitative_data_hash[:name]}",
+              :row_location => lineno,
+              :column_name => expected_header_name,
+              :row_name => dataset[:taxon],
+              :column_location => @csvfile.headers.index(expected_header_name),
+              :suggested_solution => 'Provide source information for this value'
+            }
+          end
+        end
+        # Warn if source specified but no data
         row.to_hash.select{|k,v| @qualitative_chr_source_headers.include?(k)}.each do |k,v|
           next if v.nil?
           # find the existing hash {:name => xx, :value => yy} to inject the source
-          # quantitative_data_array :names are trimmed.  Don't have (val1,val2,val3) in them.
+          # qualitative :names are trimmed.  Don't have (val1,val2,val3) in them.
           # But the qualitative_chr_header_map does
           expected_name = qualitative_chr_header_map[k.sub(SOURCE_PREFIX,"")]
           if expected_name.nil?
@@ -482,12 +514,7 @@ module TreeOfSexImport
     end
 
     def uri?(string)
-      uri = URI.parse(string)
-      %w( http https ).include?(uri.scheme)
-    rescue URI::BadURIError
-      false
-    rescue URI::InvalidURIError
-      false
+      true if string.match(/^http/)
     end
 
     def source_string_to_hash(string)

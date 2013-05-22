@@ -333,6 +333,7 @@ class ImportJob < ActiveRecord::Base
             t.import_job = self
             t.iczn_group = IcznGroup.find_by_name("family")
           end
+          last_parent = family_taxon
         end
         
         # genus

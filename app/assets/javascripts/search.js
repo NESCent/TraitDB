@@ -1,4 +1,5 @@
 var uniqueRowId = 1;
+var selectedOperatorValue = 'or';
 
 function addTaxonFilterRow(animation) {
     animation = typeof animation !== 'undefined' ? animation : 'fast';
@@ -46,7 +47,9 @@ function addTraitFilterRow(animation) {
     el.find('input.continuous_trait_entries').attr('id',continuousTraitEntriesId).attr('name','continuous_trait_entries[' + uniqueRowId + ']');
     el.hide();
     lastTraitFilterRow.after(el);
-    el.show(animation);
+    el.show(animation, function() {
+        updateTraitFilterOperatorVisibility();
+    });
 }
 
 function removeTaxonFilterRow(removeButton) {
@@ -63,6 +66,7 @@ function removeTraitFilterRow(removeButton) {
         // Don't remove the only row
         $(removeButton).parents(".trait-filter-row").hide('fast', function () {
             $(this).remove();
+            updateTraitFilterOperatorVisibility();
         });
     }
 }
@@ -308,6 +312,28 @@ function resetSearchForm() {
     }
     for(var i=0; i < trait_row_count; i++) {
         $('.trait-filter-row').first().remove();
+    }
+    updateTraitFilterOperatorVisibility();
+    return false;
+}
+
+function updateTraitFilterOperatorVisibility() {
+    // trait_operator should only be in the last row and only
+    // if there are more than one traits
+
+    var trait_row_count = $('.trait-filter-row').length;
+    $('.trait_operator').remove();
+    if(trait_row_count > 1) {
+        // insert a new element
+        var operatorElement = $('<select id="trait_operator" name="trait_operator"></select>');
+        operatorElement.addClass("trait_operator").addClass("span12");
+        operatorElement.append($('<option value="or">OR</option>'));
+        operatorElement.append($('<option value="and">AND</option>'));
+        operatorElement[0].value = selectedOperatorValue;
+        operatorElement.change(function() {
+            selectedOperatorValue = this.value;
+        });
+        $('.trait-filter-row').last().find(".operator_placeholder").first().append(operatorElement);
     }
     return false;
 }

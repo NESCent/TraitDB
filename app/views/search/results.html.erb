@@ -42,9 +42,9 @@
           <td><%= otu.genus_name %></td>
           <td><%= otu.species_name %></td>
             <% @results[:headers][:categorical_traits].each do |trait|
-              categorical_trait_values = row[:categorical_trait_values] %>
+              categorical_trait_values = row[:categorical_trait_values].find{|v| v[:categorical_trait_id] == trait[:id] } %>
             <td>
-              <%= categorical_trait_values.select{|v| v[:categorical_trait_id] == trait[:id] }.map{|v| v[:values]}.join(', ') %>
+              <%= categorical_trait_values[:values].join(', ') if categorical_trait_values %>
             </td>
             <% if @results[:include_references] %>
               <td>
@@ -52,10 +52,9 @@
             <% end %>
           <% end %>
           <% @results[:headers][:continuous_traits].each do |trait|
-            continuous_trait_values = row[:continuous_trait_values] %>
+            continuous_trait_values = row[:continuous_trait_values].find{|v| v[:continuous_trait_id] == trait[:id] } %>
             <td>
-              <!-- look at this data reduction a little closer -->
-              <%= continuous_trait_values.select{|v| v[:continuous_trait_id] == trait[:id] }.map{|v| v[:values].first }.first %>
+              <%= continuous_trait_values[:values].join(', ') if continuous_trait_values %>
             </td>
             <% if @results[:include_references] %>
               <td>

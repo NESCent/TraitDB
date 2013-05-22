@@ -1,50 +1,47 @@
 <%-
   headers = ['Higher Taxonomic Group','Order','Family','Genus','Species']
-  @results[:categorical_traits].each do |trait|
-    headers << trait.name
+  @results[:headers][:categorical_traits].each do |trait|
+    headers << trait[:name]
     if @results[:include_references]
-      headers << "Source: #{trait.name}"
+      headers << "Source: #{trait[:name]}"
     end
   end
-  @results[:continuous_traits].each do |trait|
-    headers << trait.name
+  @results[:headers][:continuous_traits].each do |trait|
+    headers << trait[:name]
     if @results[:include_references]
-      headers << "Source: #{trait.name}"
+      headers << "Source: #{trait[:name]}"
     end
   end
   headers << 'Notes'
 -%>
 <%= CSV.generate_line headers -%>
 <%-
-    @results[:otus].each do |otu|
+    @results[:rows].each do |data_row|
+      otu = data_row[:otu]
       row = []
       row << otu.htg_name
       row << otu.order_name
       row << otu.family_name
       row << otu.genus_name
       row << otu.species_name
-      @results[:categorical_traits].each do |trait|
-        categorical_trait_values = otu.categorical_trait_values.where(:categorical_trait_id => trait.id)
-        if categorical_trait_values.empty?
+      @results[:headers][:categorical_traits].each do |trait|
+        categorical_trait_values = data_row[:categorical_trait_values].find{|v| v[:categorical_trait_id] == trait[:id] }
+        if categorical_trait_values.nil?
           row << nil
           row << nil if @results[:include_references]
         else
-          row << categorical_trait_values.map{|c| c.categorical_trait_category.name}.join('|')
-          row << categorical_trait_values.first.source_reference.to_s if @results[:include_references]
+          row << categorical_trait_values[:values].join('|')
+          row << categorical_trait_values[:sources].first if @results[:include_references]
         end
       end
-      @results[:continuous_traits].each do |trait|
-        continuous_value = otu.continuous_trait_values.find_by_continuous_trait_id(trait.id)
-        if continuous_value
-          row << continuous_value.value
-          if @results[:include_references]
-            row << continuous_value.source_reference.to_s
-          end
-        else
+      @results[:headers][:continuous_traits].each do |trait|
+        continuous_trait_values = data_row[:continuous_trait_values].find{|v| v[:continuous_trait_id] == trait[:id] }
+        if continuous_trait_values.nil?
           row << nil
-          if @results[:include_references]
-            row << nil
-          end
+          row << nil if @results[:include_references]
+        else
+          row << continuous_trait_values[:values].join('|')
+          row << continuous_trait_values[:sources].first if @results[:include_references]
         end
       end
       row << otu.notes.to_s

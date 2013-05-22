@@ -59,12 +59,26 @@ class SearchController < ApplicationController
   end
 
   def results
+    trait_operator = params['trait_operator']
+    # trait_operator must be 'and' or 'or'.
+    # This string is used in database queries and defaults to 'or'
+    unless OPERATORS.values.include? trait_operator
+      trait_operator = OPERATORS[:or]
+    end
+
+    continuous_trait_filters = {}
+
     # Continuous Trait Values
-    continuous_trait_predicate_map = {} # Map of continuous_trait_ids to array of value predicates
     if params['continuous_trait_name']
       params['continuous_trait_name'].reject{|k,v| v.empty?}.each do |k,v|
         trait_id = Integer(v)
-        trait_predicate = continuous_trait_predicate_map[trait_id] || []
+        # This block is invoked for each filter on the search form
+        # Multiple filters may reference the same trait, so keep the values/predicates for each trait together
+        if continuous_trait_filters[trait_id].nil?
+          continuous_trait_filters[trait_id] = {:predicates => [], :values => []}
+        end
+        predicates = continuous_trait_filters[trait_id][:predicates]
+        values = continuous_trait_filters[trait_id][:values]
 
         # Check for the equals/less than/etc
         # get the predicate for this row
@@ -73,18 +87,33 @@ class SearchController < ApplicationController
             field_value = Float(params['continuous_trait_entries'][k])
             case params['continuous_trait_value_predicates'][k]
               when 'gt'
-                trait_predicate << ['value > ?', field_value]
+                predicates << 'value > ?'
+                values << field_value
               when 'lt'
-                trait_predicate << ['value < ?', field_value]
+                predicates << 'value < ?'
+                values << field_value
               when 'eq'
-                trait_predicate << ['value = ?', field_value]
+                predicates << 'value = ?'
+                values << field_value
               when 'ne'
-                trait_predicate << ['value != ?', field_value]
+                predicates << 'value != ?'
+                values << field_value
             end
           end
         end
-        continuous_trait_predicate_map[trait_id] = trait_predicate
+        continuous_trait_filters[trait_id][:predicates] = predicates
+        continuous_trait_filters[trait_id][:values] = values
       end
+    end
+
+
+    # Convert to one predicate, and use the operator
+    # The argument to a where() call should look like this: where(['value > ? AND value < ?', 1, 2])
+    # joining the predicates provides the 'value > ? AND value < ?'
+    # The * in front of the values array converts it to varargs
+    continuous_trait_predicate_map = {}
+    continuous_trait_filters.each do |trait_id, filter|
+      continuous_trait_predicate_map[trait_id] = [filter[:predicates].join(" #{trait_operator} "), *filter[:values]]
     end
 
     headers = {}
@@ -114,8 +143,6 @@ class SearchController < ApplicationController
     end
 
     rows = []
-    # AND or OR
-    trait_operator = params['trait_operator'] || OPERATORS[:or]
 
     params['htg'].reject{|k,v| v.empty?}.each do |k,v|
       # Extract the taxon_id from each Taxonomy dropdown
@@ -148,11 +175,12 @@ class SearchController < ApplicationController
         # for each Otu in the list, see if it has the specified trait values
         continuous_trait_values = []
         matched_trait_otu_count = 0
-        continuous_trait_predicate_map.each do |trait_id, predicates_array|
+        continuous_trait_predicate_map.each do |trait_id, predicate_array|
           matched_values = otu.continuous_trait_values.where(:continuous_trait_id => trait_id)
-          predicates_array.each do |predicate|
-            matched_values = matched_values.where(predicate)
-          end
+          # predicate_array is an object ready to be dropped into a where() call.
+          # The operator (and/or) has already been added to the query
+          matched_values = matched_values.where(predicate_array)
+
           # If this OTU had a trait value that met the criteria, increment our counter
           unless matched_values.nil? || matched_values.empty?
             # Keep track of how many traits matched to determine if AND was successful
@@ -167,7 +195,13 @@ class SearchController < ApplicationController
         total_queried_categorical_values = 0
         categorical_trait_category_map.each do |trait_id, category_ids|
           total_queried_categorical_values += category_ids.count
-          matched_values = otu.categorical_trait_values.where(:categorical_trait_id => trait_id).where(:categorical_trait_category_id => category_ids)
+          matched_values = otu.categorical_trait_values.where(:categorical_trait_id => trait_id)
+          # category_ids is an array of the category values selected on the form.
+          # If it is empty, then the user did not specify any category IDs to filter on, so include everything
+          unless category_ids.empty?
+            matched_values = matched_values.where(:categorical_trait_category_id => category_ids)
+          end
+
           unless matched_values.nil? || matched_values.empty?
             matched_trait_otu_count += matched_values.count
             values = matched_values.map{|categorical_trait_value| categorical_trait_value.categorical_trait_category.name }

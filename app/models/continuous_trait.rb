@@ -4,6 +4,7 @@ class ContinuousTrait < ActiveRecord::Base
   has_one :csv_dataset, :through => :import_job
   has_many :continuous_trait_values
   has_many :otus, :through => :continuous_trait_values
+  has_one :display_format
 
   scope :sorted, order('name ASC')
 

@@ -2,7 +2,7 @@
 <style type="text/css">
     .form-signin {
         max-width: 300px;
-        padding: 19px 29px 49px;
+        padding: 9px 19px 29px;
         margin: 20px auto 20px;
         background-color: #eee;
         border: 1px solid #e5e5e5;
@@ -17,21 +17,58 @@
     .form-signin .checkbox {
         margin-bottom: 10px;
     }
-    .form-signin input[type="text"],
-    .form-signin input[type="password"] {
+    .form-signin input[type="url"] {
         font-size: 16px;
         height: auto;
         margin-bottom: 15px;
-        padding: 7px 9px;
+        padding: 7px 28px;
+        background: url(http://openid.net/login-bg.gif) no-repeat;
+      background-color: white;
+        background-position: 2% 50%;
     }
+    .form-separator {
+      margin: 20px auto 20px;
+
+    }
+    .vertical-line {
+      height: 100px;
+      background-image: url(<%= asset_path 'black-dot.png' %>);
+      background-repeat: repeat-y;
+      background-position: center top;
+    }
+    .separator-or{
+      text-align: center;
+      vertical-align: middle;
+    }
+
 </style>
 
 <div class="row-fluid">
-    <%= form_for(resource, :as => resource_name, :url => session_path(resource_name), :html => {:class => 'form-signin'}) do |f| %>
-      <h2 class="form-signin-heading">Sign in</h2>
-      <%= f.email_field :email, :autofocus => true, :class => 'input-block-level', :placeholder => 'Email' %>
-      <%= f.password_field :password, :class=> 'input-block-level', :placeholder => 'Password' %>
-      <%= f.submit "Sign in", :class => 'btn btn-primary pull-right' %>
-    <% end %>
+  <div class="span8 offset2">
+    <!-- left div -->
+    <div class="span5">
+      <%= form_tag(omniauth_authorize_path(resource, :open_id), {:class => 'form-signin'}) do %>
+        <h4 class="form-signin-heading">Sign in with <%= image_tag('openid-logo-clear.png', :size => '100x40', :alt => 'OpenID') %></h4>
+        <%= url_field_tag(:openid_url, nil, {:class => 'input-block-level', :placeholder => 'OpenID Identifier'}) %>
+        <%= button_tag("Sign in", {:class => 'btn btn-primary'}) %>
+      <% end %>
+      <%= link_to('Get an OpenID','http://openid.net/get-an-openid/') %>
+    </div>
+    <div class="span2">
+      <div class="form-separator">
+        <div class="vertical-line">&nbsp;</div>
+        <div class="separator-or">or</div>
+        <div class="vertical-line">&nbsp;</div>
+      </div>
+    </div>
+    <!-- right div -->
+    <div class="span5">
+      <%= form_tag(omniauth_authorize_path(resource, :open_id), {:class => 'form-signin'}) do %>
+        <h4 class="form-signin-heading">Sign in with <%= image_tag('Googlelogo.png', :size => '100x34', :alt => 'Google') %></h4>
+        <%= hidden_field_tag :openid_url, "https://www.google.com/accounts/o8/id" %>
+        <%= button_tag("Sign in", {:class => 'btn btn-primary'}) %>
+      <% end %>
+      <%= link_to('Create a Google account','https://accounts.google.com/SignUp') %>
+    </div>
+  </div>
 </div>
-<%= render "devise/shared/links" %>

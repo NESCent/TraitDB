@@ -2,7 +2,7 @@
 <div class="row-fluid">
   <div class="row-fluid"><p class="lead">Update OTU</p></div>
   <div class="row-fluid">
-  <%= form_for(:taxon, :url => {:action => 'update', :id => @otu.id }, :html => { :class => "form" }) do |f| %>
+  <%= form_for(@otu, :url => {:action => 'update'}, :html => { :class => "form" }) do |f| %>
     <%= render(:partial => "form", :locals => { :f => f }) %>
     <div class="form-actions">
     	<%= submit_tag("Update OTU", :class => 'btn btn-primary') %>

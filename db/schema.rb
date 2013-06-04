@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130520201959) do
+ActiveRecord::Schema.define(:version => 20130603185325) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -40,10 +40,12 @@ ActiveRecord::Schema.define(:version => 20130520201959) do
   create_table "categorical_traits", :force => true do |t|
     t.string   "name"
     t.integer  "import_job_id"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+    t.integer  "display_format_id"
   end
 
+  add_index "categorical_traits", ["display_format_id"], :name => "index_categorical_traits_on_display_format_id"
   add_index "categorical_traits", ["import_job_id"], :name => "index_categorical_traits_on_import_job_id"
   add_index "categorical_traits", ["name"], :name => "index_categorical_traits_on_name"
 
@@ -63,10 +65,12 @@ ActiveRecord::Schema.define(:version => 20130520201959) do
   create_table "continuous_traits", :force => true do |t|
     t.string   "name"
     t.integer  "import_job_id"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+    t.integer  "display_format_id"
   end
 
+  add_index "continuous_traits", ["display_format_id"], :name => "index_continuous_traits_on_display_format_id"
   add_index "continuous_traits", ["import_job_id"], :name => "index_continuous_traits_on_import_job_id"
   add_index "continuous_traits", ["name"], :name => "index_continuous_traits_on_name"
 
@@ -98,6 +102,12 @@ ActiveRecord::Schema.define(:version => 20130520201959) do
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
+
+  create_table "display_formats", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "headers", :force => true do |t|
     t.string   "column_name"

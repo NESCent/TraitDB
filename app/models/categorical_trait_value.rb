@@ -5,5 +5,9 @@ class CategoricalTraitValue < ActiveRecord::Base
   has_one :categorical_trait, :through => :categorical_trait_category
   belongs_to :source_reference
   scope :sorted, order('position ASC')
+  def formatted_value
+    return value unless categorical_trait.display_format_id
+    self.categorical_trait.display_format.format_value(categorical_trait_category.name)
+  end
 
 end

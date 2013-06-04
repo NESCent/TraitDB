@@ -5,14 +5,14 @@
     <table class="table table-bordered table-condensed table-striped" summary="OTU List">
     <tr class="header">
       <th>OTU Name</th>
-      <th>Taxon</th>
+      <th>Species</th>
       <th>Source Dataset</th>
       <th>Actions</th>
     </tr>
     <% @otus.each do |otu| %>
     <tr>
       <td><%= otu.name %></td>
-      <td><% if otu.taxon %><%= link_to(otu.taxon.name, taxon_path(otu.taxon)) %><% end %></td>
+      <td><% if otu.species_taxon %><%= link_to(otu.species_taxon.name, taxon_path(otu.species_taxon)) %><% end %></td>
       <td><% if otu.csv_dataset %><%= link_to(otu.dataset_name, csv_dataset_path(otu.csv_dataset)) %><% end %></td>
       <td>
         <div class="btn-group">

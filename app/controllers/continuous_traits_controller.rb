@@ -23,4 +23,18 @@ class ContinuousTraitsController < ApplicationController
   def show
     @continuous_trait = ContinuousTrait.find(params[:id])
   end
+
+  def edit
+    @continuous_trait = ContinuousTrait.find(params[:id])
+  end
+
+  def update
+    @continuous_trait = ContinuousTrait.find(params[:id])
+    if @continuous_trait.update_attributes(params[:continuous_trait])
+      flash[:notice] = 'Trait updated successfully'
+      redirect_to(:action => 'show', :id => @continuous_trait.id)
+    else
+      render('edit')
+    end
+  end
 end

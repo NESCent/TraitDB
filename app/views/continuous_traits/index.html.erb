@@ -8,6 +8,7 @@
       <th>Source Dataset</th>
       <th>Values</th>
       <th>OTUs</th>
+      <th>Format</th>
       <th>Actions</th>
     </tr>
     <% @continuous_traits.each do |trait| %>
@@ -16,9 +17,11 @@
       <td><% if trait.csv_dataset %><%= link_to(trait.dataset_name, csv_dataset_path(trait.csv_dataset)) %><% end %></td>
       <td><%= link_to("#{trait.continuous_trait_values.count}", continuous_trait_values_path(:continuous_trait => trait.id)) %></td>
       <td><%=  link_to("#{trait.otus.count}", otus_path(:continuous_trait => trait.id)) %></td>
+      <td><%= trait.display_format_name %></td>
       <td>
         <div class="btn-group">
           <%= link_to("Show", continuous_trait_path(trait), :class => 'btn btn-small' ) %>
+          <%= link_to("Edit", edit_continuous_trait_path(trait), :class => 'btn btn-primary btn-small' ) %>
         </div>
       </td>
     </tr>

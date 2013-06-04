@@ -24,4 +24,18 @@ class CategoricalTraitsController < ApplicationController
     @categorical_trait = CategoricalTrait.find(params[:id])
   end
 
+  def edit
+    @categorical_trait = CategoricalTrait.find(params[:id])
+  end
+
+  def update
+    @categorical_trait = CategoricalTrait.find(params[:id])
+    if @categorical_trait.update_attributes(params[:categorical_trait])
+      flash[:notice] = 'Trait updated successfully'
+      redirect_to(:action => 'show', :id => @categorical_trait.id)
+    else
+      render('edit')
+    end
+  end
+
 end

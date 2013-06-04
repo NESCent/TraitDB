@@ -8,11 +8,15 @@
         <td><%= @continuous_trait.name %></td>
       </tr>
       <tr>
+        <th>Display Format</th>
+        <td><%= @continuous_trait.display_format_name %></td>
+      </tr>
+      <tr>
         <th>Values</th>
         <td>
           <ol>
             <% @continuous_trait.continuous_trait_values.each do |trait_value| %>
-              <li><%= link_to(trait_value.value.to_s, continuous_trait_value_path(trait_value)) %></li>
+              <li><%= link_to(trait_value.formatted_value, continuous_trait_value_path(trait_value)) %></li>
             <% end %>
           </ol>
         </td>

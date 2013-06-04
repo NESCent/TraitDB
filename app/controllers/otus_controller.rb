@@ -21,7 +21,7 @@ class OtusController < ApplicationController
       @count = 20
     end
     @total = Otu.where(where_options).count
-    @otus = Otu.where(where_options).sorted.limit(@count).offset(@start)
+    @otus = Otu.where(where_options).limit(@count).offset(@start)
 
   end
 

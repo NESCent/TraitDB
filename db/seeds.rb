@@ -8,5 +8,5 @@
 
 # Populate ICZN groups
 IcznGroup.create([{name: 'order'}, {name: 'family'}, {name: 'genus'}, {name: 'species'}])
-DisplayFormat.create([{name: 'integer'}, {name: 'float'}, {name: 'string'}])
+DisplayFormat.create([{name:''}, {name: 'integer'}, {name: 'float'}, {name: 'string'}])
 

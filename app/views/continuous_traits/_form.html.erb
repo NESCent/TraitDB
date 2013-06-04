@@ -1,0 +1,11 @@
+<%= error_messages_for(@continuous_trait) %>
+  <table>
+    <tr>
+      <th><%= f.label(:name, "Continuous Trait Name") %></th>
+      <td><%= f.text_field(:name) %></td>
+    </tr>
+    <tr>
+      <th><%= f.label(:display_format_id, "Display Format") %></th>
+      <td><%= f.select(:display_format_id, options_from_collection_for_select(DisplayFormat.all, 'id','name', @continuous_trait.display_format_id)) %></td>
+    </tr>
+  </table>

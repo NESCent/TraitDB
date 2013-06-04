@@ -183,7 +183,7 @@ class SearchController < ApplicationController
           matched_values = matched_values.where(predicate_array)
           matched_count = matched_values.count
           unless matched_values.empty?
-            values = matched_values.map{|continuous_trait_value| continuous_trait_value.value}
+            values = matched_values.map{|continuous_trait_value| continuous_trait_value.formatted_value}
             sources = matched_values.map{|continuous_trait_value| continuous_trait_value.source_reference.to_s }
             continuous_trait_values << {:continuous_trait_id => trait_id, :values => values, :sources => sources }
           end
@@ -206,7 +206,7 @@ class SearchController < ApplicationController
           end
           matched_count = matched_values.count
           unless matched_values.empty?
-            values = matched_values.map{|categorical_trait_value| categorical_trait_value.categorical_trait_category.name }
+            values = matched_values.map{|categorical_trait_value| categorical_trait_value.formatted_value }
             sources = matched_values.map{|categorical_trait_value| categorical_trait_value.source_reference.to_s }
             categorical_trait_values << {:categorical_trait_id => trait_id, :values => values, :sources => sources }
           end

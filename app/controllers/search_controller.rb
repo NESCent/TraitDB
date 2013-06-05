@@ -142,6 +142,10 @@ class SearchController < ApplicationController
       {:id => categorical_trait.id, :name => categorical_trait.name}
     end
 
+    # Arrays to hold ids of the traits where notes were recorded
+    categorical_trait_notes_ids = [] # categorical_trait_ids of traits where notes were found
+    continuous_trait_notes_ids = [] # continuous_trait_ids of traits where notes were found
+
     rows = []
 
     params['htg'].reject{|k,v| v.empty?}.each do |k,v|
@@ -187,6 +191,10 @@ class SearchController < ApplicationController
             sources = matched_values.map{|continuous_trait_value| continuous_trait_value.source_reference.to_s }
             # Notes only included if there is a result
             notes = otu.continuous_trait_notes_text(trait_id)
+            if notes
+              # This trait has a note.  Add a notes column unless one already exists
+              continuous_trait_notes_ids << trait_id unless continuous_trait_notes_ids.include? trait_id
+            end
             continuous_trait_values << {:continuous_trait_id => trait_id, :values => values, :sources => sources, :notes => notes}
           end
           # requested count is 1 because predicates for continuous are either met or not met
@@ -211,6 +219,11 @@ class SearchController < ApplicationController
             values = matched_values.map{|categorical_trait_value| categorical_trait_value.formatted_value }
             sources = matched_values.map{|categorical_trait_value| categorical_trait_value.source_reference.to_s }
             notes = otu.categorical_trait_notes_text(trait_id)
+            if notes
+              # This trait has a note.  Add a notes column unless one already exists
+              categorical_trait_notes_ids << trait_id unless categorical_trait_notes_ids.include? trait_id
+            end
+
             categorical_trait_values << {:categorical_trait_id => trait_id, :values => values, :sources => sources, :notes => notes }
           end
           match_map[:categorical] << {:trait_id => trait_id, :coded_count => coded_count,
@@ -242,6 +255,9 @@ class SearchController < ApplicationController
       end
     end
     rows.sort! {|a,b| a[:sort_name] <=> b[:sort_name]}
+
+    columns[:categorical_trait_notes_ids] = categorical_trait_notes_ids
+    columns[:continuous_trait_notes_ids] = continuous_trait_notes_ids
 
     # data to return to view
     @results = {:columns => columns, # columns is a hash with keys :categorical_traits and :continuous_traits

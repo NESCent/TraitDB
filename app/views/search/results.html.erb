@@ -19,13 +19,13 @@
           <th>Family</th>
           <th>Genus</th>
           <th>Species</th>
-          <% @results[:headers][:categorical_traits].each do |trait| %>
+          <% @results[:columns][:categorical_traits].each do |trait| %>
             <th><%= trait[:name] %></th>
             <% if @results[:include_references] %>
               <th>Source:<%= trait[:name] %></th>
             <% end %>
           <% end %>
-          <% @results[:headers][:continuous_traits].each do |trait| %>
+          <% @results[:columns][:continuous_traits].each do |trait| %>
             <th><%= trait[:name] %></th>
             <% if @results[:include_references] %>
               <th>Source:<%= trait[:name] %></th>
@@ -41,7 +41,7 @@
           <td><%= otu.family_name %></td>
           <td><%= otu.genus_name %></td>
           <td><%= otu.species_name %></td>
-            <% @results[:headers][:categorical_traits].each do |trait|
+            <% @results[:columns][:categorical_traits].each do |trait|
               categorical_trait_values = row[:categorical_trait_values].find{|v| v[:categorical_trait_id] == trait[:id] } %>
             <td>
               <%= categorical_trait_values[:values].join(', ') if categorical_trait_values %>
@@ -55,7 +55,7 @@
               </td>
             <% end %>
           <% end %>
-          <% @results[:headers][:continuous_traits].each do |trait|
+          <% @results[:columns][:continuous_traits].each do |trait|
             continuous_trait_values = row[:continuous_trait_values].find{|v| v[:continuous_trait_id] == trait[:id] } %>
             <td>
               <%= continuous_trait_values[:values].join(', ') if continuous_trait_values %>

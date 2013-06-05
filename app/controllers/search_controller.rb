@@ -116,9 +116,9 @@ class SearchController < ApplicationController
       continuous_trait_predicate_map[trait_id] = [filter[:predicates].join(" #{trait_operator} "), *filter[:values]]
     end
 
-    headers = {}
-    # This just gets the headers
-    headers[:continuous_traits] = ContinuousTrait.where(:id => continuous_trait_predicate_map.keys).map do |continuous_trait|
+    columns = {}
+    # This just gets the columns
+    columns[:continuous_traits] = ContinuousTrait.where(:id => continuous_trait_predicate_map.keys).map do |continuous_trait|
       {:id => continuous_trait.id, :name => continuous_trait.name}
     end
 
@@ -138,7 +138,7 @@ class SearchController < ApplicationController
       end
     end
 
-    headers[:categorical_traits] = CategoricalTrait.where(:id => categorical_trait_category_map.keys).map do |categorical_trait|
+    columns[:categorical_traits] = CategoricalTrait.where(:id => categorical_trait_category_map.keys).map do |categorical_trait|
       {:id => categorical_trait.id, :name => categorical_trait.name}
     end
 
@@ -244,7 +244,7 @@ class SearchController < ApplicationController
     rows.sort! {|a,b| a[:sort_name] <=> b[:sort_name]}
 
     # data to return to view
-    @results = {:headers => headers, # headers is a hash with keys :categorical_traits and :continuous_traits
+    @results = {:columns => columns, # columns is a hash with keys :categorical_traits and :continuous_traits
                 :rows => rows, # rows is an array of hashes.  Each hash has :otu, :categorical_trait_values, and :continuous_trait_values
                 :include_references => !params['include_references'].nil? }
 

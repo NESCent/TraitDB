@@ -1,12 +1,12 @@
 <%-
   headers = ['Higher Taxonomic Group','Order','Family','Genus','Species']
-  @results[:headers][:categorical_traits].each do |trait|
+  @results[:columns][:categorical_traits].each do |trait|
     headers << trait[:name]
     if @results[:include_references]
       headers << "Source: #{trait[:name]}"
     end
   end
-  @results[:headers][:continuous_traits].each do |trait|
+  @results[:columns][:continuous_traits].each do |trait|
     headers << trait[:name]
     if @results[:include_references]
       headers << "Source: #{trait[:name]}"
@@ -24,7 +24,7 @@
       row << otu.family_name
       row << otu.genus_name
       row << otu.species_name
-      @results[:headers][:categorical_traits].each do |trait|
+      @results[:columns][:categorical_traits].each do |trait|
         categorical_trait_values = data_row[:categorical_trait_values].find{|v| v[:categorical_trait_id] == trait[:id] }
         if categorical_trait_values.nil?
           row << nil
@@ -34,7 +34,7 @@
           row << categorical_trait_values[:sources].first if @results[:include_references]
         end
       end
-      @results[:headers][:continuous_traits].each do |trait|
+      @results[:columns][:continuous_traits].each do |trait|
         continuous_trait_values = data_row[:continuous_trait_values].find{|v| v[:continuous_trait_id] == trait[:id] }
         if continuous_trait_values.nil?
           row << nil

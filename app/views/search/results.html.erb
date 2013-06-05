@@ -45,6 +45,9 @@
               categorical_trait_values = row[:categorical_trait_values].find{|v| v[:categorical_trait_id] == trait[:id] } %>
             <td>
               <%= categorical_trait_values[:values].join(', ') if categorical_trait_values %>
+              <% if categorical_trait_values && categorical_trait_values[:notes] %>
+                <%= categorical_trait_values[:notes] %>
+              <% end %>
             </td>
             <% if @results[:include_references] %>
               <td>
@@ -56,6 +59,9 @@
             continuous_trait_values = row[:continuous_trait_values].find{|v| v[:continuous_trait_id] == trait[:id] } %>
             <td>
               <%= continuous_trait_values[:values].join(', ') if continuous_trait_values %>
+              <% if continuous_trait_values && continuous_trait_values[:notes] %>
+                <%= continuous_trait_values[:notes] %>
+              <% end %>
             </td>
             <% if @results[:include_references] %>
               <td>

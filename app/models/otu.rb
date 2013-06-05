@@ -11,6 +11,8 @@ class Otu < ActiveRecord::Base
   has_many :categorical_trait_values, :dependent => :destroy
   has_many :categorical_trait_categories, :through => :categorical_trait_values
   has_many :continuous_trait_values, :dependent => :destroy
+  has_many :categorical_trait_notes, :dependent => :destroy
+  has_many :continuous_trait_notes, :dependent => :destroy
 
   scope :in_taxon, lambda{|taxon_id, iczn_group_name| where("#{iczn_group_name}_taxon_id = ?", taxon_id)}
   scope :in_species, lambda {|taxon_id| in_taxon(taxon_id, 'species')}

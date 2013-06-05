@@ -5,6 +5,7 @@ class ContinuousTrait < ActiveRecord::Base
   has_many :continuous_trait_values
   has_many :otus, :through => :continuous_trait_values
   belongs_to :display_format
+  has_many :continuous_trait_notes
 
   scope :sorted, order('name ASC')
 

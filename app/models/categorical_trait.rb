@@ -5,6 +5,7 @@ class CategoricalTrait < ActiveRecord::Base
   has_one :csv_dataset, :through => :import_job
   has_many :otus, :through => :categorical_trait_categories, :source => :categorical_trait_values
   belongs_to :display_format
+  has_many :categorical_trait_notes
   scope :sorted, order('name ASC')
 
   def dataset_name

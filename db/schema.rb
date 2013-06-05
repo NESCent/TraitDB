@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130603185325) do
+ActiveRecord::Schema.define(:version => 20130605150507) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -21,6 +21,17 @@ ActiveRecord::Schema.define(:version => 20130603185325) do
   end
 
   add_index "categorical_trait_categories", ["categorical_trait_id"], :name => "index_categorical_trait_categories_on_categorical_trait_id"
+
+  create_table "categorical_trait_notes", :force => true do |t|
+    t.text     "notes"
+    t.integer  "otu_id"
+    t.integer  "categorical_trait_id"
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
+  end
+
+  add_index "categorical_trait_notes", ["categorical_trait_id"], :name => "index_categorical_trait_notes_on_categorical_trait_id"
+  add_index "categorical_trait_notes", ["otu_id"], :name => "index_categorical_trait_notes_on_otu_id"
 
   create_table "categorical_trait_values", :force => true do |t|
     t.integer  "position"
@@ -48,6 +59,17 @@ ActiveRecord::Schema.define(:version => 20130603185325) do
   add_index "categorical_traits", ["display_format_id"], :name => "index_categorical_traits_on_display_format_id"
   add_index "categorical_traits", ["import_job_id"], :name => "index_categorical_traits_on_import_job_id"
   add_index "categorical_traits", ["name"], :name => "index_categorical_traits_on_name"
+
+  create_table "continuous_trait_notes", :force => true do |t|
+    t.text     "notes"
+    t.integer  "otu_id"
+    t.integer  "continuous_trait_id"
+    t.datetime "created_at",          :null => false
+    t.datetime "updated_at",          :null => false
+  end
+
+  add_index "continuous_trait_notes", ["continuous_trait_id"], :name => "index_continuous_trait_notes_on_continuous_trait_id"
+  add_index "continuous_trait_notes", ["otu_id"], :name => "index_continuous_trait_notes_on_otu_id"
 
   create_table "continuous_trait_values", :force => true do |t|
     t.integer  "otu_id"

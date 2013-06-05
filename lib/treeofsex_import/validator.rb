@@ -33,8 +33,12 @@ module TreeOfSexImport
     # and the first/last qualitative character header
   
     # Headers for source columns must consist of the prefix below, followed by a 
-    # character name (quantitative or qualitative)
+    # character name
     SOURCE_PREFIX = 'source: '
+
+    # Headers for notes columns must consist of the prefix below, followed by a
+    # character name
+    NOTES_PREFIX = 'notes: '
   
     def initialize(path=nil)
       @filepath = path
@@ -99,6 +103,8 @@ module TreeOfSexImport
       read_quantitative_chr_source_headers
       # check for valid Quantitative Character source headers
       read_qualitative_chr_source_headers
+      # check for valid Character notes headers
+      read_chr_notes_headers
       true
     end
   
@@ -322,7 +328,25 @@ module TreeOfSexImport
         end
       end
     end
-    
+
+    def read_chr_notes_headers
+      @qualitative_chr_notes_headers = []
+      @quantitative_chr_notes_headers = []
+      @csvfile.headers().select{|header| header.index(NOTES_PREFIX) == 0}.each do |header|
+        if @chr_headers[:quantitative].include? header.sub(NOTES_PREFIX,'')
+          @quantitative_chr_notes_headers << header
+        elsif @chr_headers[:qualitative].map{|x| x[:raw_header_name]}.include? header.sub(NOTES_PREFIX,'')
+          @qualitative_chr_notes_headers << header
+        else
+          @validation_results[:issues] << {
+            :issue_description => 'Found extra notes header',
+            :column_name => header,
+            :suggested_solution => 'Remove extra header or correct the import columns you specified'
+          }
+        end
+      end
+    end
+
     def read_row_data
       @datasets = []
       # map the raw names to the output names for looking up
@@ -507,6 +531,52 @@ module TreeOfSexImport
           end
         end
         dataset[:qualitative_data] = qualitative_data_array
+
+        # 8. Notes - for quantitative data
+        # Warn if notes but no data
+        row.to_hash.select{|k,v| @quantitative_chr_notes_headers.include?(k)}.each do |k,v|
+          next if v.nil?
+          # find the existing hash {:name => xx, :value => yy} to inject the source
+          expected_name = k.sub(NOTES_PREFIX,'')
+          quantitative_data_hash = quantitative_data_array.find{|q| q[:name] == expected_name }
+          if quantitative_data_hash.nil? # have notes but no data.  Should this be tolerated?
+            problematic_row = true
+            @parse_results[:issues] << {
+              :issue_description => "Notes provided for '#{expected_name}' but no data exists for '#{expected_name}'",
+              :row_location => lineno,
+              :column_name => k,
+              :row_name => dataset[:taxon],
+              :column_location => @csvfile.headers.index(k),
+              :suggested_solution => "Make sure data is valid for '#{expected_name}' or remove notes from '#{k}'"
+            }
+          else
+            quantitative_data_hash[:notes] = v
+          end
+        end
+        # 9. Notes - for qualitative data
+        # Warn if notes but no data
+        row.to_hash.select{|k,v| @qualitative_chr_notes_headers.include?(k)}.each do |k,v| # k is the column name
+          next if v.nil?
+          # find the existing hash {:name => xx, :value => yy} to inject the source
+          # qualitative :names are trimmed.  Don't have (val1,val2,val3) in them.
+          # But the qualitative_chr_header_map does
+          expected_name = qualitative_chr_header_map[k.sub(NOTES_PREFIX,"")]
+          qualitative_data_hash = qualitative_data_array.find{|q| q[:name] == expected_name }
+          if qualitative_data_hash.nil?
+            problematic_row = true
+            @parse_results[:issues] << {
+              :issue_description => "Notes provided for '#{expected_name}' but no data exists for '#{expected_name}'",
+              :row_location => lineno,
+              :column_name => k,
+              :row_name => dataset[:taxon],
+              :column_location => @csvfile.headers.index(k),
+              :suggested_solution => "Make sure data is valid for '#{expected_name}' or remove notes from '#{k}'"
+            }
+          else
+            qualitative_data_hash[:notes] = v
+          end
+        end
+
         unless problematic_row
           @datasets << dataset
         end

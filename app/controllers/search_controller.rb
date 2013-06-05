@@ -116,9 +116,9 @@ class SearchController < ApplicationController
       continuous_trait_predicate_map[trait_id] = [filter[:predicates].join(" #{trait_operator} "), *filter[:values]]
     end
 
-    headers = {}
-    # This just gets the headers
-    headers[:continuous_traits] = ContinuousTrait.where(:id => continuous_trait_predicate_map.keys).map do |continuous_trait|
+    columns = {}
+    # This just gets the columns
+    columns[:continuous_traits] = ContinuousTrait.where(:id => continuous_trait_predicate_map.keys).map do |continuous_trait|
       {:id => continuous_trait.id, :name => continuous_trait.name}
     end
 
@@ -138,9 +138,13 @@ class SearchController < ApplicationController
       end
     end
 
-    headers[:categorical_traits] = CategoricalTrait.where(:id => categorical_trait_category_map.keys).map do |categorical_trait|
+    columns[:categorical_traits] = CategoricalTrait.where(:id => categorical_trait_category_map.keys).map do |categorical_trait|
       {:id => categorical_trait.id, :name => categorical_trait.name}
     end
+
+    # Arrays to hold ids of the traits where notes were recorded
+    categorical_trait_notes_ids = [] # categorical_trait_ids of traits where notes were found
+    continuous_trait_notes_ids = [] # continuous_trait_ids of traits where notes were found
 
     rows = []
 
@@ -185,7 +189,13 @@ class SearchController < ApplicationController
           unless matched_values.empty?
             values = matched_values.map{|continuous_trait_value| continuous_trait_value.formatted_value}
             sources = matched_values.map{|continuous_trait_value| continuous_trait_value.source_reference.to_s }
-            continuous_trait_values << {:continuous_trait_id => trait_id, :values => values, :sources => sources }
+            # Notes only included if there is a result
+            notes = otu.continuous_trait_notes_text(trait_id)
+            if notes
+              # This trait has a note.  Add a notes column unless one already exists
+              continuous_trait_notes_ids << trait_id unless continuous_trait_notes_ids.include? trait_id
+            end
+            continuous_trait_values << {:continuous_trait_id => trait_id, :values => values, :sources => sources, :notes => notes}
           end
           # requested count is 1 because predicates for continuous are either met or not met
           match_map[:continuous] << {:trait_id => trait_id, :coded_count => coded_count,
@@ -208,7 +218,13 @@ class SearchController < ApplicationController
           unless matched_values.empty?
             values = matched_values.map{|categorical_trait_value| categorical_trait_value.formatted_value }
             sources = matched_values.map{|categorical_trait_value| categorical_trait_value.source_reference.to_s }
-            categorical_trait_values << {:categorical_trait_id => trait_id, :values => values, :sources => sources }
+            notes = otu.categorical_trait_notes_text(trait_id)
+            if notes
+              # This trait has a note.  Add a notes column unless one already exists
+              categorical_trait_notes_ids << trait_id unless categorical_trait_notes_ids.include? trait_id
+            end
+
+            categorical_trait_values << {:categorical_trait_id => trait_id, :values => values, :sources => sources, :notes => notes }
           end
           match_map[:categorical] << {:trait_id => trait_id, :coded_count => coded_count,
                                       :requested_count => requested_count,
@@ -240,8 +256,11 @@ class SearchController < ApplicationController
     end
     rows.sort! {|a,b| a[:sort_name] <=> b[:sort_name]}
 
+    columns[:categorical_trait_notes_ids] = categorical_trait_notes_ids
+    columns[:continuous_trait_notes_ids] = continuous_trait_notes_ids
+
     # data to return to view
-    @results = {:headers => headers, # headers is a hash with keys :categorical_traits and :continuous_traits
+    @results = {:columns => columns, # columns is a hash with keys :categorical_traits and :continuous_traits
                 :rows => rows, # rows is an array of hashes.  Each hash has :otu, :categorical_trait_values, and :continuous_trait_values
                 :include_references => !params['include_references'].nil? }
 

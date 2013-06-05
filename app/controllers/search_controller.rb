@@ -185,7 +185,9 @@ class SearchController < ApplicationController
           unless matched_values.empty?
             values = matched_values.map{|continuous_trait_value| continuous_trait_value.formatted_value}
             sources = matched_values.map{|continuous_trait_value| continuous_trait_value.source_reference.to_s }
-            continuous_trait_values << {:continuous_trait_id => trait_id, :values => values, :sources => sources }
+            # Notes only included if there is a result
+            notes = otu.continuous_trait_notes.where(:continuous_trait_id => trait_id)
+            continuous_trait_values << {:continuous_trait_id => trait_id, :values => values, :sources => sources, :notes => notes}
           end
           # requested count is 1 because predicates for continuous are either met or not met
           match_map[:continuous] << {:trait_id => trait_id, :coded_count => coded_count,
@@ -208,7 +210,8 @@ class SearchController < ApplicationController
           unless matched_values.empty?
             values = matched_values.map{|categorical_trait_value| categorical_trait_value.formatted_value }
             sources = matched_values.map{|categorical_trait_value| categorical_trait_value.source_reference.to_s }
-            categorical_trait_values << {:categorical_trait_id => trait_id, :values => values, :sources => sources }
+            notes = otu.categorical_trait_notes.where(:categorical_trait_id => trait_id)
+            categorical_trait_values << {:categorical_trait_id => trait_id, :values => values, :sources => sources, :notes => notes }
           end
           match_map[:categorical] << {:trait_id => trait_id, :coded_count => coded_count,
                                       :requested_count => requested_count,

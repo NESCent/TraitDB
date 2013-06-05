@@ -388,9 +388,20 @@ class ImportJob < ActiveRecord::Base
                                                    :source_reference_id => source_reference.id)
               source_reference.categorical_trait_values << value
               otu.categorical_trait_values << value
+              value.save
               otu.save
             end
             source_reference.save
+
+            # Record notes if present - only one field of notes
+            if import_trait[:notes]
+              trait_note = CategoricalTraitNote.create(:categorical_trait_id => trait.id,
+                                                       :notes => import_trait[:notes])
+              otu.categorical_trait_notes << trait_note
+              trait_note.save
+              otu.save
+            end
+
           end
           d[:quantitative_data].each do |import_trait|
             # skip if source is not provided
@@ -408,6 +419,13 @@ class ImportJob < ActiveRecord::Base
             source_reference.continuous_trait_values << value
             source_reference.save
             otu.continuous_trait_values << value
+            # Record notes if present - only one field of notes
+            if import_trait[:notes]
+              trait_note = ContinuousTraitNote.create(:continuous_trait_id => trait.id,
+                                                      :notes => import_trait[:notes])
+              otu.continuous_trait_notes << trait_note
+              trait_note.save
+            end
             otu.save
           end
         end

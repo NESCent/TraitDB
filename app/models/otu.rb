@@ -61,4 +61,24 @@ class Otu < ActiveRecord::Base
     htg_taxon ? htg_taxon.name : nil
   end
 
+  def continuous_trait_notes_text(continuous_trait_id)
+    trait_notes = continuous_trait_notes.where(:continuous_trait_id => continuous_trait_id).first
+    if trait_notes
+      trait_notes.notes
+    else
+      nil
+    end
+  end
+
+  def categorical_trait_notes_text(categorical_trait_id)
+    trait_notes = categorical_trait_notes.where(:categorical_trait_id => categorical_trait_id).first
+    if trait_notes
+      trait_notes.notes
+    else
+      nil
+    end
+  end
+
+
+
 end

@@ -12,6 +12,47 @@ module TraitDB
         raise "Unable to load template file at #{path}"
       end
     end
+    
+    def name
+      @template["template_name"]
+    end
+    
+    def taxonomy_columns # a hash
+      @template["taxonomy_columns"]
+    end
+    
+    def trait_groups
+      @template["trait_groups"]
+    end
+    
+    def categorical_trait_names
+      @template["categorical_trait_columns"].map{|x| x["name"] }
+    end
+    
+    def categorical_trait_values(trait_name)
+      @template["categorical_trait_columns"].find{|x| x["name"] == trait_name}["values"]
+    end
+    
+    def continuous_trait_names
+      @template["continuous_trait_columns"].map{|x| x["name"] }
+    end
+    
+    def categorical_trait_names_in_group(group_name)
+      @template["categorical_trait_columns"].select{|x| x["groups"].include? group_name}.map{|x| x["name"]}
+    end
+    
+    def continuous_trait_names_in_group(group_name)
+      @template["continuous_trait_columns"].select{|x| x["groups"].include? group_name}.map{|x| x["name"]}
+    end
+    
+    def groups_for_categorical_trait(trait_name)
+      @template["categorical_trait_columns"].find{|x| x["name"] == trait_name}["groups"]
+    end
+    
+    def groups_for_continuous_trait(trait_name)
+      @template["continuous_trait_columns"].find{|x| x["name"] == trait_name}["groups"]
+    end
+
     private
 
     def file_usable?
@@ -22,7 +63,8 @@ module TraitDB
     end
 
     def read_template
-      @template = YAML.load_file(@template_file)
+      root_object = YAML.load_file(@template_file)
+      @template = root_object["traitdb_spreadsheet_template"]
     end
     
   end

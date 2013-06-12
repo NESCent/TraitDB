@@ -3,7 +3,7 @@ class AfterUploadController < Wicked::WizardController
   before_filter :authenticate_user!
   before_filter :verify_is_admin
 
-  steps :read_headers, :count_rows, :select_trait_headers, :validate_headers, :parse_rows, :import_rows, :imported
+  steps :read_headers, :count_rows, :select_template, :validate_headers, :parse_rows, :import_rows, :imported
 
   def index
     show
@@ -90,8 +90,8 @@ class AfterUploadController < Wicked::WizardController
         else
           @import_job.count_rows
         end
-      when :select_trait_headers
-        if @import_job.selected_trait_headers?
+      when :select_template
+        if @import_job.csv_import_template
           skip_step
         end
       when :validate_headers

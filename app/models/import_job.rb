@@ -12,7 +12,7 @@ class ImportJob < ActiveRecord::Base
   before_save :update_trait_headers_state
 
   attr_accessible :state, :csv_dataset
-  attr_accessible :quantitative_header_start_id, :quantitative_header_end_id, :qualitative_header_start_id, :qualitative_header_end_id
+  attr_accessible :csv_import_template_id
   
   IMPORT_STATES = %w(new reading_headers read_headers headers_failed count_failed counted_rows selecting_trait_headers selected_trait_headers validating validated validation_failed parsing parsed parse_warnings importing imported import_failed)
   validates_inclusion_of :state, :in => IMPORT_STATES

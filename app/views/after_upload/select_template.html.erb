@@ -1,0 +1,26 @@
+<% @page_title = 'Select Template' %>
+<div class="row-fluid">
+  <div class="row-fluid">
+    <p class="lead">Select a template:</p>
+    <p>Please select the CSV template for importing:</p>
+  </div>
+  <div class="row-fluid">
+    <%= form_for(@import_job, :url => next_wizard_path, :html => {:class =>'form form-horizontal'}) do |f| %>
+      <%= error_messages_for(@import_job) %>
+      <div class="span9 offset1 well">
+
+        <div class="control-group">
+          <%= f.label(:csv_import_template_id, "Template", :class => 'control-label') %>
+          <div class="controls">
+            <%= f.select(:csv_import_template_id, options_from_collection_for_select(CsvImportTemplate.all, 'id', 'template_file_file_name')) %>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="controls">
+            <%= button_tag("Begin Import", :type => 'submit', :class => 'btn btn-primary') %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

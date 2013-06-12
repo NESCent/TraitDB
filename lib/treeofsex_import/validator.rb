@@ -89,8 +89,6 @@ module TraitDB
       read_continuous_trait_headers
       # Check for Categorical Trait headers
       read_categorical_trait_headers
-      # Check for metadata, e.g. data entry email, notes
-      check_metadata_headers
       # check for valid trait source headers
       read_trait_source_headers
       # check for valid trait notes headers
@@ -127,19 +125,9 @@ module TraitDB
     # as those for continuous traits
     def read_continuous_trait_headers
       # Try to find all the names listed in the template
-      missing_headers = (@template.continuous_trait_names) - @csvfile.headers()
-      if missing_headers.empty?
-        # nothing missing
-        @trait_headers[:continuous] += @template.continuous_trait_names
-        @validation_results[:info] << {:info => 'Continuous Trait headers are valid'}
-      else
-        missing_headers.each do |missing|
-          @validation_results[:issues] << {
-            :issue_description => "Did not find continuous trait column: #{missing}",
-            :suggested_solution => 'Check your CSV file for typos and verify the continuous trait names in the template'
-          }
-        end
-      end
+      found_headers = @template.continuous_trait_names & @csvfile.headers
+      @trait_headers[:continuous] += found_headers
+      @validation_results[:info] << {:info => "Found #{found_headers.count} continuous trait headers"}
     end
   
     # Checks if the CSV file contains the headers defined by the template
@@ -147,37 +135,9 @@ module TraitDB
     def read_categorical_trait_headers
       # Try to find all the names listed in the template
       # This assumes the values are not embedded in the column name
-      missing_headers = @template.categorical_trait_names - @csvfile.headers
-      if missing_headers.empty?
-        # nothing missing
-        @trait_headers[:categorical] += @template.categorical_trait_names
-        @validation_results[:info] << {:info => 'Categorical Trait headers are valid'}
-      else
-        missing_headers.each do |missing|
-          @validation_results[:issues] << {
-            :issue_description => "Did not find categorical trait column: #{missing}",
-            :suggested_solution => 'Check your CSV file for typos and verify the categorical trait names in the template'
-          }
-        end
-      end
-    end
-  
-    def check_metadata_headers
-      # Should include entry email, entry name, notes/comments
-      missing_headers = @template.metadata_columns.values - @csvfile.headers
-      if missing_headers.empty?
-        # nothing missing
-        @validation_results[:info] << {:info => 'Metadata headers are valid'}
-      else
-        # missing some metadata headers
-        missing_headers.each do |missing|
-          @validation_results[:issues] << {
-            :issue_description => "Missing #{missing}",
-            :column_name => missing,
-            :suggested_solution => "Make sure your CSV file has a column for '#{missing}'"
-          }
-        end
-      end
+      found_headers = @template.categorical_trait_names & @csvfile.headers
+      @trait_headers[:categorical] += found_headers
+      @validation_results[:info] << {:info => "Found #{found_headers.count} categorical trait headers"}
     end
 
     def read_trait_source_headers
@@ -260,7 +220,7 @@ module TraitDB
         categorical_trait_data = []
         # Would be a good idea to collect all of the errors before failing
         row.to_hash.select{|k,v| @trait_headers[:categorical].include?(k)}.each do |name,data|
-          next if v.nil?
+          next if data.nil?
           # split the data values
           separator = @template.trait_options['value_separator'] || '|'
           split_data_values = data.split(separator)

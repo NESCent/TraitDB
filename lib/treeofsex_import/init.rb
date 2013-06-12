@@ -6,14 +6,18 @@ APP_ROOT = File.dirname(__FILE__) # a constant, based on the directory containin
 
 $:.unshift APP_ROOT # puts the directory into the search path
 
-# require 'validator' # loads once the validator.rb file
 require 'import_template'
+require 'validator' # loads once the validator.rb file
 
 # Instantiate a template validator with the first argument
 # which should be a YML file
 
 import_template = TraitDB::ImportTemplate.new(ARGV[0])
-puts import_template.template
+
+# Validator takes a template and a path to a CSV file
+validator = TraitDB::Validator.new(import_template, ARGV[1])
+results = validator.validate
+puts results
 
 # 
 # validator = TreeOfSexImport::Validator.new(ARGV[0])

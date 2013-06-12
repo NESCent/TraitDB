@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130612155256) do
+ActiveRecord::Schema.define(:version => 20130612185835) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -60,6 +60,14 @@ ActiveRecord::Schema.define(:version => 20130612155256) do
   add_index "categorical_traits", ["import_job_id"], :name => "index_categorical_traits_on_import_job_id"
   add_index "categorical_traits", ["name"], :name => "index_categorical_traits_on_name"
 
+  create_table "categorical_traits_trait_groups", :force => true do |t|
+    t.integer "categorical_trait_id"
+    t.integer "trait_group_id"
+  end
+
+  add_index "categorical_traits_trait_groups", ["categorical_trait_id"], :name => "index_categorical_traits_trait_groups_on_categorical_trait_id"
+  add_index "categorical_traits_trait_groups", ["trait_group_id"], :name => "index_categorical_traits_trait_groups_on_trait_group_id"
+
   create_table "continuous_trait_notes", :force => true do |t|
     t.text     "notes"
     t.integer  "otu_id"
@@ -95,6 +103,14 @@ ActiveRecord::Schema.define(:version => 20130612155256) do
   add_index "continuous_traits", ["display_format_id"], :name => "index_continuous_traits_on_display_format_id"
   add_index "continuous_traits", ["import_job_id"], :name => "index_continuous_traits_on_import_job_id"
   add_index "continuous_traits", ["name"], :name => "index_continuous_traits_on_name"
+
+  create_table "continuous_traits_trait_groups", :force => true do |t|
+    t.integer "continuous_trait_id"
+    t.integer "trait_group_id"
+  end
+
+  add_index "continuous_traits_trait_groups", ["continuous_trait_id"], :name => "index_continuous_traits_trait_groups_on_continuous_trait_id"
+  add_index "continuous_traits_trait_groups", ["trait_group_id"], :name => "index_continuous_traits_trait_groups_on_trait_group_id"
 
   create_table "csv_datasets", :force => true do |t|
     t.string   "csv_file_file_name"
@@ -256,6 +272,12 @@ ActiveRecord::Schema.define(:version => 20130612155256) do
   end
 
   add_index "taxon_ancestors", ["parent_id", "child_id"], :name => "index_taxon_ancestors_on_parent_id_and_child_id"
+
+  create_table "trait_groups", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "users", :force => true do |t|
     t.string   "email",                  :default => "",    :null => false

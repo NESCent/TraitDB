@@ -241,14 +241,19 @@ class ImportJob < ActiveRecord::Base
     messages = []
     # trait definitions to be imported into database.
     traits[:continuous].each do |import_trait|
-      ContinuousTrait.where(:name => import_trait[:name]).first_or_create do |trait|
+      continuous_trait = ContinuousTrait.where(:name => import_trait[:name]).first_or_create do |trait| # This do block only executes on create
         messages << "Adding continuous trait #{import_trait[:name]}"
         trait.import_job = self
         if import_trait[:format]
           trait.display_format = DisplayFormat.where(:name => import_trait[:format]).first
-          # TODO: add trait group
         end
       end
+      import_trait[:groups].each do |import_group_name|
+        group = TraitGroup.where(:name => import_group_name).first_or_create
+        group.continuous_traits << continuous_trait
+        group.save
+      end
+      continuous_trait.save
     end
 
     traits[:categorical].each do |import_trait|
@@ -257,8 +262,12 @@ class ImportJob < ActiveRecord::Base
         trait.import_job = self
         if import_trait[:format]
           trait.display_format = DisplayFormat.where(:name => import_trait[:format]).first
-          # TODO: add trait group
         end
+      end
+      import_trait[:groups].each do |import_group_name|
+        group = TraitGroup.where(:name => import_group_name).first_or_create
+        group.categorical_traits << categorical_trait
+        group.save
       end
 
       import_trait[:values].each do |value|
@@ -266,6 +275,7 @@ class ImportJob < ActiveRecord::Base
           messages << "Adding category #{value} to #{import_trait[:name]}"
         end
       end
+      categorical_trait.save
     end
     messages
   end
@@ -340,7 +350,8 @@ class ImportJob < ActiveRecord::Base
             value.save
             otu.save
           end
-          source_reference.save
+
+          source_reference.save if import_trait[:source]
 
           # Record trait notes if present - only one field of notes
           if import_trait[:notes]
@@ -369,6 +380,8 @@ class ImportJob < ActiveRecord::Base
             source_reference.continuous_trait_values << value
           end
           otu.continuous_trait_values << value
+          source_reference.save if import_trait[:source]
+
           # Record notes if present - only one field of notes
           if import_trait[:notes]
             trait_note = ContinuousTraitNote.create(:continuous_trait_id => trait.id,

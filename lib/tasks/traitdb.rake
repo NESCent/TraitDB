@@ -5,6 +5,7 @@ namespace :traitdb do
     CsvDataset.destroy_all
     CategoricalTrait.destroy_all
     ContinuousTrait.destroy_all
+    TraitGroup.destroy_all
   end
 
 end

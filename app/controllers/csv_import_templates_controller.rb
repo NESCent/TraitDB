@@ -14,6 +14,8 @@ class CsvImportTemplatesController < ApplicationController
     @template = CsvImportTemplate.new(params[:template])
     @template.user = current_user
     if @template.save
+      @template.update_name
+      @template.save
       flash[:notice] = 'Template created successfully'
       redirect_to(:action => 'index')
     else

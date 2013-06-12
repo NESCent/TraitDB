@@ -5,6 +5,7 @@
     <table class="table table-bordered table-condensed table-striped" summary="Template List">
     <tr class="header">
       <th>Filename</th>
+      <th>Template name</th>
       <th>Project</th>
       <th>Uploader</th>
       <th>Uploaded</th>
@@ -13,6 +14,7 @@
     <% @templates.each do |template| %>
     <tr>
       <td><%= template.template_file_file_name %></td>
+      <td><%= template.name %></td>
       <td><% if template.project %><%= template.project.name %><% end %></td>
       <td><%= template.user.email %></td>
       <td><%= template.created_at %></td>

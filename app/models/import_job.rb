@@ -192,7 +192,7 @@ class ImportJob < ActiveRecord::Base
 
   def get_validator
     # validator needs a template
-    template = TraitDB::ImportTemplate.new(csv_import_template.template_file.path)
+    template = csv_import_template.get_import_template
     validator = TraitDB::Validator.new(template, csv_dataset.csv_file.path)
     validator # returns the validator
   end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130612144255) do
+ActiveRecord::Schema.define(:version => 20130612155256) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -162,22 +162,14 @@ ActiveRecord::Schema.define(:version => 20130612144255) do
 
   create_table "import_jobs", :force => true do |t|
     t.integer  "csv_dataset_id"
-    t.string   "state",                        :limit => 25, :default => "new", :null => false
-    t.datetime "created_at",                                                    :null => false
-    t.datetime "updated_at",                                                    :null => false
+    t.string   "state",                  :limit => 25, :default => "new", :null => false
+    t.datetime "created_at",                                              :null => false
+    t.datetime "updated_at",                                              :null => false
     t.integer  "csv_row_count"
-    t.integer  "quantitative_header_start_id"
-    t.integer  "quantitative_header_end_id"
-    t.integer  "qualitative_header_start_id"
-    t.integer  "qualitative_header_end_id"
     t.integer  "csv_import_template_id"
   end
 
   add_index "import_jobs", ["csv_dataset_id"], :name => "index_import_jobs_on_csv_dataset_id"
-  add_index "import_jobs", ["qualitative_header_end_id"], :name => "index_import_jobs_on_qualitative_header_end_id"
-  add_index "import_jobs", ["qualitative_header_start_id"], :name => "index_import_jobs_on_qualitative_header_start_id"
-  add_index "import_jobs", ["quantitative_header_end_id"], :name => "index_import_jobs_on_quantitative_header_end_id"
-  add_index "import_jobs", ["quantitative_header_start_id"], :name => "index_import_jobs_on_quantitative_header_start_id"
 
   create_table "otus", :force => true do |t|
     t.string   "author"

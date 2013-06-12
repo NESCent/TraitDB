@@ -8,6 +8,7 @@ $:.unshift APP_ROOT # puts the directory into the search path
 
 require 'import_template'
 require 'validator' # loads once the validator.rb file
+require 'pp'
 
 # Instantiate a template validator with the first argument
 # which should be a YML file
@@ -17,8 +18,13 @@ import_template = TraitDB::ImportTemplate.new(ARGV[0])
 # Validator takes a template and a path to a CSV file
 validator = TraitDB::Validator.new(import_template, ARGV[1])
 results = validator.validate
-puts results
-
+PP.pp(results)
+results = validator.parse
+PP.pp(results)
+datasets = validator.datasets
+headers = validator.trait_headers
+PP.pp(headers)
+PP.pp(datasets)
 # 
 # validator = TreeOfSexImport::Validator.new(ARGV[0])
 # validator.quantitative_header_start = "Chromosome number (female)"

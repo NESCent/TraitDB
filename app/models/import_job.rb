@@ -251,7 +251,7 @@ class ImportJob < ActiveRecord::Base
     validator = get_validator
     validator.validate
     validator.parse
-    import_chrs(validator.chr_headers)
+    import_chrs(validator.trait_headers)
     import_datasets(validator.datasets)
     true
   end

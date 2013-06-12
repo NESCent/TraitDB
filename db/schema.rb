@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130605150507) do
+ActiveRecord::Schema.define(:version => 20130612144255) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -109,6 +109,17 @@ ActiveRecord::Schema.define(:version => 20130605150507) do
 
   add_index "csv_datasets", ["user_id"], :name => "index_csv_datasets_on_user_id"
 
+  create_table "csv_import_templates", :force => true do |t|
+    t.string   "template_file_file_name"
+    t.string   "template_file_content_type"
+    t.integer  "template_file_file_size"
+    t.datetime "template_file_updated_at"
+    t.integer  "project_id"
+    t.integer  "user_id"
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
+  end
+
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0
     t.integer  "attempts",   :default => 0
@@ -159,6 +170,7 @@ ActiveRecord::Schema.define(:version => 20130605150507) do
     t.integer  "quantitative_header_end_id"
     t.integer  "qualitative_header_start_id"
     t.integer  "qualitative_header_end_id"
+    t.integer  "csv_import_template_id"
   end
 
   add_index "import_jobs", ["csv_dataset_id"], :name => "index_import_jobs_on_csv_dataset_id"

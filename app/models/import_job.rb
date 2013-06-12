@@ -7,6 +7,7 @@ class ImportJob < ActiveRecord::Base
   has_many :parse_issues, :dependent => :destroy
   has_many :validation_issues, :dependent => :destroy
   has_many :headers, :dependent => :destroy
+  belongs_to :csv_import_template
 
   before_save :update_trait_headers_state
 

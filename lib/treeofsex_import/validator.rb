@@ -126,7 +126,12 @@ module TraitDB
     def read_continuous_trait_headers
       # Try to find all the names listed in the template
       found_headers = @template.continuous_trait_names & @csvfile.headers
-      @trait_headers[:continuous] += found_headers
+      @trait_headers[:continuous] += found_headers.map{|x|
+        {:name => x,
+         :groups => @template.groups_for_continuous_trait(x),
+         :format => @template.continuous_trait_format(x)
+        }
+      }
       @validation_results[:info] << {:info => "Found #{found_headers.count} continuous trait headers"}
     end
   
@@ -136,7 +141,13 @@ module TraitDB
       # Try to find all the names listed in the template
       # This assumes the values are not embedded in the column name
       found_headers = @template.categorical_trait_names & @csvfile.headers
-      @trait_headers[:categorical] += found_headers
+      @trait_headers[:categorical] += found_headers.map{|x|
+        {:name => x,
+         :groups => @template.groups_for_categorical_trait(x),
+         :format => @template.categorical_trait_format(x),
+         :values => @template.categorical_trait_values(x)
+        }
+      }
       @validation_results[:info] << {:info => "Found #{found_headers.count} categorical trait headers"}
     end
 
@@ -146,7 +157,7 @@ module TraitDB
       prefix = @template.trait_options['source_prefix'] # needs to be validated in the template reader
       if required
         # source is required, make sure this csv file contains it for each header
-        all_trait_headers = @trait_headers[:continuous] + @trait_headers[:categorical]
+        all_trait_headers = (@trait_headers[:continuous] + @trait_headers[:categorical]).map{|x| x[:name]}
         expected_source_headers = all_trait_headers.map{|x| "#{prefix}#{x}"} # prefix each
         missing_headers = expected_source_headers - @csvfile.headers()
         if missing_headers.empty?
@@ -168,7 +179,7 @@ module TraitDB
     def read_trait_notes_headers
       prefix = @template.trait_options['notes_prefix']
       if prefix
-        all_trait_headers = @trait_headers[:continuous] + @trait_headers[:categorical]
+        all_trait_headers = (@trait_headers[:continuous] + @trait_headers[:categorical]).map{|x| x[:name]}
         possible_trait_notes_headers = all_trait_headers.map{|x| "#{prefix}#{x}"}
         @trait_notes_headers += possible_trait_notes_headers & @csvfile.headers()
         unless @trait_notes_headers.empty?
@@ -196,7 +207,7 @@ module TraitDB
         # Each item must be a number or nil
         # build an array of hashes.  Hashes contain :name and :value.  :source will be added later if present
         continuous_trait_data = []
-        row.to_hash.select{|k,v| @trait_headers[:continuous].include?(k)}.each do |k,v|
+        row.to_hash.select{|k,v| @trait_headers[:continuous].map{|x| x[:name]}.include?(k)}.each do |k,v|
           next if v.nil?
           # Fail if the data is non-numeric
           if (v.is_number?)
@@ -219,7 +230,7 @@ module TraitDB
         # build an array of hashes.  Hashes contain :name and :values.  :source will be added later
         categorical_trait_data = []
         # Would be a good idea to collect all of the errors before failing
-        row.to_hash.select{|k,v| @trait_headers[:categorical].include?(k)}.each do |name,data|
+        row.to_hash.select{|k,v| @trait_headers[:categorical].map{|x| x[:name]}.include?(k)}.each do |name,data|
           next if data.nil?
           # split the data values
           separator = @template.trait_options['value_separator'] || '|'
@@ -245,8 +256,9 @@ module TraitDB
         end
       
         # 4. Metadata columns
+        dataset[:metadata] = {}
         @template.metadata_columns.each do |k,v|
-          dataset[k] = row.to_hash[v] if row.to_hash.include?(v)
+          dataset[:metadata][k] = row.to_hash[v] if row.to_hash.include?(v)
         end
 
         # 5. Sources for trait data

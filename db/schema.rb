@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130612202253) do
+ActiveRecord::Schema.define(:version => 20130613190128) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -187,6 +187,25 @@ ActiveRecord::Schema.define(:version => 20130612202253) do
   end
 
   add_index "import_jobs", ["csv_dataset_id"], :name => "index_import_jobs_on_csv_dataset_id"
+
+  create_table "otu_metadata_fields", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "otu_metadata_fields", ["name"], :name => "index_otu_metadata_fields_on_name"
+
+  create_table "otu_metadata_values", :force => true do |t|
+    t.text     "value"
+    t.integer  "otu_metadata_field_id"
+    t.integer  "otu_id"
+    t.datetime "created_at",            :null => false
+    t.datetime "updated_at",            :null => false
+  end
+
+  add_index "otu_metadata_values", ["otu_id"], :name => "index_otu_metadata_values_on_otu_id"
+  add_index "otu_metadata_values", ["otu_metadata_field_id"], :name => "index_otu_metadata_values_on_otu_metadata_field_id"
 
   create_table "otus", :force => true do |t|
     t.string   "author"

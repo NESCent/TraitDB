@@ -37,7 +37,9 @@
               <th>Source:<%= trait[:name] %></th>
             <% end %>
           <% end %>
-          <th>Notes</th>
+          <% @results[:columns][:otu_metadata_field_names].each do |metadata_field| %>
+            <th><%= metadata_field %></th>
+          <% end %>
         </tr>
         <% @results[:rows].each do |row| %>
         <% otu = row[:otu] %>
@@ -73,9 +75,11 @@
               </td>
             <% end %>
           <% end %>
-          <td><span class="notes_popover" rel="popover" data-content="<%= otu.notes %>" data-original-title="Notes">
-            <%= truncate(otu.notes) %>
-          </span></td>
+          <% @results[:columns][:otu_metadata_field_names].each do |metadata_field_name| %>
+            <td>
+              <span class="notes_popover" rel="popover" data-content="<%= row[:metadata][metadata_field_name] %>" data-original-title="<%= metadata_field_name %>"><%= truncate(row[:metadata][metadata_field_name]) %></span>
+            </td>
+          <% end %>
         </tr>
         <% end %>
       </table>

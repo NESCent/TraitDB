@@ -20,7 +20,14 @@
           <!-- Upload will require login -->
           <li class="<%= 'active' if params[:controller] == 'upload' -%>"><%= link_to("Upload", :controller => '/upload') %></li>
           <% if user_signed_in? %>
-            <li class="<%= 'active' if params[:controller] == 'csv_datasets' -%>"><%= link_to("Admin", csv_datasets_path) %></li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" href="#" data-toggle="dropdown">Admin<b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li class="<%= 'active' if params[:controller] == 'csv_import_templates' -%>"><%= link_to("Templates", csv_import_templates_path) %></li>
+                <li class="<%= 'active' if params[:controller] == 'csv_datasets' -%>"><%= link_to("Datasets", csv_datasets_path) %></li>
+              </ul>
+            </li>
+
             <li class="dropdown">
                 <a class="dropdown-toggle" href="#" data-toggle="dropdown">Data<b class="caret"></b></a>
                 <ul class="dropdown-menu">

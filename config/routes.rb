@@ -12,6 +12,7 @@ TraitDB::Application.routes.draw do
   resources :otus
   resources :taxa
   resources :source_references
+  resources :csv_import_templates
 
   # import jobs are nested within csv datasets
   resources :csv_datasets do

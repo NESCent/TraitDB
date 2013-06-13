@@ -6,6 +6,7 @@ class CategoricalTrait < ActiveRecord::Base
   has_many :otus, :through => :categorical_trait_categories, :source => :categorical_trait_values
   belongs_to :display_format
   has_many :categorical_trait_notes
+  has_and_belongs_to_many :trait_groups
   scope :sorted, order('name ASC')
 
   def dataset_name

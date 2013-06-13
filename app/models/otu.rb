@@ -81,6 +81,8 @@ class Otu < ActiveRecord::Base
     end
   end
 
-
+  def metadata_pairs
+    otu_metadata_values.map{|x| {:name => x.otu_metadata_field.name, :value => x.value}}.sort_by{|x| x[:name]}
+  end
 
 end

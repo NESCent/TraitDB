@@ -309,17 +309,27 @@ class ImportJob < ActiveRecord::Base
         end
 
         # Create the OTU at the lowest level, may be species
-        # TODO: get the metadata (formerly notes, etc)
-        otu_metadata = d[:metadata]
-        # Metadata will just be stored as a hash, not in columns
-
         # make an otu
         otu = Otu.create(:species_taxon => taxa_map['species'],
                          :genus_taxon => taxa_map['genus'],
                          :family_taxon => taxa_map['family'],
                          :order_taxon => taxa_map['order'],
                          :htg_taxon => taxa_map['htg'],
-                         :import_job => self) # Notes were here
+                         :import_job => self)
+
+        # Add metadata to the OTU, including notes, entry email, etc
+        d[:metadata].each do |k,v|
+          next if v.nil? || k.nil?
+          # k is the field name, v is the value
+          field = OtuMetadataField.where(:name => k).first_or_create
+          value = OtuMetadataValue.create(:value => v,
+                                          :otu_metadata_field => field,
+                                          :otu => otu)
+          field.otu_metadata_values << value
+          otu.otu_metadata_values << value
+          field.save
+          value.save
+        end
 
         # refs
         # Categorical Traits

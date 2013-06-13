@@ -6,6 +6,7 @@ namespace :traitdb do
     CategoricalTrait.destroy_all
     ContinuousTrait.destroy_all
     TraitGroup.destroy_all
+    OtuMetadataField.destroy_all
   end
 
 end

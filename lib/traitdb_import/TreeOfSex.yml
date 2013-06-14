@@ -1,0 +1,143 @@
+# Definitions for importing CSV spreadsheets for the Tree of Sex WG
+
+traitdb_spreadsheet_template:
+  template_name: Tree of Sex
+  # All taxonomy columns specified here are required
+  taxonomy_columns: # keys are the local to the app.  Values are literals in the CSV
+    htg: Higher taxonomic group
+    order: Order
+    family: Family
+    genus: Genus
+    species: species
+#    species_author: species author # In template, only for plants.  Don't have a way to hide these for animals
+#    infraspecific: infraspecific # In template, only exists for plants.  Don't have a way to hide these for animals
+  # Metadata columns are optional, could refactor into two groups
+  metadata_columns:
+    common_name: common name
+    notes: notes, comments
+    entry_name: entry name
+    entry_email: entry email
+  trait_groups: [Plants, Animals] # Traits may belong to zero or more groups.  Traits without an explicit group are in the default group (0)
+  trait_options:
+    source_prefix: "source: " # include the space after the colon
+    require_source: true # source rules for formatting?
+    notes_prefix: "notes: " #include the space after the colon
+    value_separator: "|" # what separates multiple values in an entry
+  # No trait is required.  could have a list of required traits
+  categorical_trait_columns:
+    -
+      name: Hybrid # Denoted as hybrid based on species name; add reference to notes column if known from other data
+      values: [0,1]
+      groups: [Plants]
+    -
+      name: Sexual System
+      values:
+        - hermaphrodite
+        - monoecy
+        - dioecy
+        - gynodioecy
+        - androdioecy
+        - gynomonoecy
+        - andromonoecy
+        - polygamodioecy
+        - polygamomonoecy
+        - apomictic
+        - other
+      groups: [Plants, Animals]
+    -
+      name: Selfing
+      values:
+        - self incompatible
+        - self compatible
+      groups: [Plants]
+    -
+      name: Growth Form
+      values:
+        - herb
+        - shrub
+        - tree
+        - herbaceous vine
+        - liana/woody vine
+      groups: [Plants]
+    -
+      name: Life Form
+      values:
+        - annual
+        - perennial
+      groups: [Plants]
+    -
+      name: Karyotype
+      values:
+        - ZO
+        - ZW
+        - XY
+        - XO
+        - WO
+        - homomorphic
+        - complex XY
+        - complex ZW
+      groups: [Plants, Animals]
+    -
+      name: Molecular basis
+      values:
+        - dosage
+        - Y dominant
+        - W dominant
+      groups: [Plants, Animals]
+    -
+      name: Genotypic
+      values:
+        - male heterogametic
+        - female heterogametic
+        - GSD
+        - polygenic
+      groups: [Plants, Animals]
+    -
+      name: Haplodiploidy
+      values: 
+        - arrhenotoky
+        - paternal genome elimination
+        - other
+      groups: [Animals]
+    -
+      name: Environmental (TSD, TSD Ia, TSD II, size, density, pH, ESD_other)
+      values:
+        - TSD
+        - TSD Ia
+        - TSD II
+        - size
+        - density
+        - pH
+        - ESD_other
+      groups: [Animals]
+    -
+      name: Polyfactorial
+      values: [yes, no]
+      groups: [Animals]
+      
+  continuous_trait_columns:
+    -
+      name: Gametophytic chromosome number
+      format: integer # formats are only for display
+      groups: [Plants]
+    -
+      name: Sporophytic chromosome number
+      format: integer
+      groups: [Plants]
+    -
+      name: Chromosome number (female)
+      format: integer
+      groups: [Animals]
+    -
+      name: Chromosome number (male)
+      format: integer
+      groups: [Animals]
+    -
+      name: C-value
+      format: float
+      groups: [Animals]
+    -
+      name: Predicted ploidy
+      format: integer
+      groups: [Animals]
+      

@@ -1,0 +1,7 @@
+<%= error_messages_for(@template) %>
+  <table>
+    <tr>
+      <th><%= f.label(:template_file, "Select a CSV Import template File (YAML) to upload") %></th>
+      <td><%= f.file_field(:template_file) %></td>
+    </tr>
+  </table>

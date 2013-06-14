@@ -18,7 +18,9 @@
       headers << "Source: #{trait[:name]}"
     end
   end
-  headers << 'Notes'
+  @results[:columns][:otu_metadata_field_names].each do |metadata_field|
+    headers << metadata_field
+  end
 -%>
 <%= CSV.generate_line headers -%>
 <%-
@@ -54,7 +56,9 @@
           row << continuous_trait_values[:sources].first if @results[:include_references]
         end
       end
-      row << otu.notes.to_s
+      @results[:columns][:otu_metadata_field_names].each do |metadata_field_name|
+        row << data_row[:metadata][metadata_field_name]
+      end
 -%>
 <%= CSV.generate_line(row).html_safe -%>
 <%- end -%>

@@ -146,6 +146,9 @@ class SearchController < ApplicationController
     categorical_trait_notes_ids = [] # categorical_trait_ids of traits where notes were found
     continuous_trait_notes_ids = [] # continuous_trait_ids of traits where notes were found
 
+    # Array to hold the metadata field names attached to the data we found
+    otu_metadata_field_names = []
+
     rows = []
 
     params['htg'].reject{|k,v| v.empty?}.each do |k,v|
@@ -252,12 +255,16 @@ class SearchController < ApplicationController
             rows << row
           end
         end
-      end
+        # add metadata field names from the included OTU
+        row[:metadata] = otu.metadata_hash
+        otu_metadata_field_names |= row[:metadata].keys
+      end # otu
     end
     rows.sort! {|a,b| a[:sort_name] <=> b[:sort_name]}
 
     columns[:categorical_trait_notes_ids] = categorical_trait_notes_ids
     columns[:continuous_trait_notes_ids] = continuous_trait_notes_ids
+    columns[:otu_metadata_field_names] = otu_metadata_field_names
 
     # data to return to view
     @results = {:columns => columns, # columns is a hash with keys :categorical_traits and :continuous_traits

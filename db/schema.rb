@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130618201601) do
+ActiveRecord::Schema.define(:version => 20130618211048) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -173,6 +173,7 @@ ActiveRecord::Schema.define(:version => 20130618201601) do
     t.string   "name",       :null => false
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.integer  "level"
   end
 
   add_index "iczn_groups", ["name"], :name => "index_iczn_groups_on_name"

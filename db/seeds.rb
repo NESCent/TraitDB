@@ -7,6 +7,18 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
 # Populate ICZN groups
-IcznGroup.create([{name: 'order'}, {name: 'family'}, {name: 'genus'}, {name: 'species'}])
+# Levels are used to provide a sort order, with enough distance between to allow intermediate IcznGroups to be created later
+IcznGroup.destroy_all
+IcznGroup.create([
+                   {name: 'kingdom',        level: 100},
+                   {name: 'htg',            level: 200},
+                   {name: 'order',          level: 300},
+                   {name: 'family',         level: 400},
+                   {name: 'genus',          level: 500},
+                   {name: 'species',        level: 600},
+                   {name: 'species_author', level: 700},
+                   {name: 'infraspecific',  level: 800}
+                 ])
+
 DisplayFormat.create([{name:''}, {name: 'integer'}, {name: 'float'}, {name: 'string'}])
 

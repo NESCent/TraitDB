@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130613190128) do
+ActiveRecord::Schema.define(:version => 20130618201601) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -283,6 +283,14 @@ ActiveRecord::Schema.define(:version => 20130613190128) do
   add_index "taxa", ["iczn_group_id"], :name => "index_taxa_on_iczn_group_id"
   add_index "taxa", ["import_job_id"], :name => "index_taxa_on_import_job_id"
   add_index "taxa", ["name"], :name => "index_taxa_on_name"
+
+  create_table "taxa_trait_groups", :force => true do |t|
+    t.integer "taxon_id"
+    t.integer "trait_group_id"
+  end
+
+  add_index "taxa_trait_groups", ["taxon_id"], :name => "index_taxa_trait_groups_on_taxon_id"
+  add_index "taxa_trait_groups", ["trait_group_id"], :name => "index_taxa_trait_groups_on_trait_group_id"
 
   create_table "taxon_ancestors", :force => true do |t|
     t.integer  "parent_id",  :null => false

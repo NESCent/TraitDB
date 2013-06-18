@@ -12,6 +12,8 @@ class Taxon < ActiveRecord::Base
   has_one :parent_taxon, :class_name => 'TaxonAncestor', :foreign_key => 'child_id'
   has_one :parent, :through => :parent_taxon
 
+  has_and_belongs_to_many :trait_groups
+
   scope :sorted, order('name ASC')
 
   scope :species_taxa, where(:iczn_group_id => IcznGroup.find_by_name("species"))

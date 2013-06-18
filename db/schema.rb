@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130618211048) do
+ActiveRecord::Schema.define(:version => 20130618214717) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -210,23 +210,18 @@ ActiveRecord::Schema.define(:version => 20130618211048) do
 
   create_table "otus", :force => true do |t|
     t.string   "author"
-    t.integer  "species_taxon_id"
     t.integer  "import_job_id"
-    t.datetime "created_at",       :null => false
-    t.datetime "updated_at",       :null => false
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
     t.text     "notes"
-    t.integer  "genus_taxon_id"
-    t.integer  "family_taxon_id"
-    t.integer  "order_taxon_id"
-    t.integer  "htg_taxon_id"
   end
 
-  add_index "otus", ["family_taxon_id"], :name => "index_otus_on_family_taxon_id"
-  add_index "otus", ["genus_taxon_id"], :name => "index_otus_on_genus_taxon_id"
-  add_index "otus", ["htg_taxon_id"], :name => "index_otus_on_htg_taxon_id"
   add_index "otus", ["import_job_id"], :name => "index_otus_on_import_job_id"
-  add_index "otus", ["order_taxon_id"], :name => "index_otus_on_order_taxon_id"
-  add_index "otus", ["species_taxon_id"], :name => "index_otus_on_taxon_id"
+
+  create_table "otus_taxa", :force => true do |t|
+    t.integer "otu_id"
+    t.integer "taxon_id"
+  end
 
   create_table "parse_issues", :force => true do |t|
     t.integer  "import_job_id"

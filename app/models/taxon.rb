@@ -17,6 +17,24 @@ class Taxon < ActiveRecord::Base
   scope :sorted, order('name ASC')
 
   scope :sorted_by_iczn, joins(:iczn_group).order('iczn_groups.level ASC')
+  scope :under_iczn_group, lambda{|iczn_group| joins(:iczn_group).where('iczn_groups.level > ?', iczn_group.level)}
+
+  def descendants_with_level(dest_iczn_group)
+    d = dest_iczn_group.distance(self.iczn_group)
+    return [] if d <= 0
+    return children.where(:iczn_group_id => dest_iczn_group.id) if d == 1 # if distance is 1, just get the children
+    descendants = []
+    for x in 1..d
+      join_clauses = ["INNER JOIN taxon_ancestors as ta0 on ta0.parent_id = #{self.id}"]
+      # now do 1 to n
+      for y in 1..(x-1)
+        join_clauses << "INNER JOIN taxon_ancestors AS ta#{y} ON ta#{y}.parent_id = ta#{y - 1}.child_id"
+      end
+      join_clauses << "AND ta#{x - 1}.child_id = taxa.id"
+      descendants += Taxon.where(:iczn_group_id => dest_iczn_group.id).joins(join_clauses.join(' '))
+    end
+    descendants
+  end
 
   def dataset_name
     csv_dataset.csv_file_file_name if csv_dataset

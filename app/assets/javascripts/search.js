@@ -88,52 +88,6 @@ function addButtonHandlers() {
     });
 }
 
-function updateOrderList(higherGroupElement, orderList) {
-    var orderElement = $(higherGroupElement).siblings(".order");
-    // remove all options from the element
-    orderElement.find('option').remove();
-    orderElement.append($('<option value>-- All --</option>'));
-    for(var order in orderList) {
-        var obj = orderList[order];
-        // now make a new select option and append it
-        var optionElement = $('<option>', {value: obj.id}).text(obj.name);
-        orderElement.append(optionElement);
-    }
-    // Also clear the lower levels
-    $(orderElement).siblings(".family").find('option').remove();
-    $(orderElement).siblings(".genus").find('option').remove();
-}
-
-function updateFamilyList(orderElement, familyList) {
-    var familyElement = $(orderElement).siblings(".family");
-    // remove all options from the element
-    familyElement.find('option').remove();
-    familyElement.append($('<option value>-- All --</option>'));
-
-    for(var family in familyList) {
-        var obj = familyList[family];
-        // now make a new select option and append it
-        var optionElement = $('<option>', {value: obj.id}).text(obj.name);
-        familyElement.append(optionElement);
-    }
-    $(familyElement).siblings(".genus").find('option').remove();
-}
-
-function updateGenusList(familyElement, genusList) {
-    // find the genus select element
-    var genusElement = $(familyElement).siblings(".genus");
-    // remove all options from the genus element
-    genusElement.find('option').remove();
-    genusElement.append($('<option value>-- All --</option>'));
-    for(var genus in genusList) {
-        var obj = genusList[genus];
-        console.log("name: " + obj.name + " id: " + obj.id);
-        // now make a new select option and append it
-        var optionElement = $('<option>', {value: obj.id}).text(obj.name);
-        genusElement.append(optionElement);
-    }
-}
-
 function updateCategoricalTraitNames(traitTypeElement, traitList) {
     // find the trait names select element
     var traitElement = $(traitTypeElement).siblings(".categorical_trait_name");
@@ -198,56 +152,41 @@ function updateCategoricalTraitValues(traitElement, valueList) {
 }
 
 function groupChanged(groupElement, groupId) {
-    // clear everything to the right, with a higher level
+    // when a group changes, reload the possible values for everything that is more specific
     var level = parseInt(groupElement.attributes['data-grouplevel'].value);
-    var iczn_group_id = parseInt(groupElement.attributes['data-groupid'].value);
-    console.log("Level: " + level);
-    // find the sibling selects in this element where the level is higher than 'level' and clear it
-    // left off here 6/19 pm
-    // loop over the levels that are higher than ours
-    var groupLevelsToClear = icznGroups.map(function(g) { return g.level; }).filter(function(l) { return l > level});
-    groupLevelsToClear.forEach(function(groupLevel) {
-        $(groupElement).siblings('select[data-grouplevel=' + groupLevel + ']').remove();
-    });
     var groupLevelsToSend = icznGroups.map(function(g) { return g.level; }).filter(function(l) { return l <= level});
-    var parentIds = new Array();
+    var parentIds = new Array($(groupElement).val());
     groupLevelsToSend.forEach(function(groupLevel) {
         parentIds.push($(groupElement).siblings('select[data-grouplevel=' + groupLevel + ']').val());
     });
     console.log('parentIds' + parentIds);
-    // Need to send an ajax request for each of the group levels to clear
-    $.ajax({
-        url: "/search/list_taxa.json",
-        data: {
-            iczn_group_id: iczn_group_id,
-            parent_ids: parentIds
-        }
-    }).done(function(data) { console.log('received response from list taxa: ' + data)});
+    // Send an ajax request for each of the group levels to clear
+    var groupsToClear = icznGroups.filter(function(g) { return g.level > level; });
+    groupsToClear.forEach(function(group) {
+        $(groupElement).siblings('select[data-grouplevel=' + group.level + ']').find('option').remove();
+        $.ajax({
+            url: "/search/list_taxa.json",
+            data: {
+                iczn_group_id: group.id,
+                parent_ids: parentIds
+            }
+        }).done(function(data) {
+                var specificGroupElement = $(groupElement).siblings('select[data-grouplevel=' + group.level + ']').first()
+                updateGroupList(specificGroupElement, data);
+                console.log('received response from list taxa for group id : ' + group.id + ' data: ' + data);
+            }
+        );
+    });
 }
 
-
-function higherGroupChanged(higherGroupElement, higherGroupId) {
-    $(higherGroupElement).siblings(".order").find('option').remove();
-    $.ajax({
-        url: "/search/list_order.json",
-        data: { htg_id: higherGroupId}
-    }).done(function(data, textStatus, jqXHR) { updateOrderList(higherGroupElement, data); });
-}
-
-function orderChanged(orderElement, orderId) {
-    $(orderElement).siblings(".family").find('option').remove();
-    $.ajax({
-        url: "/search/list_family.json",
-        data: { order_id: orderId}
-    }).done(function(data, textStatus, jqXHR) { updateFamilyList(orderElement, data); });
-}
-
-function familyChanged(familyElement, familyId) {
-    $(familyElement).siblings(".genus").find('option').remove();
-    $.ajax({
-        url: "/search/list_genus.json",
-        data: { family_id: familyId }
-    }).done(function(data, textStatus, jqXHR) { updateGenusList(familyElement, data); });
+function updateGroupList(destinationSelectElement, taxa) {
+    // remove all options from the element
+    destinationSelectElement.find('option').remove();
+    destinationSelectElement.append($('<option value>-- All --</option>'));
+    taxa.forEach(function(taxon) {
+        var optionElement = $('<option>', {value:taxon.id}).text(taxon.name);
+        destinationSelectElement.append(optionElement);
+        });
 }
 
 // need an update trait types

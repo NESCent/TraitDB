@@ -33,7 +33,7 @@ class Otu < ActiveRecord::Base
   end
 
   def names_by_group # Returns an array of hashes - ordered in descending hierarchy
-    taxa.sorted_by_iczn.map{|taxon| {taxon.iczn_group_name => taxon.name}}
+    taxa.sorted_by_iczn.map{|taxon| { :iczn_group_name => taxon.iczn_group_name, :name => taxon.name }}
   end
 
   def categorical_traits
@@ -49,7 +49,7 @@ class Otu < ActiveRecord::Base
   end
 
   def name
-    "#{genus_taxon.name} #{species_name}"
+    "#{genus_name} #{species_name}"
   end
 
   def sort_name
@@ -57,23 +57,23 @@ class Otu < ActiveRecord::Base
   end
 
   def species_name
-    names_by_group()['species']
+    names_by_group().find{|x| x[:name] == 'species'}
   end
 
   def genus_name
-    names_by_group()['genus']
+    names_by_group().find{|x| x[:name] == 'genus'}
   end
 
   def family_name
-    names_by_group()['family']
+    names_by_group().find{|x| x[:name] == 'family'}
   end
 
   def order_name
-    names_by_group()['order']
+    names_by_group().find{|x| x[:name] == 'order'}
   end
 
   def htg_name
-    names_by_group()['htg']
+    names_by_group().find{|x| x[:name] == 'htg'}
   end
 
   def continuous_trait_notes_text(continuous_trait_id)

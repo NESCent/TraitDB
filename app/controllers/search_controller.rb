@@ -129,31 +129,41 @@ class SearchController < ApplicationController
 
     rows = []
 
-    params['htg'].reject{|k,v| v.empty?}.each do |k,v|
-      # Extract the taxon_id from each Taxonomy dropdown
-      lowest_id =  Integer(v)
-      lowest_group = 'htg'
-      if params['order'] && params['order'][k]
-        unless params['order'][k].blank?
-          lowest_id = Integer(params['order'][k])
-          lowest_group = 'order'
-        end
-      end
-      if params['family'] && params['family'][k]
-        unless params['family'][k].blank?
-          lowest_id = Integer(params['family'][k])
-          lowest_group = 'family'
-        end
-      end
-      if params['genus'] && params['genus'][k]
-        unless params['genus'][k].blank?
-          lowest_id = Integer(params['genus'][k])
-          lowest_group = 'genus'
-        end
-      end
+    # The requested taxon filters have parameter names that correspond to IcznGroup names.
+    # The values are the Taxon IDs
+    sorted_groups_requested = IcznGroup.sorted.where(:name => params.keys)
+    valid_group_names = IcznGroup.sorted.map{|g| g.name}
+    columns[:iczn_groups] = sorted_groups_requested.map{|group| {:name => group.name, :id => group.id}}
 
-      # Assemble a set of Otus for this selected row
-      Otu.in_taxon(lowest_id, lowest_group).each do |otu|
+    # An example params hash looks like this
+    # "{"htg"=>{"0"=>"2601", "2"=>"2601"}, "order"=>{"0"=>"2602", "2"=>"2602"}, "family"=>{"0"=>"2603", "2"=>"2607"}, "genus"=>{"0"=>"2625", "2"=>"2612"}, "species"=>{"0"=>"2623", "2"=>"2613"}, "trait_types"=>{"0"=>""}, "categorical_trait_name"=>{"0"=>""}, "categorical_trait_values"=>{"0"=>""}, "continuous_trait_name"=>{"0"=>""}, "continuous_trait_value_predicates"=>{"0"=>""}, "continuous_trait_entries"=>{"0"=>""}, "include_references"=>"on", "controller"=>"search", "action"=>"results"}"
+
+    indices = []
+
+    params.each do |pk, pv|
+      next unless valid_group_names.include? pk
+      # pk is one of 'htg','order',etc...
+      # pv looks like {"0"=>"2602", "2"=>"2607"}
+      # "0" and "2" are integers in string format, and these indices may not be consecutive
+      indices += pv.keys.map{|n| n.to_i}
+    end
+    indices.sort!.uniq!
+
+    lowest_requested_taxa = []
+    indices.each do |index|
+      lowest_requested_taxon = nil
+      sorted_groups_requested.each do |group|
+        taxon_id_str = params[group.name][index.to_s]
+        if taxon_id_str
+          lowest_requested_taxon = Taxon.find(taxon_id_str.to_i)
+        end
+      end
+      lowest_requested_taxa << lowest_requested_taxon if lowest_requested_taxon
+    end
+
+    # At this point, we'll have a list of the most specific taxa requested at each level
+    lowest_requested_taxa.each do |lowest_requested_taxon|
+      lowest_requested_taxon.otus.each do |otu|
         # Start with a hash containing the OTU
         # This row will only be included in the output set if the criteria is met
         row = { :otu => otu, :sort_name => otu.name }
@@ -236,6 +246,10 @@ class SearchController < ApplicationController
         # add metadata field names from the included OTU
         row[:metadata] = otu.metadata_hash
         otu_metadata_field_names |= row[:metadata].keys
+        # add taxonomy to the row, so that the view doesn't have to look up OTU relationships
+        taxonomy = {}
+        otu.taxa.each{|t| taxonomy[t.iczn_group_id] = t.name}
+        row[:taxonomy] = taxonomy
       end # otu
     end
     rows.sort! {|a,b| a[:sort_name] <=> b[:sort_name]}

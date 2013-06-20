@@ -1,39 +1,19 @@
 class SearchController < ApplicationController
   OPERATORS = { :or => 'or', :and => 'and' }
   def index
-    @taxa = {}
-    # Higher taxonomic group
-    @taxa[:htg] = htg_taxa
-    # Order
-    @taxa[:order] = order_taxa_in_htg(@taxa[:htg].first)
-    # Family
-    @taxa[:family] = family_taxa_in_order(@taxa[:order].first)
-    # Genus
-    @taxa[:genus] = genus_taxa_in_family(@taxa[:family].first)
+    @iczn_groups = IcznGroup.sorted.select{|group| group.taxa.count > 0}
+
     @trait_groups = []
     @trait_types = [['Categorical', :categorical], ['Continuous', :continuous]]
     @trait_names = {:categorical => CategoricalTrait.sorted, :continuous => ContinuousTrait.sorted }
     @categorical_trait_values = categorical_trait_values_for_trait(@trait_names[:categorical].first)
   end
 
-  def list_htg
-    @higher_group_list = htg_taxa
-    render :json => @higher_group_list
-  end
-
-  def list_order
-    @order_list = order_taxa_in_htg(params[:htg_id])
-    render :json => @order_list
-  end
-
-  def list_family
-    @family_list = family_taxa_in_order(params[:order_id])
-    render :json => @family_list
-  end
-
-  def list_genus
-    @genus_list = genus_taxa_in_family(params[:family_id])
-    render :json => @genus_list
+  def list_taxa # needs iczn_group_id and parent_ids
+    iczn_group_id = params[:iczn_group_id]
+    parent_ids = params[:parent_ids]
+    @taxa_list = taxa_in_iczn_group_with_parents(iczn_group_id, parent_ids)
+    render :json => @taxa_list
   end
 
   def list_trait_groups
@@ -41,8 +21,6 @@ class SearchController < ApplicationController
     render :json => @trait_groups
   end
 
-  #        url: "/search/list_trait_names.json",
-#  data: { trait_type_name: traitTypeId}
   def list_categorical_trait_names
     @categorical_trait_names = CategoricalTrait.sorted
     render :json => @categorical_trait_names
@@ -291,32 +269,10 @@ class SearchController < ApplicationController
 
   private
 
-  def htg_taxa
-    return Taxon.ungrouped_taxa.sorted
-  end
-
-  def order_taxa_in_htg(htg_id)
-    if htg_id
-      return Taxon.find(htg_id).children.order_taxa.sorted
-    else
-      return Taxon.order_taxa.sorted
-    end
-  end
-
-  def family_taxa_in_order(order_id)
-    if order_id
-      return Taxon.find(order_id).children.family_taxa.sorted
-    else
-      return Taxon.family_taxa.sorted
-    end
-  end
-
-  def genus_taxa_in_family(family_id)
-    if family_id
-      return Taxon.find(family_id).children.genus_taxa.sorted
-    else
-      return Taxon.genus_taxa.sorted
-    end
+  def taxa_in_iczn_group_with_parents(iczn_group_id, parent_taxon_ids)
+    iczn_group = IcznGroup.find(iczn_group_id)
+    taxon_ids = Taxon.where(:id => parent_taxon_ids).map{|t| t.descendants_with_level(iczn_group).map{|x| x.id}}.flatten
+    return Taxon.where(:id => taxon_ids).sorted
   end
 
   def traits

@@ -10,14 +10,13 @@ function addTaxonFilterRow(animation) {
     var el = lastTaxonFilterRow.clone(true);
     // update the ids
     uniqueRowId++;
-    var htgId = "htg_" + uniqueRowId;
-    var orderId = "order_" + uniqueRowId;
-    var familyId = "family_" + uniqueRowId;
-    var genusId = "genus_" + uniqueRowId;
-    el.find('select.htg').attr('id',htgId).attr('name','htg[' + uniqueRowId + ']');
-    el.find('select.order').attr('id',orderId).attr('name','order[' + uniqueRowId + ']');
-    el.find('select.family').attr('id',familyId).attr('name','family[' + uniqueRowId + ']');
-    el.find('select.genus').attr('id',genusId).attr('name','genus[' + uniqueRowId + ']');
+
+    // data-groupid, data-grouplevel, data-groupname
+    icznGroups.forEach(function(group) {
+        var elementId = group.name + '_' + uniqueRowId;
+        var elementName = group.name + '[' + uniqueRowId + ']';
+        el.find('select[data-groupid="' + group.id + '"]').attr('id',elementId).attr('name', elementName);
+    });
     el.hide();
     lastTaxonFilterRow.after(el);
     el.show(animation);
@@ -198,6 +197,35 @@ function updateCategoricalTraitValues(traitElement, valueList) {
     }
 }
 
+function groupChanged(groupElement, groupId) {
+    // clear everything to the right, with a higher level
+    var level = parseInt(groupElement.attributes['data-grouplevel'].value);
+    var iczn_group_id = parseInt(groupElement.attributes['data-groupid'].value);
+    console.log("Level: " + level);
+    // find the sibling selects in this element where the level is higher than 'level' and clear it
+    // left off here 6/19 pm
+    // loop over the levels that are higher than ours
+    var groupLevelsToClear = icznGroups.map(function(g) { return g.level; }).filter(function(l) { return l > level});
+    groupLevelsToClear.forEach(function(groupLevel) {
+        $(groupElement).siblings('select[data-grouplevel=' + groupLevel + ']').remove();
+    });
+    var groupLevelsToSend = icznGroups.map(function(g) { return g.level; }).filter(function(l) { return l <= level});
+    var parentIds = new Array();
+    groupLevelsToSend.forEach(function(groupLevel) {
+        parentIds.push($(groupElement).siblings('select[data-grouplevel=' + groupLevel + ']').val());
+    });
+    console.log('parentIds' + parentIds);
+    // Need to send an ajax request for each of the group levels to clear
+    $.ajax({
+        url: "/search/list_taxa.json",
+        data: {
+            iczn_group_id: iczn_group_id,
+            parent_ids: parentIds
+        }
+    }).done(function(data) { console.log('received response from list taxa: ' + data)});
+}
+
+
 function higherGroupChanged(higherGroupElement, higherGroupId) {
     $(higherGroupElement).siblings(".order").find('option').remove();
     $.ajax({
@@ -264,14 +292,8 @@ function continuousTraitEntryChanged(continuousTraitEntryElement, entryId) {
 
 function addSelectionChangeListeners() {
     // taxonomy
-    $('select.htg').change(function() {
-        higherGroupChanged(this,this.value);
-    });
-    $('select.order').change(function() {
-        orderChanged(this,this.value);
-    });
-    $('select.family').change(function() {
-        familyChanged(this,this.value);
+    $('select[data-groupid]').change(function() {
+        groupChanged(this,this.value);
     });
 
     // trait

@@ -271,7 +271,7 @@ class SearchController < ApplicationController
 
   def taxa_in_iczn_group_with_parents(iczn_group_id, parent_taxon_ids)
     iczn_group = IcznGroup.find(iczn_group_id)
-    taxon_ids = Taxon.where(:id => parent_taxon_ids).map{|t| t.descendants_with_level(iczn_group).map{|x| x.id}}.flatten
+    taxon_ids = Taxon.where(:id => parent_taxon_ids).map{|t| t.descendants_with_level(iczn_group).map{|x| x.id}}.inject{|memo,id| memo & id}
     return Taxon.where(:id => taxon_ids).sorted
   end
 

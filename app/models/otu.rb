@@ -56,6 +56,7 @@ class Otu < ActiveRecord::Base
     names_by_group().join(' ')
   end
 
+  # TODO: get rid of all of these
   def species_name
     names_by_group().find{|x| x[:name] == 'species'}
   end

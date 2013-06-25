@@ -1,18 +1,18 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.2.12'
+gem 'rails', '4.0.0'
 
 # Paperclip adds file upload support to ActiveRecord models
 gem "paperclip", "~> 3.4.1"
 
 # delayed_job allows background asynchronous jobs
 # it used to import uploaded files
-gem "delayed_job", "~> 3.0.5"
-gem "delayed_job_active_record"
+gem "delayed_job", "~> 4.0.0.beta2"
+gem "delayed_job_active_record", "~> 4.0.0.beta3"
 gem "daemons"
 
 # devise for user accounts
-gem "devise"
+gem 'devise', '3.0.0.rc'
 
 # OmniAuth for open id in devise
 gem 'omniauth'
@@ -26,21 +26,21 @@ gem 'wicked'
 
 gem 'mysql2'
 
-# Gems used only for assets and not required
-# in production environments by default.
-group :assets do
-  gem 'sass-rails',   '~> 3.2.3'
-  gem 'coffee-rails', '~> 3.2.1'
+# Rails 4 removed attr_accessible and attr_protected from your models.
+gem 'protected_attributes'
 
-  # See https://github.com/sstephenson/execjs#readme for more supported runtimes
-  
-  # CSS and JS from twitter bootstrap.
-  # Could easily be made static
-  gem 'less-rails-bootstrap'
-  gem 'therubyracer', :platforms => :ruby
+# Formerly in the assets group
+gem 'sass-rails',   '~> 4.0.0'
+gem 'coffee-rails', '~> 4.0.0'
 
-  gem 'uglifier', '>= 1.0.3'
-end
+# See https://github.com/sstephenson/execjs#readme for more supported runtimes
+
+# CSS and JS from twitter bootstrap.
+# Could easily be made static
+gem 'less-rails-bootstrap'
+gem 'therubyracer', :platforms => :ruby
+
+gem 'uglifier', '>= 1.0.3'
 
 gem 'jquery-rails'
 

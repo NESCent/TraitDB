@@ -1,3 +1,19 @@
 // Place all the styles related to the search controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+.taxa-table caption, .traits-table caption {
+  text-align: left;
+}
+
+.table-borderless td {
+  border: 0 !important
+}
+
+.trait-list {
+  margin-left: 10px;
+}
+
+select.taxon-select {
+  width: auto;
+}

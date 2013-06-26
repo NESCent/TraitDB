@@ -7,72 +7,90 @@
     <div class="row-fluid">
       <div id="searchform" class="well">
         <%= form_tag '/search/results', { :class => 'form' } do -%>
-            <!-- taxon selection, should be a partial? -->
             <div id="taxa">
-              <h3>Taxonomy</h3>
               <div class="row-fluid">
-                <div class="span10">
-                  <div class="row-fluid">
-                    <% @iczn_groups.each do |group| %>
-                      <!-- how many spans will fit? -->
-                      <label><%= group.name %></label>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
-              <div class="row-fluid taxon-filter-row">
-                <div class="span10">
-                  <div class="row-fluid">
-                    <% @iczn_groups.each do |group| %>
-                      <%= select_tag("#{group.name}[0]",
-                                     options_from_collection_for_select(group.taxa.sorted, 'id', 'name'),
-                                     'data-groupid' => group.id,
-                                     'data-groupname' => group.name,
-                                     'data-grouplevel' => group.level
-                          ) %>
-                    <% end %>
-                  </div>
-                </div>
-                <div class="span2 add_remove_taxon">
-                  <a href="#" class="btn add_taxon"><i class="icon-plus-sign"></i></a>
-                  <a href="#" class="btn remove_taxon"><i class="icon-minus-sign"></i></a>
-                </div>
+                <table class="span12 table table-condensed table-borderless taxa-table">
+                  <caption><span class="lead">1. Choose Taxonomy</span></caption>
+                  <thead>
+                    <tr>
+                      <% @iczn_groups.each do |group| %>
+                          <th><%= group.name %></th>
+                      <% end %>
+                      <th>&nbsp;</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="taxon-filter-row">
+                      <% @iczn_groups.each do |group| %>
+                        <td>
+                        <%= select_tag("#{group.name}[0]",
+                                       options_from_collection_for_select(group.taxa.sorted, 'id', 'name'),
+                                       'data-groupid' => group.id,
+                                       'data-groupname' => group.name,
+                                       'data-grouplevel' => group.level,
+                                       :class => 'input-medium'
+                            ) %>
+                        </td>
+                      <% end %>
+                      <td class="add-remove-taxon">
+                        <a href="#" class="btn add_taxon taxon-cell "><i class="icon-plus-sign"></i></a>
+                        <a href="#" class="btn remove_taxon taxon-cell "><i class="icon-minus-sign"></i></a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
             <div id="traits">
-              <h3>Traits</h3>
               <div class="row-fluid">
-                <div class="span1">
-
-                </div>
-                <div class="span9">
-                  <div class="row-fluid">
-                    <label class="span3">Type</label>
-                    <label class="span3">Name</label>
-                    <label class="span3">Value</label>
-                  </div>
-                </div>
-              </div>
-
-              <div class="row-fluid trait-filter-row">
-                <div class="span1 operator_placeholder"></div>
-                <div class="span9">
-                  <div class="row-fluid">
-                    <%= select_tag(:"#{:trait_types}[0]", options_for_select(@trait_types), :prompt => '-- Select --', :class => 'span3 trait_type') %>
-                    <%= select_tag(:"#{:categorical_trait_name}[0]", nil, :prompt => '-- Select --', :class => 'span3 categorical_trait_name') %>
-                    <%= select_tag("#{:categorical_trait_values}[0]", nil, :prompt => '-- All Values --', :class => 'span3 categorical_trait_values') %>
-                    <%= select_tag(:"#{:continuous_trait_name}[0]", nil, :prompt => '-- Select --', :class => 'span3 continuous_trait_name') %>
-                    <%= select_tag("#{:continuous_trait_value_predicates}[0]", nil, :prompt => '-- All Values --', :class => 'span3 continuous_trait_value_predicates') %>
-                    <%= number_field_tag("#{:continuous_trait_entries}[0]", nil, :class => 'span3 continuous_trait_entries') %>
-                  </div>
-                </div>
-                <div class="span2">
-                  <a href="#" class="btn add_trait"><i class="icon-plus-sign"></i></a>
-                  <a href="#" class="btn remove_trait"><i class="icon-minus-sign"></i></a>
-                </div>
+                <table class="span12 table traits-table table-borderless">
+                  <caption>
+                    <span class="lead">2. Choose Traits</span>
+                    <a href="#" class="trait_list">Show Trait List</a>
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th>&nbsp;</th>
+                      <th>Type</th>
+                      <th>Name</th>
+                      <th>Value</th>
+                      <th>&nbsp;</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="trait-filter-row">
+                      <td>
+                        <span class="operator_placeholder"></span>
+                      </td>
+                      <td>
+                        <%= select_tag(:"#{:trait_types}[0]", options_for_select(@trait_types), :prompt => '-- Select --', :class => 'trait_type') %>
+                      </td>
+                      <td>
+                        <%= select_tag(:"#{:categorical_trait_name}[0]", nil, :prompt => '-- Select --', :class => 'categorical_trait_name') %>
+                        <%= select_tag(:"#{:continuous_trait_name}[0]", nil, :prompt => '-- Select --', :class => 'continuous_trait_name') %>
+                      </td>
+                      <td>
+                        <%= select_tag("#{:categorical_trait_values}[0]", nil, :prompt => '-- All Values --', :class => 'categorical_trait_values') %>
+                        <%= select_tag("#{:continuous_trait_value_predicates}[0]", nil, :prompt => '-- All Values --', :class => 'continuous_trait_value_predicates') %>
+                      </td>
+                      <td>
+                        <%= number_field_tag("#{:continuous_trait_entries}[0]", nil, :class => 'continuous_trait_entries') %>
+                      </td>
+                      <td>
+                        <a href="#" class="btn add_trait"><i class="icon-plus-sign"></i></a>
+                        <a href="#" class="btn remove_trait"><i class="icon-minus-sign"></i></a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           <div id="options">
+            <div class="row-fluid options-row">
+              <label class="checkbox inline">
+                <input type="checkbox" id="select_all_traits" name="select_all_traits">Select all traits
+              </label>
+            </div>
             <div class="row-fluid options-row">
               <label class="checkbox inline">
                 <input type="checkbox" id="only_rows_with_data" name="only_rows_with_data">Only include rows with data for chosen traits
@@ -86,7 +104,7 @@
           </div>
           <div class="form-actions">
             <button type="submit" class="btn btn-primary pull-right">Search <i class="icon-search icon-white"></i></button>
-            <button type="reset" id="reset_search" class="btn btn-link pull-right">Reset</button>
+            <button type="reset" id="reset-search" class="btn btn-link pull-right">Reset</button>
           </div>
         <% end %>
       </div>

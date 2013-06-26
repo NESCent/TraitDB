@@ -155,15 +155,15 @@ function groupChanged(groupElement, groupId) {
     // when a group changes, reload the possible values for everything that is more specific
     var level = parseInt(groupElement.attributes['data-grouplevel'].value);
     var groupLevelsToSend = icznGroups.map(function(g) { return g.level; }).filter(function(l) { return l <= level});
-    var parentIds = new Array($(groupElement).val());
+    var parentIds = new Array();
     groupLevelsToSend.forEach(function(groupLevel) {
-        parentIds.push($(groupElement).siblings('select[data-grouplevel=' + groupLevel + ']').val());
+        parentIds.push($(groupElement).closest(".taxon-filter-row").find('select[data-grouplevel=' + groupLevel + ']').val());
     });
     console.log('parentIds' + parentIds);
     // Send an ajax request for each of the group levels to clear
     var groupsToClear = icznGroups.filter(function(g) { return g.level > level; });
     groupsToClear.forEach(function(group) {
-        $(groupElement).siblings('select[data-grouplevel=' + group.level + ']').find('option').remove();
+        $(groupElement).closest(".taxon-filter-row").find('select[data-grouplevel=' + group.level + ']').find('option').remove();
         $.ajax({
             url: "/search/list_taxa.json",
             data: {
@@ -171,7 +171,7 @@ function groupChanged(groupElement, groupId) {
                 parent_ids: parentIds
             }
         }).done(function(data) {
-                var specificGroupElement = $(groupElement).siblings('select[data-grouplevel=' + group.level + ']').first()
+                var specificGroupElement = $(groupElement).closest(".taxon-filter-row").find('select[data-grouplevel=' + group.level + ']').first()
                 updateGroupList(specificGroupElement, data);
                 console.log('received response from list taxa for group id : ' + group.id + ' data: ' + data);
             }

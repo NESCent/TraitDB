@@ -252,7 +252,7 @@ module TraitDB
               @parse_results[:issues] << {
                 :issue_description => "Unrecognized value '#{value}' in categorical data field",
                 :row_location => lineno,
-                :column_name => k,
+                :column_name => name,
                 :row_name => dataset[:taxon],
                 :column_location => @csvfile.headers.index(name),
                 :suggested_solution => "Acceptable values are #{allowed_data_values}"

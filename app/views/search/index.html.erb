@@ -21,11 +21,13 @@
                   </thead>
                   <tbody>
                     <tr class="taxon-filter-row">
-                      <% @iczn_groups.each do |group| %>
+                      <% @iczn_groups.each_with_index do |group, i| %>
                         <td>
+                          <%# 'All' is not valid for the first taxon %>
+                          <% prompt = '-- All --' if i > 0 %>
                         <%= select_tag("#{group.name}[0]",
                                        options_from_collection_for_select(group.taxa.sorted, 'id', 'name'),
-                                       :prompt => '-- All --',
+                                       :prompt => prompt,
                                        'data-groupid' => group.id,
                                        'data-groupname' => group.name,
                                        'data-grouplevel' => group.level,

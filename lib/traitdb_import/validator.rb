@@ -104,20 +104,24 @@ module TraitDB
         @validation_results[:issues] << {:issue_description => 'Unable to read headers from CSV'}
         return
       end
-      # Quickly check if we're missing any taxon headers
-      missing_headers = (@template.taxonomy_columns.values) - headers
-      if missing_headers.empty?
-        # All taxon headers were found
-        # invert so that keys are the values in the spreadsheet and values are the names in the model
-        @taxon_header_map = @template.taxonomy_columns.invert
-        @validation_results[:info] << {:info => 'Taxon headers are valid'}
+      # Require at least one taxon header
+      found_taxon_headers = (@template.taxonomy_columns.values) & headers
+      puts "found_taxon_headers: #{found_taxon_headers}"
+      if found_taxon_headers.empty?
+        # No taxon headers found
+        @validation_results[:issues] << {
+          :issue_description => 'Missing taxon headers',
+          :suggested_solution => "Make sure CSV file has headers for taxa '#{@template.taxonomy_columns.values.join(',')}'."
+        }
       else
-        missing_headers.each do |missing|
-          @validation_results[:issues] << {
-              :issue_description => 'Missing taxon Header',
-              :suggested_solution => "Make sure CSV file has column header named '#{missing}'."
-          }
-        end
+        # Found at least one taxon header in the CSV file that is described by the template
+        # Need to reverse the hash so that we can look up an internal group name (e.g. 'htg')
+        # based on the value that appears in the CSV file (e.g. 'Higher Taxonomic Group')
+        # Also, only store mappings for values that were found in the CSV, since our template
+        # may reference extra fields
+
+        @taxon_header_map = @template.taxonomy_columns.reject{|k,v| !found_taxon_headers.include? v }.invert
+        @validation_results[:info] << {:info => 'Taxon headers are valid'}
       end
     end
   

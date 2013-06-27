@@ -1,7 +1,7 @@
 class DisplayFormat < ActiveRecord::Base
   attr_accessible :name
-  has_many :categorical_traits
-  has_many :continuous_traits
+  has_many :categorical_traits, :dependent => :nullify
+  has_many :continuous_traits, :dependent => :nullify
   def format_value(value)
     case name
       when 'integer'

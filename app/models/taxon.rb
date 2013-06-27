@@ -4,7 +4,7 @@ class Taxon < ActiveRecord::Base
 
   belongs_to :import_job
   has_one :csv_dataset, :through => :import_job
-  has_many :otus, :dependent => :destroy, :foreign_key => :species_taxon_id
+  has_and_belongs_to_many :otus
 
   has_many :child_taxa, :class_name => 'TaxonAncestor', :foreign_key => 'parent_id'
   has_many :children, :through => :child_taxa, :dependent => :destroy
@@ -12,13 +12,37 @@ class Taxon < ActiveRecord::Base
   has_one :parent_taxon, :class_name => 'TaxonAncestor', :foreign_key => 'child_id'
   has_one :parent, :through => :parent_taxon
 
+  has_and_belongs_to_many :trait_groups
+
   scope :sorted, order('name ASC')
 
-  scope :species_taxa, where(:iczn_group_id => IcznGroup.find_by_name("species"))
-  scope :family_taxa, where(:iczn_group_id => IcznGroup.find_by_name("family"))
-  scope :order_taxa, where(:iczn_group_id => IcznGroup.find_by_name("order"))
-  scope :genus_taxa, where(:iczn_group_id => IcznGroup.find_by_name("genus"))
-  scope :ungrouped_taxa, where(:iczn_group_id => nil)
+  scope :sorted_by_iczn, joins(:iczn_group).order('iczn_groups.level ASC')
+  scope :under_iczn_group, lambda{|iczn_group| joins(:iczn_group).where('iczn_groups.level > ?', iczn_group.level)}
+
+  def grouped_categorical_traits
+    trait_groups.map{|g| g.categorical_traits.sorted }.flatten
+  end
+
+  def grouped_continuous_traits
+    trait_groups.map{|g| g.continuous_traits.sorted }.flatten
+  end
+
+  def descendants_with_level(dest_iczn_group)
+    d = dest_iczn_group.distance(self.iczn_group)
+    return [] if d <= 0
+    return children.where(:iczn_group_id => dest_iczn_group.id) if d == 1 # if distance is 1, just get the children
+    descendants = []
+    for x in 1..d
+      join_clauses = ["INNER JOIN taxon_ancestors as ta0 on ta0.parent_id = #{self.id}"]
+      # now do 1 to n
+      for y in 1..(x-1)
+        join_clauses << "INNER JOIN taxon_ancestors AS ta#{y} ON ta#{y}.parent_id = ta#{y - 1}.child_id"
+      end
+      join_clauses << "AND ta#{x - 1}.child_id = taxa.id"
+      descendants += Taxon.where(:iczn_group_id => dest_iczn_group.id).joins(join_clauses.join(' '))
+    end
+    descendants
+  end
 
   def dataset_name
     csv_dataset.csv_file_file_name if csv_dataset
@@ -30,30 +54,6 @@ class Taxon < ActiveRecord::Base
   
   def parent_name
     parent.name if parent
-  end
-
-  # No longer used anywhere
-  def descendant_taxa
-    descendants = []
-    children.each do |c|
-      descendants << c.id
-      descendants += c.descendant_taxa
-    end
-    return descendants
-  end
-
-  def descendant_otus
-    Otu.where(:species_taxon_id => descendant_taxa)
-  end
-
-  def ancestor_with_iczn_group_name(name)
-    if iczn_group_name == name
-      return self
-    elsif parent
-      return parent.ancestor_with_iczn_group_name(name)
-    else
-      return nil
-    end
   end
 
 end

@@ -154,7 +154,7 @@ class SearchController < ApplicationController
       lowest_requested_taxon = nil
       sorted_groups_requested.each do |group|
         taxon_id_str = params[group.name][index.to_s]
-        if taxon_id_str
+        unless taxon_id_str.nil? || taxon_id_str.empty?
           lowest_requested_taxon = Taxon.find(taxon_id_str.to_i)
         end
       end

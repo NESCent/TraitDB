@@ -25,6 +25,7 @@
                         <td>
                         <%= select_tag("#{group.name}[0]",
                                        options_from_collection_for_select(group.taxa.sorted, 'id', 'name'),
+                                       :prompt => '-- All --',
                                        'data-groupid' => group.id,
                                        'data-groupname' => group.name,
                                        'data-grouplevel' => group.level,

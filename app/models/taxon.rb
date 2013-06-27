@@ -20,11 +20,11 @@ class Taxon < ActiveRecord::Base
   scope :under_iczn_group, lambda{|iczn_group| joins(:iczn_group).where('iczn_groups.level > ?', iczn_group.level)}
 
   def grouped_categorical_traits
-    trait_groups.map{|g| g.categorical_traits.sorted }
+    trait_groups.map{|g| g.categorical_traits.sorted }.flatten
   end
 
   def grouped_continuous_traits
-    trait_groups.map{|g| g.continuous_traits.sorted }
+    trait_groups.map{|g| g.continuous_traits.sorted }.flatten
   end
 
   def descendants_with_level(dest_iczn_group)

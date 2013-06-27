@@ -90,7 +90,7 @@ function addButtonHandlers() {
 
 function updateCategoricalTraitNames(traitTypeElement, traitList) {
     // find the trait names select element
-    var traitElement = $(traitTypeElement).siblings(".categorical_trait_name");
+    var traitElement = $(traitTypeElement).closest(".trait-filter-row").find(".categorical_trait_name");
     // remove all options from the select
     traitElement.find('option').remove();
     traitElement.append($('<option value>-- Select --</option>'));
@@ -104,7 +104,7 @@ function updateCategoricalTraitNames(traitTypeElement, traitList) {
 
 function updateContinuousTraitNames(traitTypeElement, traitList) {
     // find the trait names select element
-    var traitElement = $(traitTypeElement).siblings(".continuous_trait_name");
+    var traitElement = $(traitTypeElement).closest(".trait-filter-row").find(".continuous_trait_name");
     // remove all options from the select
     traitElement.find('option').remove();
     traitElement.append($('<option value>-- Select --</option>'));
@@ -117,7 +117,7 @@ function updateContinuousTraitNames(traitTypeElement, traitList) {
 }
 
 function updateContinuousTraitValuePredicates(traitElement) {
-    var traitValuesElement = $(traitElement).siblings(".continuous_trait_value_predicates");
+    var traitValuesElement = $(traitElement).closest(".trait-filter-row").find(".continuous_trait_value_predicates");
     traitValuesElement.find('option').remove();
     traitValuesElement.append($('<option value>-- All Values --</option>'));
     traitValuesElement.append($('<option value="eq">= (Equals)</option>'));
@@ -131,16 +131,16 @@ function updateContinuousTraitEntries(traitValuesElement) {
     if (traitValuesElement.value == 'in') {
         // show the second field
         // would be good to resize too
-        $(traitValuesElement).siblings('.continuous_trait_entries').children('.field2').show();
+        $(traitValuesElement).closest(".trait-filter-row").find('.continuous_trait_entries').children('.field2').show();
     } else {
         // hide the second field
-        $(traitValuesElement).siblings('.continuous_trait_entries').children('.field2').hide();
+        $(traitValuesElement).closest(".trait-filter-row").find('.continuous_trait_entries').children('.field2').hide();
     }
 }
 
 function updateCategoricalTraitValues(traitElement, valueList) {
     // find the trait values select element
-    var traitValuesElement = $(traitElement).siblings(".categorical_trait_values");
+    var traitValuesElement = $(traitElement).closest(".trait-filter-row").find('.categorical_trait_values');
     // remove all options from the select
     traitValuesElement.find('option').remove();
     traitValuesElement.append($('<option value>-- Select --</option>'));
@@ -192,16 +192,16 @@ function updateGroupList(destinationSelectElement, taxa) {
 // need an update trait types
 function traitTypeChanged(traitTypeElement, traitTypeId) {
     if(traitTypeElement.value == 'continuous') {
-        $(traitTypeElement).siblings(".continuous_trait_name").find('option').remove();
-        $(traitTypeElement).siblings(".continuous_trait_name, .continuous_trait_value_predicates, .continuous_trait_entries").show('fast');
-        $(traitTypeElement).siblings(".categorical_trait_name, .categorical_trait_values").hide('fast');
+        $(traitTypeElement).closest(".trait-filter-row").find(".continuous_trait_name").find('option').remove();
+        $(traitTypeElement).closest(".trait-filter-row").find(".continuous_trait_name, .continuous_trait_value_predicates, .continuous_trait_entries").show('fast');
+        $(traitTypeElement).closest(".trait-filter-row").find(".categorical_trait_name, .categorical_trait_values").hide('fast');
         $.ajax({
             url: "/search/list_continuous_trait_names.json"
         }).done(function(data, textstatus, jqXHR) { updateContinuousTraitNames(traitTypeElement, data); });
     } else {
-        $(traitTypeElement).siblings(".categorical_trait_name").find('option').remove();
-        $(traitTypeElement).siblings(".continuous_trait_name, .continuous_trait_value_predicates, .continuous_trait_entries").hide('fast');
-        $(traitTypeElement).siblings(".categorical_trait_name, .categorical_trait_values").show('fast');
+        $(traitTypeElement).closest(".trait-filter-row").find(".categorical_trait_name").find('option').remove();
+        $(traitTypeElement).closest(".trait-filter-row").find(".continuous_trait_name, .continuous_trait_value_predicates, .continuous_trait_entries").hide('fast');
+        $(traitTypeElement).closest(".trait-filter-row").find(".categorical_trait_name, .categorical_trait_values").show('fast');
         $.ajax({
             url: "/search/list_categorical_trait_names.json"
         }).done(function(data, textstatus, jqXHR) { updateCategoricalTraitNames(traitTypeElement, data); });
@@ -210,7 +210,7 @@ function traitTypeChanged(traitTypeElement, traitTypeId) {
 }
 
 function categoricalTraitNameChanged(categoricalTraitNameElement, traitId) {
-    $(categoricalTraitNameElement).siblings(".categorical_trait_values").find('option').remove();
+    $(categoricalTraitNameElement).closest(".trait-filter-row").find(".categorical_trait_values").find('option').remove();
     $.ajax({
         url: "/search/list_categorical_trait_values.js",
         data: { trait_id: traitId }

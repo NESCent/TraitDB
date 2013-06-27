@@ -16,18 +16,19 @@ class SearchController < ApplicationController
     render :json => @taxa_list
   end
 
-  def list_trait_groups
-    @trait_groups = trait_groups
-    render :json => @trait_groups
-  end
-
-  def list_categorical_trait_names
-    @categorical_trait_names = CategoricalTrait.sorted
+  def list_categorical_trait_names # needs taxon_ids
+    @categorical_trait_names = []
+    Taxon.where(:id => params[:taxon_ids]).each do |taxon|
+      @categorical_trait_names = @categorical_trait_names | taxon.grouped_categorical_traits
+    end
     render :json => @categorical_trait_names
   end
 
-  def list_continuous_trait_names
-    @continuous_trait_names = ContinuousTrait.sorted
+  def list_continuous_trait_names # needs taxon_ids
+    @continuous_trait_names = []
+    Taxon.where(:id => params[:taxon_ids]).each do |taxon|
+      @continuous_trait_names = @continuous_trait_names | taxon.grouped_continuous_traits
+    end
     render :json => @continuous_trait_names
   end
 

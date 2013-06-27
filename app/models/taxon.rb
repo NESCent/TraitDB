@@ -19,6 +19,14 @@ class Taxon < ActiveRecord::Base
   scope :sorted_by_iczn, joins(:iczn_group).order('iczn_groups.level ASC')
   scope :under_iczn_group, lambda{|iczn_group| joins(:iczn_group).where('iczn_groups.level > ?', iczn_group.level)}
 
+  def grouped_categorical_traits
+    trait_groups.map{|g| g.categorical_traits.sorted }
+  end
+
+  def grouped_continuous_traits
+    trait_groups.map{|g| g.continuous_traits.sorted }
+  end
+
   def descendants_with_level(dest_iczn_group)
     d = dest_iczn_group.distance(self.iczn_group)
     return [] if d <= 0

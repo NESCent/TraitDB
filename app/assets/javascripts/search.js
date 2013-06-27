@@ -191,19 +191,27 @@ function updateGroupList(destinationSelectElement, taxa) {
 
 // need an update trait types
 function traitTypeChanged(traitTypeElement, traitTypeId) {
+    // When getting traits, need to supply the selected taxonomy
+    var selectedTaxonIds = jQuery.map($('#taxa').find('select'), function(e, i) { return $(e).val(); }).filter( function(e, i) { return e.length > 0});
     if(traitTypeElement.value == 'continuous') {
         $(traitTypeElement).closest(".trait-filter-row").find(".continuous_trait_name").find('option').remove();
         $(traitTypeElement).closest(".trait-filter-row").find(".continuous_trait_name, .continuous_trait_value_predicates, .continuous_trait_entries").show('fast');
         $(traitTypeElement).closest(".trait-filter-row").find(".categorical_trait_name, .categorical_trait_values").hide('fast');
         $.ajax({
-            url: "/search/list_continuous_trait_names.json"
+            url: "/search/list_continuous_trait_names.json",
+            data: {
+                taxon_ids: selectedTaxonIds
+            }
         }).done(function(data, textstatus, jqXHR) { updateContinuousTraitNames(traitTypeElement, data); });
     } else {
         $(traitTypeElement).closest(".trait-filter-row").find(".categorical_trait_name").find('option').remove();
         $(traitTypeElement).closest(".trait-filter-row").find(".continuous_trait_name, .continuous_trait_value_predicates, .continuous_trait_entries").hide('fast');
         $(traitTypeElement).closest(".trait-filter-row").find(".categorical_trait_name, .categorical_trait_values").show('fast');
-        $.ajax({
-            url: "/search/list_categorical_trait_names.json"
+      $.ajax({
+            url: "/search/list_categorical_trait_names.json",
+            data: {
+                taxon_ids: selectedTaxonIds
+            }
         }).done(function(data, textstatus, jqXHR) { updateCategoricalTraitNames(traitTypeElement, data); });
     }
 

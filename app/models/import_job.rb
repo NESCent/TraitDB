@@ -232,8 +232,9 @@ class ImportJob < ActiveRecord::Base
     validator = get_validator
     validator.validate
     validator.parse
-    import_traits(validator.trait_headers) # Need to handle trait groups
-    import_datasets(validator.datasets) # same here, as well as metadata fields
+    import_traits(validator.trait_headers)
+    import_datasets(validator.datasets)
+    link_trait_groups # done after import
     true
   end
 
@@ -396,5 +397,21 @@ class ImportJob < ActiveRecord::Base
       end #end of datasets.each
   end
 
+  def link_trait_groups
+    template = csv_import_template.get_import_template
+    template.trait_group_names.each do |trait_group_name|
+      trait_group = TraitGroup.find_by_name(trait_group_name)
+      next if trait_group.nil?
+
+      # Only set groups for taxa created by this import job
+      iczn_group = IcznGroup.where(:name => template.trait_group_rank(trait_group_name)).first
+      next if iczn_group.nil?
+
+      iczn_group.taxa.where(:name => template.trait_group_taxon_name(trait_group_name)).each do |taxon|
+        taxon.trait_groups << trait_group
+        taxon.save
+      end
+    end
+  end
   
 end

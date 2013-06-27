@@ -4,13 +4,14 @@ traitdb_spreadsheet_template:
   template_name: Tree of Sex
   # All taxonomy columns specified here are required
   taxonomy_columns: # keys are the local to the app.  Values are literals in the CSV
+    kingdom: kingdom # For plants or animals
     htg: Higher taxonomic group
     order: Order
     family: Family
     genus: Genus
     species: species
-#    species_author: species author # In template, only for plants.  Don't have a way to hide these for animals
-#    infraspecific: infraspecific # In template, only exists for plants.  Don't have a way to hide these for animals
+    species_author: species author # In template, only for plants.  Don't have a way to hide these for animals
+    infraspecific: infraspecific # In template, only exists for plants.  Don't have a way to hide these for animals
   # Metadata columns are optional, could refactor into two groups
   metadata_columns:
     common_name: common name

@@ -4,20 +4,29 @@ traitdb_spreadsheet_template:
   template_name: Tree of Sex
   # All taxonomy columns specified here are required
   taxonomy_columns: # keys are the local to the app.  Values are literals in the CSV
+    kingdom: kingdom # For plants or animals
     htg: Higher taxonomic group
     order: Order
     family: Family
     genus: Genus
     species: species
-#    species_author: species author # In template, only for plants.  Don't have a way to hide these for animals
-#    infraspecific: infraspecific # In template, only exists for plants.  Don't have a way to hide these for animals
+    species_author: species author # In template, only for plants.  Don't have a way to hide these for animals
+    infraspecific: infraspecific # In template, only exists for plants.  Don't have a way to hide these for animals
   # Metadata columns are optional, could refactor into two groups
   metadata_columns:
     common_name: common name
     notes: notes, comments
     entry_name: entry name
     entry_email: entry email
-  trait_groups: [Plants, Animals] # Traits may belong to zero or more groups.  Traits without an explicit group are in the default group (0)
+  trait_groups: # these define a relationship of a taxonomy to a set of traits.  They can only be applied after data is imported
+    -
+      name: Plants
+      taxonomic_rank: kingdom
+      taxon_name: plants
+    - 
+      name: Animals
+      taxonomic_rank: kingdom
+      taxon_name: animals
   trait_options:
     source_prefix: "source: " # include the space after the colon
     require_source: true # source rules for formatting?
@@ -53,6 +62,7 @@ traitdb_spreadsheet_template:
     -
       name: Growth Form
       values:
+        - woody
         - herb
         - shrub
         - tree

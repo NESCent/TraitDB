@@ -232,8 +232,9 @@ class ImportJob < ActiveRecord::Base
     validator = get_validator
     validator.validate
     validator.parse
-    import_traits(validator.trait_headers) # Need to handle trait groups
-    import_datasets(validator.datasets) # same here, as well as metadata fields
+    import_traits(validator.trait_headers)
+    import_datasets(validator.datasets)
+    link_trait_groups # done after import
     true
   end
 
@@ -291,15 +292,12 @@ class ImportJob < ActiveRecord::Base
       datasets.each do |d|
         taxon = d[:taxon]
         # Find or create an OTU for this row
-
-        # htg, order, family, genus, species, species_author, infraspecific
         last_parent = nil
-        # These need to come from the validator and from the IcznGroups
-        taxa_map = {'htg'=> nil, 'order' => nil, 'family' => nil, 'genus' => nil, 'species' => nil, 'species_author' => nil, 'infraspecific' => nil}
-        # Start with the HTG
+        taxa_map = {}
+        IcznGroup.sorted.each{|x| taxa_map[x.name] = nil}
         taxa_map.keys.each do |level|
-          # level will be 'htg' or 'family', etc.
-          next if taxon[level].nil?
+          # level will be the name of the IcznGroup, e.g. 'htg' or 'family'
+          next if taxon[level].nil? || taxon[level].empty? # skip if this row doesn't have taxonomy information at the current level
           model_taxon = Taxon.where(:name => taxon[level].strip).first_or_create do |t|
             t.parent = last_parent
             t.import_job = self
@@ -308,14 +306,9 @@ class ImportJob < ActiveRecord::Base
           last_parent = taxa_map[level] = model_taxon
         end
 
-        # Create the OTU at the lowest level, may be species
-        # make an otu
-        otu = Otu.create(:species_taxon => taxa_map['species'],
-                         :genus_taxon => taxa_map['genus'],
-                         :family_taxon => taxa_map['family'],
-                         :order_taxon => taxa_map['order'],
-                         :htg_taxon => taxa_map['htg'],
-                         :import_job => self)
+        # Create an OTU
+        # Tested this in console but not yet web.  Should work just fine
+        otu = Otu.create(:taxa => taxa_map.values.compact,:import_job => self)
 
         # Add metadata to the OTU, including notes, entry email, etc
         d[:metadata].each do |k,v|
@@ -404,5 +397,21 @@ class ImportJob < ActiveRecord::Base
       end #end of datasets.each
   end
 
+  def link_trait_groups
+    template = csv_import_template.get_import_template
+    template.trait_group_names.each do |trait_group_name|
+      trait_group = TraitGroup.find_by_name(trait_group_name)
+      next if trait_group.nil?
+
+      # Only set groups for taxa created by this import job
+      iczn_group = IcznGroup.where(:name => template.trait_group_rank(trait_group_name)).first
+      next if iczn_group.nil?
+
+      iczn_group.taxa.where(:name => template.trait_group_taxon_name(trait_group_name)).each do |taxon|
+        taxon.trait_groups << trait_group
+        taxon.save
+      end
+    end
+  end
   
 end

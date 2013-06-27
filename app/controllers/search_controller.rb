@@ -1,55 +1,34 @@
 class SearchController < ApplicationController
   OPERATORS = { :or => 'or', :and => 'and' }
   def index
-    @taxa = {}
-    # Higher taxonomic group
-    @taxa[:htg] = htg_taxa
-    # Order
-    @taxa[:order] = order_taxa_in_htg(@taxa[:htg].first)
-    # Family
-    @taxa[:family] = family_taxa_in_order(@taxa[:order].first)
-    # Genus
-    @taxa[:genus] = genus_taxa_in_family(@taxa[:family].first)
+    @iczn_groups = IcznGroup.sorted.select{|group| group.taxa.count > 0}
+
     @trait_groups = []
     @trait_types = [['Categorical', :categorical], ['Continuous', :continuous]]
     @trait_names = {:categorical => CategoricalTrait.sorted, :continuous => ContinuousTrait.sorted }
     @categorical_trait_values = categorical_trait_values_for_trait(@trait_names[:categorical].first)
   end
 
-  def list_htg
-    @higher_group_list = htg_taxa
-    render :json => @higher_group_list
+  def list_taxa # needs iczn_group_id and parent_ids
+    iczn_group_id = params[:iczn_group_id]
+    parent_ids = params[:parent_ids]
+    @taxa_list = taxa_in_iczn_group_with_parents(iczn_group_id, parent_ids)
+    render :json => @taxa_list
   end
 
-  def list_order
-    @order_list = order_taxa_in_htg(params[:htg_id])
-    render :json => @order_list
-  end
-
-  def list_family
-    @family_list = family_taxa_in_order(params[:order_id])
-    render :json => @family_list
-  end
-
-  def list_genus
-    @genus_list = genus_taxa_in_family(params[:family_id])
-    render :json => @genus_list
-  end
-
-  def list_trait_groups
-    @trait_groups = trait_groups
-    render :json => @trait_groups
-  end
-
-  #        url: "/search/list_trait_names.json",
-#  data: { trait_type_name: traitTypeId}
-  def list_categorical_trait_names
-    @categorical_trait_names = CategoricalTrait.sorted
+  def list_categorical_trait_names # needs taxon_ids
+    @categorical_trait_names = []
+    Taxon.where(:id => params[:taxon_ids]).each do |taxon|
+      @categorical_trait_names = @categorical_trait_names | taxon.grouped_categorical_traits
+    end
     render :json => @categorical_trait_names
   end
 
-  def list_continuous_trait_names
-    @continuous_trait_names = ContinuousTrait.sorted
+  def list_continuous_trait_names # needs taxon_ids
+    @continuous_trait_names = []
+    Taxon.where(:id => params[:taxon_ids]).each do |taxon|
+      @continuous_trait_names = @continuous_trait_names | taxon.grouped_continuous_traits
+    end
     render :json => @continuous_trait_names
   end
 
@@ -151,31 +130,41 @@ class SearchController < ApplicationController
 
     rows = []
 
-    params['htg'].reject{|k,v| v.empty?}.each do |k,v|
-      # Extract the taxon_id from each Taxonomy dropdown
-      lowest_id =  Integer(v)
-      lowest_group = 'htg'
-      if params['order'] && params['order'][k]
-        unless params['order'][k].blank?
-          lowest_id = Integer(params['order'][k])
-          lowest_group = 'order'
-        end
-      end
-      if params['family'] && params['family'][k]
-        unless params['family'][k].blank?
-          lowest_id = Integer(params['family'][k])
-          lowest_group = 'family'
-        end
-      end
-      if params['genus'] && params['genus'][k]
-        unless params['genus'][k].blank?
-          lowest_id = Integer(params['genus'][k])
-          lowest_group = 'genus'
-        end
-      end
+    # The requested taxon filters have parameter names that correspond to IcznGroup names.
+    # The values are the Taxon IDs
+    sorted_groups_requested = IcznGroup.sorted.where(:name => params.keys)
+    valid_group_names = IcznGroup.sorted.map{|g| g.name}
+    columns[:iczn_groups] = sorted_groups_requested.map{|group| {:name => group.name, :id => group.id}}
 
-      # Assemble a set of Otus for this selected row
-      Otu.in_taxon(lowest_id, lowest_group).each do |otu|
+    # An example params hash looks like this
+    # "{"htg"=>{"0"=>"2601", "2"=>"2601"}, "order"=>{"0"=>"2602", "2"=>"2602"}, "family"=>{"0"=>"2603", "2"=>"2607"}, "genus"=>{"0"=>"2625", "2"=>"2612"}, "species"=>{"0"=>"2623", "2"=>"2613"}, "trait_types"=>{"0"=>""}, "categorical_trait_name"=>{"0"=>""}, "categorical_trait_values"=>{"0"=>""}, "continuous_trait_name"=>{"0"=>""}, "continuous_trait_value_predicates"=>{"0"=>""}, "continuous_trait_entries"=>{"0"=>""}, "include_references"=>"on", "controller"=>"search", "action"=>"results"}"
+
+    indices = []
+
+    params.each do |pk, pv|
+      next unless valid_group_names.include? pk
+      # pk is one of 'htg','order',etc...
+      # pv looks like {"0"=>"2602", "2"=>"2607"}
+      # "0" and "2" are integers in string format, and these indices may not be consecutive
+      indices += pv.keys.map{|n| n.to_i}
+    end
+    indices.sort!.uniq!
+
+    lowest_requested_taxa = []
+    indices.each do |index|
+      lowest_requested_taxon = nil
+      sorted_groups_requested.each do |group|
+        taxon_id_str = params[group.name][index.to_s]
+        unless taxon_id_str.nil? || taxon_id_str.empty?
+          lowest_requested_taxon = Taxon.find(taxon_id_str.to_i)
+        end
+      end
+      lowest_requested_taxa << lowest_requested_taxon if lowest_requested_taxon
+    end
+
+    # At this point, we'll have a list of the most specific taxa requested at each level
+    lowest_requested_taxa.each do |lowest_requested_taxon|
+      lowest_requested_taxon.otus.each do |otu|
         # Start with a hash containing the OTU
         # This row will only be included in the output set if the criteria is met
         row = { :otu => otu, :sort_name => otu.name }
@@ -258,6 +247,10 @@ class SearchController < ApplicationController
         # add metadata field names from the included OTU
         row[:metadata] = otu.metadata_hash
         otu_metadata_field_names |= row[:metadata].keys
+        # add taxonomy to the row, so that the view doesn't have to look up OTU relationships
+        taxonomy = {}
+        otu.taxa.each{|t| taxonomy[t.iczn_group_id] = t.name}
+        row[:taxonomy] = taxonomy
       end # otu
     end
     rows.sort! {|a,b| a[:sort_name] <=> b[:sort_name]}
@@ -291,32 +284,10 @@ class SearchController < ApplicationController
 
   private
 
-  def htg_taxa
-    return Taxon.ungrouped_taxa.sorted
-  end
-
-  def order_taxa_in_htg(htg_id)
-    if htg_id
-      return Taxon.find(htg_id).children.order_taxa.sorted
-    else
-      return Taxon.order_taxa.sorted
-    end
-  end
-
-  def family_taxa_in_order(order_id)
-    if order_id
-      return Taxon.find(order_id).children.family_taxa.sorted
-    else
-      return Taxon.family_taxa.sorted
-    end
-  end
-
-  def genus_taxa_in_family(family_id)
-    if family_id
-      return Taxon.find(family_id).children.genus_taxa.sorted
-    else
-      return Taxon.genus_taxa.sorted
-    end
+  def taxa_in_iczn_group_with_parents(iczn_group_id, parent_taxon_ids)
+    iczn_group = IcznGroup.find(iczn_group_id)
+    taxon_ids = Taxon.where(:id => parent_taxon_ids).map{|t| t.descendants_with_level(iczn_group).map{|x| x.id}}.inject{|memo,id| memo & id}
+    return Taxon.where(:id => taxon_ids).sorted
   end
 
   def traits

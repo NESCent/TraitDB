@@ -10,14 +10,13 @@ function addTaxonFilterRow(animation) {
     var el = lastTaxonFilterRow.clone(true);
     // update the ids
     uniqueRowId++;
-    var htgId = "htg_" + uniqueRowId;
-    var orderId = "order_" + uniqueRowId;
-    var familyId = "family_" + uniqueRowId;
-    var genusId = "genus_" + uniqueRowId;
-    el.find('select.htg').attr('id',htgId).attr('name','htg[' + uniqueRowId + ']');
-    el.find('select.order').attr('id',orderId).attr('name','order[' + uniqueRowId + ']');
-    el.find('select.family').attr('id',familyId).attr('name','family[' + uniqueRowId + ']');
-    el.find('select.genus').attr('id',genusId).attr('name','genus[' + uniqueRowId + ']');
+
+    // data-groupid, data-grouplevel, data-groupname
+    icznGroups.forEach(function(group) {
+        var elementId = group.name + '_' + uniqueRowId;
+        var elementName = group.name + '[' + uniqueRowId + ']';
+        el.find('select[data-groupid="' + group.id + '"]').attr('id',elementId).attr('name', elementName);
+    });
     el.hide();
     lastTaxonFilterRow.after(el);
     el.show(animation);
@@ -89,55 +88,9 @@ function addButtonHandlers() {
     });
 }
 
-function updateOrderList(higherGroupElement, orderList) {
-    var orderElement = $(higherGroupElement).siblings(".order");
-    // remove all options from the element
-    orderElement.find('option').remove();
-    orderElement.append($('<option value>-- All --</option>'));
-    for(var order in orderList) {
-        var obj = orderList[order];
-        // now make a new select option and append it
-        var optionElement = $('<option>', {value: obj.id}).text(obj.name);
-        orderElement.append(optionElement);
-    }
-    // Also clear the lower levels
-    $(orderElement).siblings(".family").find('option').remove();
-    $(orderElement).siblings(".genus").find('option').remove();
-}
-
-function updateFamilyList(orderElement, familyList) {
-    var familyElement = $(orderElement).siblings(".family");
-    // remove all options from the element
-    familyElement.find('option').remove();
-    familyElement.append($('<option value>-- All --</option>'));
-
-    for(var family in familyList) {
-        var obj = familyList[family];
-        // now make a new select option and append it
-        var optionElement = $('<option>', {value: obj.id}).text(obj.name);
-        familyElement.append(optionElement);
-    }
-    $(familyElement).siblings(".genus").find('option').remove();
-}
-
-function updateGenusList(familyElement, genusList) {
-    // find the genus select element
-    var genusElement = $(familyElement).siblings(".genus");
-    // remove all options from the genus element
-    genusElement.find('option').remove();
-    genusElement.append($('<option value>-- All --</option>'));
-    for(var genus in genusList) {
-        var obj = genusList[genus];
-        console.log("name: " + obj.name + " id: " + obj.id);
-        // now make a new select option and append it
-        var optionElement = $('<option>', {value: obj.id}).text(obj.name);
-        genusElement.append(optionElement);
-    }
-}
-
 function updateCategoricalTraitNames(traitTypeElement, traitList) {
     // find the trait names select element
-    var traitElement = $(traitTypeElement).siblings(".categorical_trait_name");
+    var traitElement = $(traitTypeElement).closest(".trait-filter-row").find(".categorical_trait_name");
     // remove all options from the select
     traitElement.find('option').remove();
     traitElement.append($('<option value>-- Select --</option>'));
@@ -151,7 +104,7 @@ function updateCategoricalTraitNames(traitTypeElement, traitList) {
 
 function updateContinuousTraitNames(traitTypeElement, traitList) {
     // find the trait names select element
-    var traitElement = $(traitTypeElement).siblings(".continuous_trait_name");
+    var traitElement = $(traitTypeElement).closest(".trait-filter-row").find(".continuous_trait_name");
     // remove all options from the select
     traitElement.find('option').remove();
     traitElement.append($('<option value>-- Select --</option>'));
@@ -164,7 +117,7 @@ function updateContinuousTraitNames(traitTypeElement, traitList) {
 }
 
 function updateContinuousTraitValuePredicates(traitElement) {
-    var traitValuesElement = $(traitElement).siblings(".continuous_trait_value_predicates");
+    var traitValuesElement = $(traitElement).closest(".trait-filter-row").find(".continuous_trait_value_predicates");
     traitValuesElement.find('option').remove();
     traitValuesElement.append($('<option value>-- All Values --</option>'));
     traitValuesElement.append($('<option value="eq">= (Equals)</option>'));
@@ -178,16 +131,16 @@ function updateContinuousTraitEntries(traitValuesElement) {
     if (traitValuesElement.value == 'in') {
         // show the second field
         // would be good to resize too
-        $(traitValuesElement).siblings('.continuous_trait_entries').children('.field2').show();
+        $(traitValuesElement).closest(".trait-filter-row").find('.continuous_trait_entries').children('.field2').show();
     } else {
         // hide the second field
-        $(traitValuesElement).siblings('.continuous_trait_entries').children('.field2').hide();
+        $(traitValuesElement).closest(".trait-filter-row").find('.continuous_trait_entries').children('.field2').hide();
     }
 }
 
 function updateCategoricalTraitValues(traitElement, valueList) {
     // find the trait values select element
-    var traitValuesElement = $(traitElement).siblings(".categorical_trait_values");
+    var traitValuesElement = $(traitElement).closest(".trait-filter-row").find('.categorical_trait_values');
     // remove all options from the select
     traitValuesElement.find('option').remove();
     traitValuesElement.append($('<option value>-- Select --</option>'));
@@ -198,52 +151,74 @@ function updateCategoricalTraitValues(traitElement, valueList) {
     }
 }
 
-function higherGroupChanged(higherGroupElement, higherGroupId) {
-    $(higherGroupElement).siblings(".order").find('option').remove();
-    $.ajax({
-        url: "/search/list_order.json",
-        data: { htg_id: higherGroupId}
-    }).done(function(data, textStatus, jqXHR) { updateOrderList(higherGroupElement, data); });
+function groupChanged(groupElement, groupId) {
+    // when a group changes, reload the possible values for everything that is more specific
+    var level = parseInt(groupElement.attributes['data-grouplevel'].value);
+    var groupLevelsToSend = icznGroups.map(function(g) { return g.level; }).filter(function(l) { return l <= level});
+    var parentIds = new Array();
+    groupLevelsToSend.forEach(function(groupLevel) {
+        parentIds.push($(groupElement).closest(".taxon-filter-row").find('select[data-grouplevel=' + groupLevel + ']').val());
+    });
+    console.log('parentIds' + parentIds);
+    // Send an ajax request for each of the group levels to clear
+    var groupsToClear = icznGroups.filter(function(g) { return g.level > level; });
+    groupsToClear.forEach(function(group) {
+        $(groupElement).closest(".taxon-filter-row").find('select[data-grouplevel=' + group.level + ']').find('option').remove();
+        $.ajax({
+            url: "/search/list_taxa.json",
+            data: {
+                iczn_group_id: group.id,
+                parent_ids: parentIds
+            }
+        }).done(function(data) {
+                var specificGroupElement = $(groupElement).closest(".taxon-filter-row").find('select[data-grouplevel=' + group.level + ']').first()
+                updateGroupList(specificGroupElement, data);
+                console.log('received response from list taxa for group id : ' + group.id + ' data: ' + data);
+            }
+        );
+    });
 }
 
-function orderChanged(orderElement, orderId) {
-    $(orderElement).siblings(".family").find('option').remove();
-    $.ajax({
-        url: "/search/list_family.json",
-        data: { order_id: orderId}
-    }).done(function(data, textStatus, jqXHR) { updateFamilyList(orderElement, data); });
-}
-
-function familyChanged(familyElement, familyId) {
-    $(familyElement).siblings(".genus").find('option').remove();
-    $.ajax({
-        url: "/search/list_genus.json",
-        data: { family_id: familyId }
-    }).done(function(data, textStatus, jqXHR) { updateGenusList(familyElement, data); });
+function updateGroupList(destinationSelectElement, taxa) {
+    // remove all options from the element
+    destinationSelectElement.find('option').remove();
+    destinationSelectElement.append($('<option value>-- All --</option>'));
+    taxa.forEach(function(taxon) {
+        var optionElement = $('<option>', {value:taxon.id}).text(taxon.name);
+        destinationSelectElement.append(optionElement);
+        });
 }
 
 // need an update trait types
 function traitTypeChanged(traitTypeElement, traitTypeId) {
+    // When getting traits, need to supply the selected taxonomy
+    var selectedTaxonIds = jQuery.map($('#taxa').find('select'), function(e, i) { return $(e).val(); }).filter( function(e, i) { return e.length > 0});
     if(traitTypeElement.value == 'continuous') {
-        $(traitTypeElement).siblings(".continuous_trait_name").find('option').remove();
-        $(traitTypeElement).siblings(".continuous_trait_name, .continuous_trait_value_predicates, .continuous_trait_entries").show('fast');
-        $(traitTypeElement).siblings(".categorical_trait_name, .categorical_trait_values").hide('fast');
+        $(traitTypeElement).closest(".trait-filter-row").find(".continuous_trait_name").find('option').remove();
+        $(traitTypeElement).closest(".trait-filter-row").find(".continuous_trait_name, .continuous_trait_value_predicates, .continuous_trait_entries").show('fast');
+        $(traitTypeElement).closest(".trait-filter-row").find(".categorical_trait_name, .categorical_trait_values").hide('fast');
         $.ajax({
-            url: "/search/list_continuous_trait_names.json"
+            url: "/search/list_continuous_trait_names.json",
+            data: {
+                taxon_ids: selectedTaxonIds
+            }
         }).done(function(data, textstatus, jqXHR) { updateContinuousTraitNames(traitTypeElement, data); });
     } else {
-        $(traitTypeElement).siblings(".categorical_trait_name").find('option').remove();
-        $(traitTypeElement).siblings(".continuous_trait_name, .continuous_trait_value_predicates, .continuous_trait_entries").hide('fast');
-        $(traitTypeElement).siblings(".categorical_trait_name, .categorical_trait_values").show('fast');
-        $.ajax({
-            url: "/search/list_categorical_trait_names.json"
+        $(traitTypeElement).closest(".trait-filter-row").find(".categorical_trait_name").find('option').remove();
+        $(traitTypeElement).closest(".trait-filter-row").find(".continuous_trait_name, .continuous_trait_value_predicates, .continuous_trait_entries").hide('fast');
+        $(traitTypeElement).closest(".trait-filter-row").find(".categorical_trait_name, .categorical_trait_values").show('fast');
+      $.ajax({
+            url: "/search/list_categorical_trait_names.json",
+            data: {
+                taxon_ids: selectedTaxonIds
+            }
         }).done(function(data, textstatus, jqXHR) { updateCategoricalTraitNames(traitTypeElement, data); });
     }
 
 }
 
 function categoricalTraitNameChanged(categoricalTraitNameElement, traitId) {
-    $(categoricalTraitNameElement).siblings(".categorical_trait_values").find('option').remove();
+    $(categoricalTraitNameElement).closest(".trait-filter-row").find(".categorical_trait_values").find('option').remove();
     $.ajax({
         url: "/search/list_categorical_trait_values.js",
         data: { trait_id: traitId }
@@ -264,14 +239,8 @@ function continuousTraitEntryChanged(continuousTraitEntryElement, entryId) {
 
 function addSelectionChangeListeners() {
     // taxonomy
-    $('select.htg').change(function() {
-        higherGroupChanged(this,this.value);
-    });
-    $('select.order').change(function() {
-        orderChanged(this,this.value);
-    });
-    $('select.family').change(function() {
-        familyChanged(this,this.value);
+    $('select[data-groupid]').change(function() {
+        groupChanged(this,this.value);
     });
 
     // trait

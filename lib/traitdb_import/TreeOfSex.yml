@@ -18,7 +18,15 @@ traitdb_spreadsheet_template:
     notes: notes, comments
     entry_name: entry name
     entry_email: entry email
-  trait_groups: [Plants, Animals] # Traits may belong to zero or more groups.  Traits without an explicit group are in the default group (0)
+  trait_groups: # these define a relationship of a taxonomy to a set of traits.  They can only be applied after data is imported
+    -
+      name: Plants
+      taxonomic_rank: kingdom
+      taxon_name: plants
+    - 
+      name: Animals
+      taxonomic_rank: kingdom
+      taxon_name: animals
   trait_options:
     source_prefix: "source: " # include the space after the colon
     require_source: true # source rules for formatting?
@@ -54,6 +62,7 @@ traitdb_spreadsheet_template:
     -
       name: Growth Form
       values:
+        - woody
         - herb
         - shrub
         - tree

@@ -55,10 +55,18 @@ module TraitDB
     end
     
     # groups
-    def trait_groups
-      @template['trait_groups']
+    def trait_group_names
+      @template['trait_groups'].map{|x| x['name']}
     end
-    
+
+    def trait_group_rank(group_name)
+      @template['trait_groups'].find{|x| x['name'] == group_name}['taxonomic_rank']
+    end
+
+    def trait_group_taxon_name(group_name)
+      @template['trait_groups'].find{|x| x['name'] == group_name}['taxon_name']
+    end
+
     def groups_for_categorical_trait(trait_name)
       categorical(trait_name)['groups']
     end

@@ -1,0 +1,39 @@
+<div class="row-fluid">
+  <div class="span6">
+    <div class="row-fluid">
+      <p class="lead">Categorical</p>
+      <div>
+        <% @categorical_traits.each do |trait| %>
+          <dl class="dl-horizontal well">
+          <dt>Name</dt>
+          <dd><%= trait.name %></dd>
+          <dt>Groups</dt>
+          <dd><%= trait.trait_groups.pluck(:name).join(', ')%></dd>
+          <dt>Values</dt>
+          <dd><ul class="unstyled"><% trait.category_names.each do |name| %>
+            <li><%= name %></li>
+            <% end %>
+          </ul></dd>
+          </dl>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <div class="span6">
+    <div class="row-fluid">
+      <p class="lead">Continuous</p>
+      <div>
+        <% @continuous_traits.each do |trait| %>
+          <dl class="dl-horizontal well">
+            <dt>Name</dt>
+            <dd><%= trait.name %></dd>
+            <dt>Groups</dt>
+            <dd><%= trait.trait_groups.pluck(:name).join(', ')%></dd>
+            <dt>Display Format</dt>
+            <dd><%= trait.display_format.name %></dd>
+          </dl>
+        <% end %>
+      </div>
+    </div>
+  </div>
+ </div>

@@ -282,6 +282,10 @@ class SearchController < ApplicationController
     end
   end
 
+  def show_trait_list
+    @categorical_traits = CategoricalTrait.sorted
+    @continuous_traits = ContinuousTrait.sorted
+  end
   private
 
   def taxa_in_iczn_group_with_parents(iczn_group_id, parent_taxon_ids)

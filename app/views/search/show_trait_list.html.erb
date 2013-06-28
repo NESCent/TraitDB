@@ -1,39 +1,59 @@
 <div class="row-fluid">
+  <!-- Categorical -->
   <div class="span6">
-    <div class="row-fluid">
-      <p class="lead">Categorical</p>
-      <div>
-        <% @categorical_traits.each do |trait| %>
-          <dl class="dl-horizontal well">
-          <dt>Name</dt>
-          <dd><%= trait.name %></dd>
-          <dt>Groups</dt>
-          <dd><%= trait.trait_groups.pluck(:name).join(', ')%></dd>
-          <dt>Values</dt>
-          <dd><ul class="unstyled"><% trait.category_names.each do |name| %>
-            <li><%= name %></li>
+    <p class="lead">Categorical Traits</p>
+    <div class="well">
+    <% @categorical_traits.each do |trait| %>
+      <dl class="dl-horizontal">
+        <dt>Name</dt>
+        <dd><%= trait.name %></dd>
+        <dt>
+          Categories (<%= trait.category_names.count %>)
+        </dt>
+        <dd>
+          <ul class="unstyled">
+            <% trait.category_names.each do |name| %>
+              <li class="trait-category-name"><%= name %></li>
             <% end %>
-          </ul></dd>
-          </dl>
-        <% end %>
-      </div>
+          </ul>
+        </dd>
+        <dt>
+          Groups (<%= trait.trait_groups.count %>)
+        </dt>
+        <dd>
+          <ul class="unstyled">
+            <% trait.trait_groups.each do |group| %>
+              <li class="trait-group"><%= group.name %></li>
+            <% end %>
+          </ul>
+        </dd>
+      </dl>
+    <% end %>
     </div>
   </div>
+
+  <!-- Continuous -->
   <div class="span6">
-    <div class="row-fluid">
-      <p class="lead">Continuous</p>
-      <div>
-        <% @continuous_traits.each do |trait| %>
-          <dl class="dl-horizontal well">
-            <dt>Name</dt>
-            <dd><%= trait.name %></dd>
-            <dt>Groups</dt>
-            <dd><%= trait.trait_groups.pluck(:name).join(', ')%></dd>
-            <dt>Display Format</dt>
-            <dd><%= trait.display_format.name %></dd>
-          </dl>
-        <% end %>
-      </div>
+    <p class="lead">Continuous Traits</p>
+    <div class="well">
+    <% @continuous_traits.each do |trait| %>
+      <dl class="dl-horizontal">
+        <dt>Name</dt>
+        <dd><%= trait.name %></dd>
+        <dt>Type</dt>
+        <dd><%= trait.display_format.name %></dd>
+        <dt>
+          Groups (<%= trait.trait_groups.count %>)
+        </dt>
+        <dd>
+          <ul class="unstyled">
+            <% trait.trait_groups.each do |group| %>
+              <li class="trait-group"><%= group.name %></li>
+            <% end %>
+          </ul>
+        </dd>
+      </dl>
+    <% end %>
     </div>
   </div>
- </div>
+</div>

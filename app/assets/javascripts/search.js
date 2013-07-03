@@ -70,6 +70,21 @@ function removeTraitFilterRow(removeButton) {
     }
 }
 
+function selectAllTraitsChanged(selectAllTraitsElement) {
+    resetTraits();
+    var allTraits = $(selectAllTraitsElement).is(':checked');
+    if(allTraits) {
+        // TODO: resetting traits clones the existing row so if we change them this breaks
+        // TODO: need to create trait rows from scratch on reset and enable this
+
+        // if all are selected, update the <select>s and disable them
+
+//        $('tr.trait-filter-row select option').remove();
+//        $('tr.trait-filter-row select').append($('<option value>-- All --</option>'));
+    }
+    $('tr.trait-filter-row select, tr.trait-filter-row input').prop('disabled', allTraits);
+}
+
 function addButtonHandlers() {
     $('.add_taxon').bind('click', function() {
         addTaxonFilterRow();
@@ -78,13 +93,22 @@ function addButtonHandlers() {
         removeTaxonFilterRow(this);
     });
     $('.add_trait').bind('click',function() {
-        addTraitFilterRow();
+        // only add traits if select all is not checked
+        if(! $('#select_all_traits').is(':checked')) {
+            addTraitFilterRow();
+        }
     });
     $('.remove_trait').bind('click', function() {
-        removeTraitFilterRow(this);
+        // only remove traits if select all is not checked
+        if(! $('#select_all_traits').is(':checked')) {
+            removeTraitFilterRow(this);
+        }
     });
     $('#reset_search').bind('click', function() {
         resetSearchForm();
+    });
+    $('#select_all_traits').bind('change', function() {
+        selectAllTraitsChanged(this);
     });
 }
 
@@ -268,21 +292,29 @@ function hideContinuousFields() {
     $('input.continuous_trait_entries').hide();
 }
 
-function resetSearchForm() {
+function resetTaxonomy() {
     var taxon_row_count = $('.taxon-filter-row').length;
-    var trait_row_count = $('.trait-filter-row').length;
-
     addTaxonFilterRow(0); // animation speed
-    addTraitFilterRow(0); // animation speed
     $('form')[0].reset();
-
     for(var i=0; i < taxon_row_count; i++) {
         $('.taxon-filter-row').first().remove();
     }
+    return false;
+}
+
+function resetTraits() {
+    var trait_row_count = $('.trait-filter-row').length;
+    addTraitFilterRow(0); // animation speed
     for(var i=0; i < trait_row_count; i++) {
         $('.trait-filter-row').first().remove();
     }
     updateTraitFilterOperatorVisibility();
+    return false;
+}
+
+function resetSearchForm() {
+    resetTaxonomy();
+    resetTraits();
     return false;
 }
 

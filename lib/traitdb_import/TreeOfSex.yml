@@ -110,7 +110,7 @@ traitdb_spreadsheet_template:
         - other
       groups: [Animals]
     -
-      name: Environmental (TSD, TSD Ia, TSD II, size, density, pH, ESD_other)
+      name: Environmental
       values:
         - TSD
         - TSD Ia

@@ -12,4 +12,8 @@ class CategoricalTrait < ActiveRecord::Base
   def dataset_name
     csv_dataset.csv_file_file_name if csv_dataset
   end
+
+  def category_names
+    categorical_trait_categories.pluck(:name)
+  end
 end

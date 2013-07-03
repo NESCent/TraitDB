@@ -45,10 +45,11 @@ class SearchController < ApplicationController
       @trait_operator = OPERATORS[:or]
     end
     @results = {}
-
-    assemble_trait_filters # populates @categorical_trait_category_map and @continuous_trait_predicate_map
-
     @results[:columns] = {} # start with an empty hash for output display columns
+
+    analyze_lowest_requested_taxa # populates @lowest_requested_taxa, @selected_taxon_ids, and @results[:columns][:iczn_groups]
+    # analyze_lowest_requested_taxa must come before assemble_trait_filters
+    assemble_trait_filters # populates @categorical_trait_category_map and @continuous_trait_predicate_map
 
     # Output columns should include chosen continuous traits
     @results[:columns][:continuous_traits] = ContinuousTrait.where(:id => @continuous_trait_predicate_map.keys).map do |continuous_trait|
@@ -69,7 +70,6 @@ class SearchController < ApplicationController
 
     rows = []
 
-    analyze_lowest_requested_taxa # populates @lowest_requested_taxa, @selected_taxon_ids, and @results[:columns][:iczn_groups]
 
     # At this point, we'll have a list of the most specific taxa requested at each level
     @lowest_requested_taxa.each do |lowest_requested_taxon|
@@ -238,78 +238,83 @@ class SearchController < ApplicationController
 
   # extracting functionality out of search to deliver a list of traits
   def assemble_trait_filters
-    continuous_trait_filters = {}
-
+    @continuous_trait_predicate_map = {} # map of continuous_trait_ids to arrays of predicates and values
+    @categorical_trait_category_map = {} # Map of categorical_trait_ids to arrays of categorical_trait_category_ids
     # if All traits specified, find them all!
     if params['select_all_traits'] # Checkbox, only exists in params if checked
       # Need the selected taxon_ids
       # First get all the traits from the selected taxonomy
-
-      # Then add them to the list
+      continuous_traits, categorical_traits,   = [],[]
+      Taxon.where(:id => @selected_taxon_ids).each do |taxon|
+        continuous_traits = continuous_traits | taxon.grouped_continuous_traits
+        categorical_traits = categorical_traits | taxon.grouped_categorical_traits
+      end
+      # selecting all traits - do not apply predicates or values
+      continuous_traits.each{|trait| @continuous_trait_predicate_map[trait.id] = [] }
+      categorical_traits.each{|trait| @categorical_trait_category_map[trait.id] = []}
+      # done
     else
+      # select all was not checked, create filters based on form selections
+      continuous_trait_filters = {}
+      # Continuous Trait Values
+      if params['continuous_trait_name']
+        params['continuous_trait_name'].reject{|k,v| v.empty?}.each do |k,v|
+          trait_id = Integer(v)
+          # This block is invoked for each filter on the search form
+          # Multiple filters may reference the same trait, so keep the values/predicates for each trait together
+          if continuous_trait_filters[trait_id].nil?
+            continuous_trait_filters[trait_id] = {:predicates => [], :values => []}
+          end
+          predicates = continuous_trait_filters[trait_id][:predicates]
+          values = continuous_trait_filters[trait_id][:values]
 
-    end
-
-    # Continuous Trait Values
-    if params['continuous_trait_name']
-      params['continuous_trait_name'].reject{|k,v| v.empty?}.each do |k,v|
-        trait_id = Integer(v)
-        # This block is invoked for each filter on the search form
-        # Multiple filters may reference the same trait, so keep the values/predicates for each trait together
-        if continuous_trait_filters[trait_id].nil?
-          continuous_trait_filters[trait_id] = {:predicates => [], :values => []}
-        end
-        predicates = continuous_trait_filters[trait_id][:predicates]
-        values = continuous_trait_filters[trait_id][:values]
-
-        # Check for the equals/less than/etc
-        # get the predicate for this row
-        if params['continuous_trait_value_predicates'][k] && params['continuous_trait_entries'][k]
-          unless params['continuous_trait_entries'][k].blank?
-            field_value = Float(params['continuous_trait_entries'][k])
-            case params['continuous_trait_value_predicates'][k]
-              when 'gt'
-                predicates << 'value > ?'
-                values << field_value
-              when 'lt'
-                predicates << 'value < ?'
-                values << field_value
-              when 'eq'
-                predicates << 'value = ?'
-                values << field_value
-              when 'ne'
-                predicates << 'value != ?'
-                values << field_value
+          # Check for the equals/less than/etc
+          # get the predicate for this row
+          if params['continuous_trait_value_predicates'][k] && params['continuous_trait_entries'][k]
+            unless params['continuous_trait_entries'][k].blank?
+              field_value = Float(params['continuous_trait_entries'][k])
+              case params['continuous_trait_value_predicates'][k]
+                when 'gt'
+                  predicates << 'value > ?'
+                  values << field_value
+                when 'lt'
+                  predicates << 'value < ?'
+                  values << field_value
+                when 'eq'
+                  predicates << 'value = ?'
+                  values << field_value
+                when 'ne'
+                  predicates << 'value != ?'
+                  values << field_value
+              end
             end
           end
+          continuous_trait_filters[trait_id][:predicates] = predicates
+          continuous_trait_filters[trait_id][:values] = values
         end
-        continuous_trait_filters[trait_id][:predicates] = predicates
-        continuous_trait_filters[trait_id][:values] = values
       end
-    end
 
-    # Convert to one predicate, and use the operator
-    # The argument to a where() call should look like this: where(['value > ? AND value < ?', 1, 2])
-    # joining the predicates provides the 'value > ? AND value < ?'
-    # The * in front of the values array converts it to varargs
-    @continuous_trait_predicate_map = {}
-    continuous_trait_filters.each do |trait_id, filter|
-      @continuous_trait_predicate_map[trait_id] = [filter[:predicates].join(" #{@trait_operator} "), *filter[:values]]
-    end
+      # Convert to one predicate, and use the operator
+      # The argument to a where() call should look like this: where(['value > ? AND value < ?', 1, 2])
+      # joining the predicates provides the 'value > ? AND value < ?'
+      # The * in front of the values array converts it to varargs
+      continuous_trait_filters.each do |trait_id, filter|
+        @continuous_trait_predicate_map[trait_id] = [filter[:predicates].join(" #{@trait_operator} "), *filter[:values]]
+      end
 
-    # Categorical Trait Values
-    @categorical_trait_category_map = {} # Map of categorical_trait_ids to arrays of categorical_trait_category_ids
-    if params['categorical_trait_name']
-      params['categorical_trait_name'].reject{|k,v| v.empty?}.each do |k,v|
-        trait_id = Integer(v)
-        trait_category_ids = @categorical_trait_category_map[trait_id] || []
+      # Categorical Trait Values
+      if params['categorical_trait_name']
+        params['categorical_trait_name'].reject{|k,v| v.empty?}.each do |k,v|
+          trait_id = Integer(v)
+          trait_category_ids = @categorical_trait_category_map[trait_id] || []
 
-        if params['categorical_trait_values'][k]
-          unless params['categorical_trait_values'][k].blank?
-            trait_category_ids << Integer(params['categorical_trait_values'][k])
+          if params['categorical_trait_values'][k]
+            unless params['categorical_trait_values'][k].blank?
+              trait_category_ids << Integer(params['categorical_trait_values'][k])
+            end
           end
+          @categorical_trait_category_map[trait_id] = trait_category_ids
         end
-        @categorical_trait_category_map[trait_id] = trait_category_ids
       end
     end
   end

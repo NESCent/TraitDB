@@ -6,8 +6,8 @@
         <p class="lead">Search Results: (<%= pluralize(@results[:rows].count, 'row')%>)</p>
       </div>
       <div class="btn-group pull-right">
-        <%= link_to(raw('<i class="icon-bookmark"></i> Link to this Search'), params_for_search(params), :class => 'btn btn-small') %>
-        <%= link_to(raw('<i class="icon-download-alt icon-white"></i> Download Results (CSV)'), params_for_search(params).merge({:format => :csv}), :class => 'btn btn-small btn-primary') %>
+        <%= link_to(raw('<i class="icon-bookmark"></i> Link to this Search'), params.except(:authenticity_token), :class => 'btn btn-small') %>
+        <%= link_to(raw('<i class="icon-download-alt icon-white"></i> Download Results (CSV)'), params.except(:authenticity_token).merge({:format => :csv}), :class => 'btn btn-small btn-primary') %>
       </div>
     </div>
     <div class="row-fluid">&nbsp;</div>
@@ -40,7 +40,6 @@
           <% end %>
         </tr>
         <% @results[:rows].each do |row| %>
-        <% otu = row[:otu] %>
         <tr>
           <% @results[:columns][:iczn_groups].each do |group| %>
             <td><%= row[:taxonomy][group[:id]] %></td>

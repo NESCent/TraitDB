@@ -38,62 +38,14 @@ class SearchController < ApplicationController
   end
 
   def results
-    trait_operator = params['trait_operator']
+    @trait_operator = params['trait_operator']
     # trait_operator must be 'and' or 'or'.
     # This string is used in database queries and defaults to 'or'
-    unless OPERATORS.values.include? trait_operator
-      trait_operator = OPERATORS[:or]
+    unless OPERATORS.values.include? @trait_operator
+      @trait_operator = OPERATORS[:or]
     end
 
-    continuous_trait_filters = {}
-
-    # Continuous Trait Values
-    if params['continuous_trait_name']
-      params['continuous_trait_name'].reject{|k,v| v.empty?}.each do |k,v|
-        trait_id = Integer(v)
-        # This block is invoked for each filter on the search form
-        # Multiple filters may reference the same trait, so keep the values/predicates for each trait together
-        if continuous_trait_filters[trait_id].nil?
-          continuous_trait_filters[trait_id] = {:predicates => [], :values => []}
-        end
-        predicates = continuous_trait_filters[trait_id][:predicates]
-        values = continuous_trait_filters[trait_id][:values]
-
-        # Check for the equals/less than/etc
-        # get the predicate for this row
-        if params['continuous_trait_value_predicates'][k] && params['continuous_trait_entries'][k]
-          unless params['continuous_trait_entries'][k].blank?
-            field_value = Float(params['continuous_trait_entries'][k])
-            case params['continuous_trait_value_predicates'][k]
-              when 'gt'
-                predicates << 'value > ?'
-                values << field_value
-              when 'lt'
-                predicates << 'value < ?'
-                values << field_value
-              when 'eq'
-                predicates << 'value = ?'
-                values << field_value
-              when 'ne'
-                predicates << 'value != ?'
-                values << field_value
-            end
-          end
-        end
-        continuous_trait_filters[trait_id][:predicates] = predicates
-        continuous_trait_filters[trait_id][:values] = values
-      end
-    end
-
-
-    # Convert to one predicate, and use the operator
-    # The argument to a where() call should look like this: where(['value > ? AND value < ?', 1, 2])
-    # joining the predicates provides the 'value > ? AND value < ?'
-    # The * in front of the values array converts it to varargs
-    continuous_trait_predicate_map = {}
-    continuous_trait_filters.each do |trait_id, filter|
-      continuous_trait_predicate_map[trait_id] = [filter[:predicates].join(" #{trait_operator} "), *filter[:values]]
-    end
+    categorical_trait_category_map, continuous_trait_predicate_map  = assemble_trait_filters(params)
 
     columns = {}
     # This just gets the columns
@@ -101,21 +53,7 @@ class SearchController < ApplicationController
       {:id => continuous_trait.id, :name => continuous_trait.name}
     end
 
-    # Categorical Trait Values
-    categorical_trait_category_map = {} # Map of categorical_trait_ids to arrays of categorical_trait_category_ids
-    if params['categorical_trait_name']
-      params['categorical_trait_name'].reject{|k,v| v.empty?}.each do |k,v|
-        trait_id = Integer(v)
-        trait_category_ids = categorical_trait_category_map[trait_id] || []
 
-        if params['categorical_trait_values'][k]
-          unless params['categorical_trait_values'][k].blank?
-            trait_category_ids << Integer(params['categorical_trait_values'][k])
-          end
-        end
-        categorical_trait_category_map[trait_id] = trait_category_ids
-      end
-    end
 
     columns[:categorical_traits] = CategoricalTrait.where(:id => categorical_trait_category_map.keys).map do |categorical_trait|
       {:id => categorical_trait.id, :name => categorical_trait.name}
@@ -233,7 +171,7 @@ class SearchController < ApplicationController
         total_continuous_matched = match_map[:continuous].map{|t| t[:matched_count]}.reduce(:+) || 0
         total_continuous_coded = match_map[:continuous].map{|t| t[:coded_count]}.reduce(:+) || 0
 
-        if trait_operator == OPERATORS[:and]
+        if @trait_operator == OPERATORS[:and]
           # For AND, include this row only if the total number of trait filters requested meets the number of trait values found
           if total_categorical_matched == total_categorical_requested && total_continuous_matched >= total_continuous_requested
             rows << row
@@ -286,7 +224,77 @@ class SearchController < ApplicationController
     @categorical_traits = CategoricalTrait.sorted
     @continuous_traits = ContinuousTrait.sorted
   end
+
   private
+
+  # extracting functionality out of search to deliver a list of traits
+  def assemble_trait_filters(params)
+    continuous_trait_filters = {}
+
+    # Continuous Trait Values
+    if params['continuous_trait_name']
+      params['continuous_trait_name'].reject{|k,v| v.empty?}.each do |k,v|
+        trait_id = Integer(v)
+        # This block is invoked for each filter on the search form
+        # Multiple filters may reference the same trait, so keep the values/predicates for each trait together
+        if continuous_trait_filters[trait_id].nil?
+          continuous_trait_filters[trait_id] = {:predicates => [], :values => []}
+        end
+        predicates = continuous_trait_filters[trait_id][:predicates]
+        values = continuous_trait_filters[trait_id][:values]
+
+        # Check for the equals/less than/etc
+        # get the predicate for this row
+        if params['continuous_trait_value_predicates'][k] && params['continuous_trait_entries'][k]
+          unless params['continuous_trait_entries'][k].blank?
+            field_value = Float(params['continuous_trait_entries'][k])
+            case params['continuous_trait_value_predicates'][k]
+              when 'gt'
+                predicates << 'value > ?'
+                values << field_value
+              when 'lt'
+                predicates << 'value < ?'
+                values << field_value
+              when 'eq'
+                predicates << 'value = ?'
+                values << field_value
+              when 'ne'
+                predicates << 'value != ?'
+                values << field_value
+            end
+          end
+        end
+        continuous_trait_filters[trait_id][:predicates] = predicates
+        continuous_trait_filters[trait_id][:values] = values
+      end
+    end
+
+    # Convert to one predicate, and use the operator
+    # The argument to a where() call should look like this: where(['value > ? AND value < ?', 1, 2])
+    # joining the predicates provides the 'value > ? AND value < ?'
+    # The * in front of the values array converts it to varargs
+    continuous_trait_predicate_map = {}
+    continuous_trait_filters.each do |trait_id, filter|
+      continuous_trait_predicate_map[trait_id] = [filter[:predicates].join(" #{@trait_operator} "), *filter[:values]]
+    end
+
+    # Categorical Trait Values
+    categorical_trait_category_map = {} # Map of categorical_trait_ids to arrays of categorical_trait_category_ids
+    if params['categorical_trait_name']
+      params['categorical_trait_name'].reject{|k,v| v.empty?}.each do |k,v|
+        trait_id = Integer(v)
+        trait_category_ids = categorical_trait_category_map[trait_id] || []
+
+        if params['categorical_trait_values'][k]
+          unless params['categorical_trait_values'][k].blank?
+            trait_category_ids << Integer(params['categorical_trait_values'][k])
+          end
+        end
+        categorical_trait_category_map[trait_id] = trait_category_ids
+      end
+    end
+    return [categorical_trait_category_map, continuous_trait_predicate_map]
+  end
 
   def taxa_in_iczn_group_with_parents(iczn_group_id, parent_taxon_ids)
     iczn_group = IcznGroup.find(iczn_group_id)

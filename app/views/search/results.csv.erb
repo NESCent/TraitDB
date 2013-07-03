@@ -1,5 +1,5 @@
 <%-
-  headers = ['Higher Taxonomic Group','Order','Family','Genus','Species']
+  headers = @results[:columns][:iczn_groups].map{|group| group[:name]}
   @results[:columns][:categorical_traits].each do |trait|
     headers << trait[:name]
     if @results[:columns][:categorical_trait_notes_ids].include? trait[:id]
@@ -25,13 +25,10 @@
 <%= CSV.generate_line headers -%>
 <%-
     @results[:rows].each do |data_row|
-      otu = data_row[:otu]
       row = []
-      row << otu.htg_name
-      row << otu.order_name
-      row << otu.family_name
-      row << otu.genus_name
-      row << otu.species_name
+      @results[:columns][:iczn_groups].each do |group|
+        row << data_row[:taxonomy][group[:id]]
+      end
       @results[:columns][:categorical_traits].each do |trait|
         categorical_trait_values = data_row[:categorical_trait_values].find{|v| v[:categorical_trait_id] == trait[:id] }
         if categorical_trait_values.nil?

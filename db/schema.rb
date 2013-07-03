@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130618214717) do
+ActiveRecord::Schema.define(:version => 20130628205614) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -65,6 +65,7 @@ ActiveRecord::Schema.define(:version => 20130618214717) do
     t.integer "trait_group_id"
   end
 
+  add_index "categorical_traits_trait_groups", ["categorical_trait_id", "trait_group_id"], :name => "by_categorical_trait_and_trait_group", :unique => true
   add_index "categorical_traits_trait_groups", ["categorical_trait_id"], :name => "index_categorical_traits_trait_groups_on_categorical_trait_id"
   add_index "categorical_traits_trait_groups", ["trait_group_id"], :name => "index_categorical_traits_trait_groups_on_trait_group_id"
 
@@ -109,6 +110,7 @@ ActiveRecord::Schema.define(:version => 20130618214717) do
     t.integer "trait_group_id"
   end
 
+  add_index "continuous_traits_trait_groups", ["continuous_trait_id", "trait_group_id"], :name => "by_continuous_trait_and_trait_group", :unique => true
   add_index "continuous_traits_trait_groups", ["continuous_trait_id"], :name => "index_continuous_traits_trait_groups_on_continuous_trait_id"
   add_index "continuous_traits_trait_groups", ["trait_group_id"], :name => "index_continuous_traits_trait_groups_on_trait_group_id"
 

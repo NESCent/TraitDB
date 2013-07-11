@@ -73,7 +73,7 @@ module TraitDB
     def read_csv_file
       @csvfile = CSV.read(@filepath,
                           :headers => true,
-                          :header_converters => lambda{|f| f.strip },
+                          :header_converters => lambda{|f| f ? f.strip : nil},
                           :converters => lambda{|f| f ? f.strip : nil}
       )
     end

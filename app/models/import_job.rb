@@ -242,6 +242,7 @@ class ImportJob < ActiveRecord::Base
     messages = []
     # trait definitions to be imported into database.
     traits[:continuous].each do |import_trait|
+      # TODO: consider trait sets here.  Recursion!
       continuous_trait = ContinuousTrait.where(:name => import_trait[:name]).first_or_create do |trait| # This do block only executes on create
         messages << "Adding continuous trait #{import_trait[:name]}"
         trait.import_job = self
@@ -258,6 +259,7 @@ class ImportJob < ActiveRecord::Base
     end
 
     traits[:categorical].each do |import_trait|
+      # TODO: consider trait sets
       categorical_trait = CategoricalTrait.where(:name => import_trait[:name]).first_or_create do |trait|
         messages << "Adding categorical trait #{import_trait[:name]}"
         trait.import_job = self

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130628205614) do
+ActiveRecord::Schema.define(:version => 20130715185816) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -54,11 +54,13 @@ ActiveRecord::Schema.define(:version => 20130628205614) do
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
     t.integer  "display_format_id"
+    t.integer  "trait_set_id"
   end
 
   add_index "categorical_traits", ["display_format_id"], :name => "index_categorical_traits_on_display_format_id"
   add_index "categorical_traits", ["import_job_id"], :name => "index_categorical_traits_on_import_job_id"
   add_index "categorical_traits", ["name"], :name => "index_categorical_traits_on_name"
+  add_index "categorical_traits", ["trait_set_id"], :name => "index_categorical_traits_on_trait_set_id"
 
   create_table "categorical_traits_trait_groups", :force => true do |t|
     t.integer "categorical_trait_id"
@@ -99,11 +101,13 @@ ActiveRecord::Schema.define(:version => 20130628205614) do
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
     t.integer  "display_format_id"
+    t.integer  "trait_set_id"
   end
 
   add_index "continuous_traits", ["display_format_id"], :name => "index_continuous_traits_on_display_format_id"
   add_index "continuous_traits", ["import_job_id"], :name => "index_continuous_traits_on_import_job_id"
   add_index "continuous_traits", ["name"], :name => "index_continuous_traits_on_name"
+  add_index "continuous_traits", ["trait_set_id"], :name => "index_continuous_traits_on_trait_set_id"
 
   create_table "continuous_traits_trait_groups", :force => true do |t|
     t.integer "continuous_trait_id"
@@ -304,6 +308,16 @@ ActiveRecord::Schema.define(:version => 20130628205614) do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
+
+  create_table "trait_sets", :force => true do |t|
+    t.string   "name"
+    t.integer  "level",               :default => 0
+    t.integer  "parent_trait_set_id"
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
+  end
+
+  add_index "trait_sets", ["parent_trait_set_id"], :name => "index_trait_sets_on_parent_trait_set_id"
 
   create_table "users", :force => true do |t|
     t.string   "email",                  :default => "",    :null => false

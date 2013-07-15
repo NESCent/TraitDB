@@ -31,7 +31,31 @@ module TraitDB
     def trait_options # a hash that includes things like source_prefix, require_source, and notes_prefix
       @template['trait_options']
     end
-    
+
+    # trait sets
+    def trait_set(path=[], tree=@template)
+      # path will be a list of names to follow
+      # tree must be a hash
+      if path.length == 0
+        tree
+      else
+        # slice off the first element in the path and return the subtree
+        trait_set(path[1..-1], tree['trait_sets'].find{|x| x['name'] == path[0]})
+      end
+    end
+
+    def trait_set_names(path=[], tree=@template)
+      trait_set(path, tree)['trait_sets'].map{|x| x['name']}
+    end
+
+    def trait_set_continuous_traits(path=[], tree=@template)
+      trait_set(path, tree)['continuous_trait_columns']
+    end
+
+    def trait_set_categorical_traits(path, tree)
+      trait_set(path, tree).map{|x| x['categorical_trait_columns']}
+    end
+
     # trait names
     def categorical_trait_names
       @template['categorical_trait_columns'].map{|x| x['name'] }

@@ -104,6 +104,9 @@ module TraitDB
     def read_template
       root_object = YAML.load_file(@template_file)
       @template = root_object['traitdb_spreadsheet_template']
+      @template['continuous_trait_columns'] ||= []
+      @template['categorical_trait_columns'] ||= []
+      @template['trait_groups'] ||= []
     end
     
   end

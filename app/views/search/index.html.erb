@@ -69,8 +69,8 @@
                         <%= select_tag(:"#{:trait_types}[0]", options_for_select(@trait_types), :prompt => '-- Select --', :class => 'trait_type input-medium') %>
                       </td>
                       <td>
-                        <%= select_tag(:"#{:categorical_trait_name}[0]", nil, :prompt => '-- Select --', :class => 'categorical_trait_name input-large') %>
-                        <%= select_tag(:"#{:continuous_trait_name}[0]", nil, :prompt => '-- Select --', :class => 'continuous_trait_name input-large') %>
+                        <%= select_tag(:"#{:categorical_trait_name}[0]", nil, :prompt => '-- Select --', :class => 'categorical_trait_name input-medium') %>
+                        <%= select_tag(:"#{:continuous_trait_name}[0]", nil, :prompt => '-- Select --', :class => 'continuous_trait_name input-medium') %>
                       </td>
                       <td>
                         <%= select_tag("#{:categorical_trait_values}[0]", nil, :prompt => '-- All Values --', :class => 'categorical_trait_values input-medium') %>

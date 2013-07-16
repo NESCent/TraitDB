@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130715185816) do
+ActiveRecord::Schema.define(:version => 20130716200155) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -51,15 +51,17 @@ ActiveRecord::Schema.define(:version => 20130715185816) do
   create_table "categorical_traits", :force => true do |t|
     t.string   "name"
     t.integer  "import_job_id"
-    t.datetime "created_at",        :null => false
-    t.datetime "updated_at",        :null => false
+    t.datetime "created_at",                       :null => false
+    t.datetime "updated_at",                       :null => false
     t.integer  "display_format_id"
     t.integer  "trait_set_id"
+    t.integer  "project_id",        :default => 1, :null => false
   end
 
   add_index "categorical_traits", ["display_format_id"], :name => "index_categorical_traits_on_display_format_id"
   add_index "categorical_traits", ["import_job_id"], :name => "index_categorical_traits_on_import_job_id"
   add_index "categorical_traits", ["name"], :name => "index_categorical_traits_on_name"
+  add_index "categorical_traits", ["project_id"], :name => "index_categorical_traits_on_project_id"
   add_index "categorical_traits", ["trait_set_id"], :name => "index_categorical_traits_on_trait_set_id"
 
   create_table "categorical_traits_trait_groups", :force => true do |t|
@@ -98,15 +100,17 @@ ActiveRecord::Schema.define(:version => 20130715185816) do
   create_table "continuous_traits", :force => true do |t|
     t.string   "name"
     t.integer  "import_job_id"
-    t.datetime "created_at",        :null => false
-    t.datetime "updated_at",        :null => false
+    t.datetime "created_at",                       :null => false
+    t.datetime "updated_at",                       :null => false
     t.integer  "display_format_id"
     t.integer  "trait_set_id"
+    t.integer  "project_id",        :default => 1, :null => false
   end
 
   add_index "continuous_traits", ["display_format_id"], :name => "index_continuous_traits_on_display_format_id"
   add_index "continuous_traits", ["import_job_id"], :name => "index_continuous_traits_on_import_job_id"
   add_index "continuous_traits", ["name"], :name => "index_continuous_traits_on_name"
+  add_index "continuous_traits", ["project_id"], :name => "index_continuous_traits_on_project_id"
   add_index "continuous_traits", ["trait_set_id"], :name => "index_continuous_traits_on_trait_set_id"
 
   create_table "continuous_traits_trait_groups", :force => true do |t|
@@ -184,6 +188,14 @@ ActiveRecord::Schema.define(:version => 20130715185816) do
 
   add_index "iczn_groups", ["name"], :name => "index_iczn_groups_on_name"
 
+  create_table "iczn_groups_projects", :force => true do |t|
+    t.integer "iczn_group_id"
+    t.integer "project_id"
+  end
+
+  add_index "iczn_groups_projects", ["iczn_group_id"], :name => "index_iczn_groups_projects_on_iczn_group_id"
+  add_index "iczn_groups_projects", ["project_id"], :name => "index_iczn_groups_projects_on_project_id"
+
   create_table "import_jobs", :force => true do |t|
     t.integer  "csv_dataset_id"
     t.string   "state",                  :limit => 25, :default => "new", :null => false
@@ -197,11 +209,13 @@ ActiveRecord::Schema.define(:version => 20130715185816) do
 
   create_table "otu_metadata_fields", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
+    t.integer  "project_id", :default => 1, :null => false
   end
 
   add_index "otu_metadata_fields", ["name"], :name => "index_otu_metadata_fields_on_name"
+  add_index "otu_metadata_fields", ["project_id"], :name => "index_otu_metadata_fields_on_project_id"
 
   create_table "otu_metadata_values", :force => true do |t|
     t.text     "value"
@@ -217,12 +231,14 @@ ActiveRecord::Schema.define(:version => 20130715185816) do
   create_table "otus", :force => true do |t|
     t.string   "author"
     t.integer  "import_job_id"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+    t.datetime "created_at",                   :null => false
+    t.datetime "updated_at",                   :null => false
     t.text     "notes"
+    t.integer  "project_id",    :default => 1, :null => false
   end
 
   add_index "otus", ["import_job_id"], :name => "index_otus_on_import_job_id"
+  add_index "otus", ["project_id"], :name => "index_otus_on_project_id"
 
   create_table "otus_taxa", :force => true do |t|
     t.integer "otu_id"
@@ -278,13 +294,15 @@ ActiveRecord::Schema.define(:version => 20130715185816) do
     t.string   "uri"
     t.integer  "iczn_group_id"
     t.integer  "import_job_id"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+    t.datetime "created_at",                   :null => false
+    t.datetime "updated_at",                   :null => false
+    t.integer  "project_id",    :default => 1, :null => false
   end
 
   add_index "taxa", ["iczn_group_id"], :name => "index_taxa_on_iczn_group_id"
   add_index "taxa", ["import_job_id"], :name => "index_taxa_on_import_job_id"
   add_index "taxa", ["name"], :name => "index_taxa_on_name"
+  add_index "taxa", ["project_id"], :name => "index_taxa_on_project_id"
 
   create_table "taxa_trait_groups", :force => true do |t|
     t.integer "taxon_id"
@@ -305,9 +323,12 @@ ActiveRecord::Schema.define(:version => 20130715185816) do
 
   create_table "trait_groups", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
+    t.integer  "project_id", :default => 1, :null => false
   end
+
+  add_index "trait_groups", ["project_id"], :name => "index_trait_groups_on_project_id"
 
   create_table "trait_sets", :force => true do |t|
     t.string   "name"
@@ -315,9 +336,11 @@ ActiveRecord::Schema.define(:version => 20130715185816) do
     t.integer  "parent_trait_set_id"
     t.datetime "created_at",                         :null => false
     t.datetime "updated_at",                         :null => false
+    t.integer  "project_id",          :default => 1, :null => false
   end
 
   add_index "trait_sets", ["parent_trait_set_id"], :name => "index_trait_sets_on_parent_trait_set_id"
+  add_index "trait_sets", ["project_id"], :name => "index_trait_sets_on_project_id"
 
   create_table "users", :force => true do |t|
     t.string   "email",                  :default => "",    :null => false

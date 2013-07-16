@@ -15,16 +15,19 @@ require 'pp'
 
 import_template = TraitDB::ImportTemplate.new(ARGV[0])
 
-# Validator takes a template and a path to a CSV file
-validator = TraitDB::Validator.new(import_template, ARGV[1])
-results = validator.validate
-PP.pp(results)
-results = validator.parse
-PP.pp(results)
-datasets = validator.datasets
-headers = validator.trait_headers
-PP.pp(headers)
-PP.pp(datasets)
+names = import_template.trait_set_qualified_continuous_trait_names
+PP.pp(names)
+#
+## Validator takes a template and a path to a CSV file
+#validator = TraitDB::Validator.new(import_template, ARGV[1])
+#results = validator.validate
+#PP.pp(results)
+#results = validator.parse
+#PP.pp(results)
+#datasets = validator.datasets
+#headers = validator.trait_headers
+#PP.pp(headers)
+#PP.pp(datasets)
 # 
 # validator = TreeOfSexImport::Validator.new(ARGV[0])
 # validator.quantitative_header_start = "Chromosome number (female)"

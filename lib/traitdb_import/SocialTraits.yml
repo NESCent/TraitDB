@@ -65,3 +65,35 @@ traitdb_spreadsheet_template:
               name: N
               format: float
               groups: [Birds]          
+        -
+          name: Male Reproductives
+          depth: 1 # if depth is 0, this is a trait
+          continuous_trait_columns:
+            - 
+              name: Mean
+              format: float
+              groups: [Birds]
+            -
+              name: SE
+              format: float
+              groups: [Birds]
+            -
+              name: SD
+              format: float
+              groups: [Birds]
+            -
+              name: Min
+              format: float
+              groups: [Birds]
+            -
+              name: Max
+              format: float
+              groups: [Birds]
+            -
+              name: Median
+              format: float
+              groups: [Birds]
+            -
+              name: N
+              format: float
+              groups: [Birds]          

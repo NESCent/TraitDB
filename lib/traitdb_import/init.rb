@@ -15,8 +15,9 @@ require 'pp'
 
 import_template = TraitDB::ImportTemplate.new(ARGV[0])
 
-names = import_template.trait_set_qualified_continuous_trait_names
-PP.pp(names)
+continuous = import_template.continuous_trait_column_names
+PP.pp(continuous)
+
 #
 ## Validator takes a template and a path to a CSV file
 #validator = TraitDB::Validator.new(import_template, ARGV[1])

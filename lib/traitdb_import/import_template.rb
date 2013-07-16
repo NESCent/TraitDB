@@ -2,6 +2,7 @@ require 'yaml'
 
 module TraitDB
   class ImportTemplate
+    DEFAULT_SET_DELIMITER = '::'
     def initialize(path=nil)
       @template_file = path
       if file_usable?
@@ -32,6 +33,10 @@ module TraitDB
       @template['trait_options']
     end
 
+    def trait_sets?
+      @template['trait_sets'].nil? ? false : true
+    end
+
     # trait sets
     def trait_set(path=[], tree=@template)
       # path will be a list of names to follow
@@ -52,27 +57,45 @@ module TraitDB
       trait_set(path, tree)['continuous_trait_columns']
     end
 
-    # returns array of path components
-    def trait_set_qualified_continuous_trait_names(prefixes=[], tree=@template)
-      trait_set_qualified_trait_names(prefixes, tree, 'continuous_trait_columns')
+    def trait_set_categorical_traits(path=[], tree=@template)
+      trait_set(path, tree)['categorical_trait_columns']
     end
 
     # returns array of path components
-    def trait_set_qualified_categorical_trait_names(prefixes=[], tree=@template)
-      trait_set_qualified_trait_names(prefixes, tree, 'categorical_trait_columns')
+    def trait_set_qualified_continuous_trait_names
+      trait_set_qualified_trait_names([], @template, 'continuous_trait_columns')
     end
 
-    def trait_set_categorical_traits(path, tree)
-      trait_set(path, tree).map{|x| x['categorical_trait_columns']}
+    # returns array of path components
+    def trait_set_qualified_categorical_trait_names
+      trait_set_qualified_trait_names([], @template, 'categorical_trait_columns')
+    end
+
+    def trait_path_from_column(column_name)
+      delimiter = trait_options['set_delimiter'] || DEFAULT_SET_DELIMITER
+      column_name.split(delimiter)
     end
 
     # trait names
     def categorical_trait_column_names
-      @template['categorical_trait_columns'].map{|x| x['name'] }
+      if @template['trait_sets']
+        # get name array paths, and join with delimiter
+        delimiter = trait_options['set_delimiter'] || DEFAULT_SET_DELIMITER
+        trait_set_qualified_categorical_trait_names.map{|n| n.join(delimiter) }
+      else
+        @template['categorical_trait_columns'].map{|x| x['name'] }
+      end
+
     end
 
     def continuous_trait_column_names
-      @template['continuous_trait_columns'].map{|x| x['name'] }
+      if @template['trait_sets']
+        # get name array paths, and join with delimiter
+        delimiter = trait_options['set_delimiter'] || DEFAULT_SET_DELIMITER
+        trait_set_qualified_continuous_trait_names.map{|n| n.join(delimiter) }
+      else
+        @template['continuous_trait_columns'].map{|x| x['name'] }
+      end
     end
     
     def categorical_trait_names_in_group(group_name)
@@ -136,7 +159,7 @@ module TraitDB
         # have trait sets, recurse!
         paths = []
         tree['trait_sets'].each do |t|
-          paths += trait_set_qualified_continuous_trait_names(prefixes + [t['name']], t)
+          paths += trait_set_qualified_trait_names(prefixes + [t['name']], t, terminal_path)
         end
         paths
       elsif tree[terminal_path]

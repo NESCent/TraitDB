@@ -52,26 +52,6 @@ module TraitDB
       trait_set(path, tree)['continuous_trait_columns']
     end
 
-    # returns arrays of path components
-    def trait_set_qualified_trait_names(prefixes, tree, terminal_path)
-      # Build up an array of paths
-      # start at the root
-      if tree['trait_sets']
-        # have trait sets, recurse!
-        paths = []
-        tree['trait_sets'].each do |t|
-          paths += trait_set_qualified_continuous_trait_names(prefixes + [t['name']], t)
-        end
-        paths
-      elsif tree[terminal_path]
-        # At the tip, return the column names
-        names = tree[terminal_path].map{|x| x['name']}
-        names.map{|n| prefixes + [n]}
-      else
-        prefixes
-      end
-    end
-
     # returns array of path components
     def trait_set_qualified_continuous_trait_names(prefixes=[], tree=@template)
       trait_set_qualified_trait_names(prefixes, tree, 'continuous_trait_columns')
@@ -87,11 +67,11 @@ module TraitDB
     end
 
     # trait names
-    def categorical_trait_names
+    def categorical_trait_column_names
       @template['categorical_trait_columns'].map{|x| x['name'] }
     end
 
-    def continuous_trait_names
+    def continuous_trait_column_names
       @template['continuous_trait_columns'].map{|x| x['name'] }
     end
     
@@ -146,6 +126,26 @@ module TraitDB
     
     def categorical(trait_name)
       @template['categorical_trait_columns'].find{|x| x['name'] == trait_name}
+    end
+
+    # returns arrays of path components
+    def trait_set_qualified_trait_names(prefixes, tree, terminal_path)
+      # Build up an array of paths
+      # start at the root
+      if tree['trait_sets']
+        # have trait sets, recurse!
+        paths = []
+        tree['trait_sets'].each do |t|
+          paths += trait_set_qualified_continuous_trait_names(prefixes + [t['name']], t)
+        end
+        paths
+      elsif tree[terminal_path]
+        # At the tip, return the column names
+        names = tree[terminal_path].map{|x| x['name']}
+        names.map{|n| prefixes + [n]}
+      else
+        prefixes
+      end
     end
 
     def file_usable?

@@ -1,5 +1,6 @@
 class CategoricalTrait < ActiveRecord::Base
   attr_accessible :name, :display_format_id
+  belongs_to :project
   has_many :categorical_trait_categories, :dependent => :destroy
   belongs_to :import_job
   has_one :csv_dataset, :through => :import_job

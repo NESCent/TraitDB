@@ -1,5 +1,6 @@
 class Otu < ActiveRecord::Base
   attr_accessible :author, :import_job, :notes, :taxa
+  belongs_to :project
   has_and_belongs_to_many :taxa
   has_many :iczn_groups, :through => :taxa
   belongs_to :import_job

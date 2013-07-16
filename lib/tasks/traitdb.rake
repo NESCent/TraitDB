@@ -9,5 +9,9 @@ namespace :traitdb do
     TraitGroup.destroy_all
     OtuMetadataField.destroy_all
   end
+  desc "Delete all projects (CLEARS ALL DATA)"
+  task :delete_projects => :environment do
+    Project.destroy_all
+  end
 
 end

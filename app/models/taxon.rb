@@ -1,5 +1,6 @@
 class Taxon < ActiveRecord::Base
   attr_accessible :name, :uri, :import_job, :parent
+  belongs_to :project
   belongs_to :iczn_group
 
   belongs_to :import_job

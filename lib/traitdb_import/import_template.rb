@@ -53,7 +53,7 @@ module TraitDB
     end
 
     # returns arrays of path components
-    def trait_set_qualified_continuous_trait_names(prefixes=[], tree=@template)
+    def trait_set_qualified_trait_names(prefixes, tree, terminal_path)
       # Build up an array of paths
       # start at the root
       if tree['trait_sets']
@@ -63,13 +63,23 @@ module TraitDB
           paths += trait_set_qualified_continuous_trait_names(prefixes + [t['name']], t)
         end
         paths
-      elsif tree['continuous_trait_columns']
+      elsif tree[terminal_path]
         # At the tip, return the column names
-        names = tree['continuous_trait_columns'].map{|x| x['name']}
+        names = tree[terminal_path].map{|x| x['name']}
         names.map{|n| prefixes + [n]}
       else
         prefixes
       end
+    end
+
+    # returns array of path components
+    def trait_set_qualified_continuous_trait_names(prefixes=[], tree=@template)
+      trait_set_qualified_trait_names(prefixes, tree, 'continuous_trait_columns')
+    end
+
+    # returns array of path components
+    def trait_set_qualified_categorical_trait_names(prefixes=[], tree=@template)
+      trait_set_qualified_trait_names(prefixes, tree, 'categorical_trait_columns')
     end
 
     def trait_set_categorical_traits(path, tree)

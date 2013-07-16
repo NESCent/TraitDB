@@ -2,6 +2,16 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
 
   def verify_is_admin
-    (current_user.nil?) ? redirect_to(root_path) : (redirect_to(root_path) unless current_user.admin?)
+    if current_user.nil? || !current_user.admin?
+      redirect_to root_path
+      false
+    end
+  end
+
+  def verify_project_selected
+    unless session[:current_project]
+      redirect_to({:controller => 'projects', :action => 'select_project' })
+      false
+    end
   end
 end

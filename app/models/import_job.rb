@@ -242,13 +242,28 @@ class ImportJob < ActiveRecord::Base
     messages = []
     # trait definitions to be imported into database.
     traits[:continuous].each do |import_trait|
-      # TODO: consider trait sets here.  Recursion!
-      continuous_trait = ContinuousTrait.where(:name => import_trait[:name]).first_or_create do |trait| # This do block only executes on create
+      setup_trait = lambda do |trait|
         messages << "Adding continuous trait #{import_trait[:name]}"
         trait.import_job = self
         if import_trait[:format]
           trait.display_format = DisplayFormat.where(:name => import_trait[:format]).first
         end
+      end
+
+      # Find or create a trait set for each level and the last delimiter becomes the name of the trait
+      if template.trait_sets?
+        path = template.trait_path_from_column(import_trait[:name])
+        trait_set_path = path[0..-2]
+        trait_name = path[0]
+        last_set = nil
+        trait_set_path.each do |pathname|
+          last_set = TraitSet.where(:name => pathname).where(:parent_trait_set => last_set).first_or_create
+        end
+        continuous_trait = last_set.continuous_traits.where(:name => trait_name).first_or_create &setup_trait
+        last_set.save
+        continuous_trait.save
+      else
+        continuous_trait = ContinuousTrait.where(:name => import_trait[:name]).first_or_create &setup_trait
       end
       import_trait[:groups].each do |import_group_name|
         group = TraitGroup.where(:name => import_group_name).first_or_create
@@ -259,14 +274,30 @@ class ImportJob < ActiveRecord::Base
     end
 
     traits[:categorical].each do |import_trait|
-      # TODO: consider trait sets
-      categorical_trait = CategoricalTrait.where(:name => import_trait[:name]).first_or_create do |trait|
+      setup_trait = lambda do |trait|
         messages << "Adding categorical trait #{import_trait[:name]}"
         trait.import_job = self
         if import_trait[:format]
           trait.display_format = DisplayFormat.where(:name => import_trait[:format]).first
         end
       end
+
+      # Find or create a trait set for each level and the last delimiter becomes the name of the trait
+      if template.trait_sets?
+        path = template.trait_path_from_column(import_trait[:name])
+        trait_set_path = path[0..-2]
+        trait_name = path[0]
+        last_set = nil
+        trait_set_path.each do |pathname|
+          last_set = TraitSet.where(:name => pathname).where(:parent_trait_set => last_set).first_or_create
+        end
+        categorical_trait = last_set.categorical_traits.where(:name => trait_name).first_or_create &setup_trait
+        last_set.save
+        categorical_trait.save
+      else
+        categorical_trait = CategoricalTrait.where(:name => import_trait[:name]).first_or_create &setup_trait
+      end
+
       import_trait[:groups].each do |import_group_name|
         group = TraitGroup.where(:name => import_group_name).first_or_create
         group.categorical_traits << categorical_trait

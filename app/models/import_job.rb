@@ -253,14 +253,9 @@ class ImportJob < ActiveRecord::Base
       # Find or create a trait set for each level and the last delimiter becomes the name of the trait
       if template.trait_sets?
         path = template.trait_path_from_column(import_trait[:name])
-        trait_set_path = path[0..-2]
-        trait_name = path[0]
-        last_set = nil
-        trait_set_path.each do |pathname|
-          last_set = TraitSet.where(:name => pathname).where(:parent_trait_set => last_set).first_or_create
-        end
-        continuous_trait = last_set.continuous_traits.where(:name => trait_name).first_or_create &setup_trait
-        last_set.save
+        set = TraitSet.find_or_create_with_path(path[0..-2])
+        continuous_trait = set.continuous_traits.where(:name => path[0]).first_or_create &setup_trait
+        set.save
         continuous_trait.save
       else
         continuous_trait = ContinuousTrait.where(:name => import_trait[:name]).first_or_create &setup_trait
@@ -285,14 +280,9 @@ class ImportJob < ActiveRecord::Base
       # Find or create a trait set for each level and the last delimiter becomes the name of the trait
       if template.trait_sets?
         path = template.trait_path_from_column(import_trait[:name])
-        trait_set_path = path[0..-2]
-        trait_name = path[0]
-        last_set = nil
-        trait_set_path.each do |pathname|
-          last_set = TraitSet.where(:name => pathname).where(:parent_trait_set => last_set).first_or_create
-        end
-        categorical_trait = last_set.categorical_traits.where(:name => trait_name).first_or_create &setup_trait
-        last_set.save
+        set = TraitSet.find_or_create_with_path(path[0..-2])
+        categorical_trait = last_set.categorical_traits.where(:name => path[0]).first_or_create &setup_trait
+        set.save
         categorical_trait.save
       else
         categorical_trait = CategoricalTrait.where(:name => import_trait[:name]).first_or_create &setup_trait

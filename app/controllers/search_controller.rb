@@ -1,7 +1,8 @@
 class SearchController < ApplicationController
+  before_filter :set_project
   OPERATORS = { :or => 'or', :and => 'and' }
   def index
-    @iczn_groups = IcznGroup.sorted.select{|group| group.taxa.count > 0}
+    @iczn_groups = @project.iczn_groups.sorted.select{|group| group.taxa.count > 0}
 
     @trait_groups = []
     @trait_types = [['Categorical', :categorical], ['Continuous', :continuous]]
@@ -18,7 +19,7 @@ class SearchController < ApplicationController
 
   def list_categorical_trait_names # needs taxon_ids
     @categorical_trait_names = []
-    Taxon.where(:id => params[:taxon_ids]).each do |taxon|
+    @project.taxa.where(:id => params[:taxon_ids]).each do |taxon|
       @categorical_trait_names = @categorical_trait_names | taxon.grouped_categorical_traits
     end
     render :json => @categorical_trait_names
@@ -26,7 +27,7 @@ class SearchController < ApplicationController
 
   def list_continuous_trait_names # needs taxon_ids
     @continuous_trait_names = []
-    Taxon.where(:id => params[:taxon_ids]).each do |taxon|
+    @project.taxa.where(:id => params[:taxon_ids]).each do |taxon|
       @continuous_trait_names = @continuous_trait_names | taxon.grouped_continuous_traits
     end
     render :json => @continuous_trait_names
@@ -52,12 +53,12 @@ class SearchController < ApplicationController
     assemble_trait_filters # populates @categorical_trait_category_map and @continuous_trait_predicate_map
 
     # Output columns should include chosen continuous traits
-    @results[:columns][:continuous_traits] = ContinuousTrait.where(:id => @continuous_trait_predicate_map.keys).map do |continuous_trait|
+    @results[:columns][:continuous_traits] = @project.continuous_traits.where(:id => @continuous_trait_predicate_map.keys).map do |continuous_trait|
       {:id => continuous_trait.id, :name => continuous_trait.name}
     end
 
     # output columns should include chosen categorical traits
-    @results[:columns][:categorical_traits] = CategoricalTrait.where(:id => @categorical_trait_category_map.keys).map do |categorical_trait|
+    @results[:columns][:categorical_traits] = @project.categorical_traits.where(:id => @categorical_trait_category_map.keys).map do |categorical_trait|
       {:id => categorical_trait.id, :name => categorical_trait.name}
     end
 
@@ -192,8 +193,8 @@ class SearchController < ApplicationController
   end
 
   def show_trait_list
-    @categorical_traits = CategoricalTrait.sorted
-    @continuous_traits = ContinuousTrait.sorted
+    @categorical_traits = @project.categorical_traits.sorted
+    @continuous_traits = @project.continuous_traits.sorted
   end
 
   private
@@ -202,8 +203,8 @@ class SearchController < ApplicationController
   def analyze_lowest_requested_taxa
     # The requested taxon filters have parameter names that correspond to IcznGroup names.
     # The values are the Taxon IDs
-    sorted_groups_requested = IcznGroup.sorted.where(:name => params.keys)
-    valid_group_names = IcznGroup.sorted.pluck(:name)
+    sorted_groups_requested = @project.iczn_groups.sorted.where(:name => params.keys)
+    valid_group_names = @project.iczn_groups.sorted.pluck(:name)
     @results[:columns][:iczn_groups]= sorted_groups_requested.map{|group| {:name => group.name, :id => group.id}}
 
     # An example params hash looks like this
@@ -229,7 +230,7 @@ class SearchController < ApplicationController
         taxon_id_str = params[group.name][index.to_s]
         unless taxon_id_str.nil? || taxon_id_str.empty?
           @selected_taxon_ids << taxon_id_str.to_i
-          lowest_requested_taxon = Taxon.find(taxon_id_str.to_i)
+          lowest_requested_taxon = @project.taxa.find(taxon_id_str.to_i)
         end
       end
       @lowest_requested_taxa << lowest_requested_taxon if lowest_requested_taxon
@@ -245,7 +246,7 @@ class SearchController < ApplicationController
       # Need the selected taxon_ids
       # First get all the traits from the selected taxonomy
       continuous_traits, categorical_traits,   = [],[]
-      Taxon.where(:id => @selected_taxon_ids).each do |taxon|
+      @project.taxa.where(:id => @selected_taxon_ids).each do |taxon|
         continuous_traits = continuous_traits | taxon.grouped_continuous_traits
         categorical_traits = categorical_traits | taxon.grouped_categorical_traits
       end
@@ -320,18 +321,18 @@ class SearchController < ApplicationController
   end
 
   def taxa_in_iczn_group_with_parents(iczn_group_id, parent_taxon_ids)
-    iczn_group = IcznGroup.find(iczn_group_id)
-    taxon_ids = Taxon.where(:id => parent_taxon_ids).map{|t| t.descendants_with_level(iczn_group).map{|x| x.id}}.inject{|memo,id| memo & id}
-    return Taxon.where(:id => taxon_ids).sorted
+    iczn_group = @project.iczn_groups.find(iczn_group_id)
+    taxon_ids = @project.taxa.where(:id => parent_taxon_ids).map{|t| t.descendants_with_level(iczn_group).map{|x| x.id}}.inject{|memo,id| memo & id}
+    return @project.taxa.where(:id => taxon_ids).sorted
   end
 
   def traits
-    return CategoricalTrait.sorted
+    return @project.categorical_traits.sorted
   end
 
   def categorical_trait_values_for_trait(trait_id)
     if trait_id
-      trait = CategoricalTrait.find(trait_id)
+      trait = @project.categorical_traits.find(trait_id)
       return trait.categorical_trait_categories
     end
   end

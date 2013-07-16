@@ -8,8 +8,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def verify_project_selected
-    unless session[:current_project]
+  def set_project
+    if session[:current_project]
+      @project = Project.find(session[:current_project])
+    else
       redirect_to({:controller => 'projects', :action => 'select_project' })
       false
     end

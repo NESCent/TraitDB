@@ -2,6 +2,7 @@
 class AfterUploadController < Wicked::WizardController
   before_filter :authenticate_user!
   before_filter :verify_is_admin
+  before_filter :set_project
 
   steps :read_headers, :count_rows, :select_template, :validate_headers, :parse_rows, :import_rows, :imported
 

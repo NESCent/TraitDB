@@ -1,6 +1,6 @@
 class ProjectsController < ApplicationController
   def index
-    @projects = Project.all
+    @projects = Project.sorted
   end
 
   def show
@@ -49,12 +49,12 @@ class ProjectsController < ApplicationController
   end
 
   def select_project
-    @projects = current_user.projects
+    @projects = Project.sorted
     render 'select_project'
   end
 
   def selected_project
-    session[:current_project] = current_user.projects.where(:id => params[:id]).first
+    session[:current_project] = Project.where(:id => params[:id]).first
     redirect_to root_url
   end
 end

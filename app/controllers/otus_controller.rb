@@ -1,6 +1,7 @@
 class OtusController < ApplicationController
   before_filter :authenticate_user!, :except => [:index, :show]
   before_filter :verify_is_admin, :except => [:index, :show]
+  before_filter :set_project
   def index
     where_options = {}
     if params[:taxon]
@@ -20,21 +21,21 @@ class OtusController < ApplicationController
     else
       @count = 20
     end
-    @total = Otu.where(where_options).count
-    @otus = Otu.where(where_options).limit(@count).offset(@start)
+    @total = @project.otus.where(where_options).count
+    @otus = @project.otus.where(where_options).limit(@count).offset(@start)
 
   end
 
   def show
-    @otu = Otu.find(params[:id])
+    @otu = @project.otus.find(params[:id])
   end
 
   def edit
-    @otu= Otu.find(params[:id])
+    @otu = @project.otus.find(params[:id])
   end
 
   def update
-    @otu = Otu.find(params[:id])
+    @otu = @project.otus.find(params[:id])
     if @otu.update_attributes(params[:otu])
       flash[:notice] = 'OTU updated successfully'
       redirect_to(:action => 'show', :id => otu.id)
@@ -44,7 +45,7 @@ class OtusController < ApplicationController
   end
 
   def destroy
-    otu = Otu.find(params[:id])
+    otu = @project.otus.find(params[:id])
     otu.destroy
     flash[:notice] = 'OTU destroyed successfully'
     redirect_to(:action => 'index')

@@ -7,6 +7,7 @@ class ContinuousTrait < ActiveRecord::Base
   belongs_to :display_format
   has_many :continuous_trait_notes
   has_and_belongs_to_many :trait_groups
+  belongs_to :trait_set
 
   scope :sorted, order('name ASC')
 

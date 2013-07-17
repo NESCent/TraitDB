@@ -9,6 +9,7 @@ class ImportJob < ActiveRecord::Base
   has_many :validation_issues, :dependent => :destroy
   has_many :headers, :dependent => :destroy
   belongs_to :csv_import_template
+  has_one :project, :through => :csv_dataset
 
   before_save :update_template_state
 
@@ -240,6 +241,7 @@ class ImportJob < ActiveRecord::Base
 
   def import_traits(traits)
     messages = []
+    template = csv_import_template.get_import_template
     # trait definitions to be imported into database.
     traits[:continuous].each do |import_trait|
       setup_trait = lambda do |trait|
@@ -255,7 +257,7 @@ class ImportJob < ActiveRecord::Base
       if template.trait_sets?
         path = template.trait_path_from_column(import_trait[:name])
         set = TraitSet.find_or_create_with_path(project, path[0..-2])
-        continuous_trait = set.continuous_traits.where(:name => path[0]).first_or_create &setup_trait
+        continuous_trait = set.continuous_traits.where(:name => path[-1]).first_or_create &setup_trait
         set.save
         continuous_trait.save
       else
@@ -263,7 +265,7 @@ class ImportJob < ActiveRecord::Base
       end
       import_trait[:groups].each do |import_group_name|
         group = TraitGroup.by_project(project).where(:name => import_group_name).first_or_create
-        group.continuous_traits << continuous_trait
+        group.continuous_traits << continuous_trait unless continuous_trait.in? group.continuous_traits
         group.save
       end
       continuous_trait.save
@@ -283,7 +285,7 @@ class ImportJob < ActiveRecord::Base
       if template.trait_sets?
         path = template.trait_path_from_column(import_trait[:name])
         set = TraitSet.find_or_create_with_path(project, path[0..-2])
-        categorical_trait = last_set.categorical_traits.where(:name => path[0]).first_or_create &setup_trait
+        categorical_trait = last_set.categorical_traits.where(:name => path[-1]).first_or_create &setup_trait
         set.save
         categorical_trait.save
       else
@@ -292,7 +294,7 @@ class ImportJob < ActiveRecord::Base
 
       import_trait[:groups].each do |import_group_name|
         group = TraitGroup.by_project(project).where(:name => import_group_name).first_or_create
-        group.categorical_traits << categorical_trait
+        group.categorical_traits << categorical_trait unless categorical_trait.in? group.categorical_traits
         group.save
       end
 
@@ -308,6 +310,7 @@ class ImportJob < ActiveRecord::Base
 
   def import_datasets(datasets)
     # datasets is an Array of Hashes
+    template = csv_import_template.get_import_template
     import_datasets_messages = []
     import_datasets_messages << "Received #{datasets.size} datasets"
     @duplicates = []
@@ -358,8 +361,13 @@ class ImportJob < ActiveRecord::Base
           # an array of hashes.  Hashes contain :name, :values, and :source
           # Source may be nil if the template allowed it.  This would have been checked by the validator already
           # find the trait to attach it to
-          # TODO: support trait sets here
-          trait = CategoricalTrait.by_project(project).where(:name => import_trait[:name]).first
+          if template.trait_sets?
+            path = template.trait_path_from_column(import_trait[:name])
+            trait = TraitSet.find_or_create_with_path(project, path[0..-2]).categorical_traits.where(:name => path[-1]).first
+          else
+            trait = CategoricalTrait.by_project(project).where(:name => import_trait[:name]).first
+          end
+
           # This will result in erroneous references if source is nil, because where(nil) returns everything!
           if import_trait[:source]
             source_reference = SourceReference.by_project(project).where(import_trait[:source]).first_or_create do |ref|
@@ -397,7 +405,14 @@ class ImportJob < ActiveRecord::Base
 
         d[:continuous_trait_data].each do |import_trait|
           # Array of hashes.  Hashes contain :name, :value, and :source
-          trait = ContinuousTrait.by_project(project).where(:name => import_trait[:name]).first
+          # This needs to check for trait_sets
+          if template.trait_sets?
+            path = template.trait_path_from_column(import_trait[:name])
+            trait = TraitSet.find_or_create_with_path(project, path[0..-2]).continuous_traits.where(:name => path[-1]).first
+          else
+            trait = ContinuousTrait.by_project(project).where(:name => import_trait[:name]).first
+          end
+
           # This will result in erroneous references if source is nil, because where(nil) returns everything!
           if import_trait[:source]
             source_reference = SourceReference.by_project(project).where(import_trait[:source]).first_or_create do |ref|
@@ -438,7 +453,7 @@ class ImportJob < ActiveRecord::Base
       next if iczn_group.nil?
 
       iczn_group.taxa.by_project(project).where(:name => template.trait_group_taxon_name(trait_group_name)).each do |taxon|
-        taxon.trait_groups << trait_group
+        taxon.trait_groups << trait_group unless trait_group.in? taxon.trait_groups
         taxon.save
       end
     end

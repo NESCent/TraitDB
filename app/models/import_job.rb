@@ -245,6 +245,7 @@ class ImportJob < ActiveRecord::Base
       setup_trait = lambda do |trait|
         messages << "Adding continuous trait #{import_trait[:name]}"
         trait.import_job = self
+        trait.project = project
         if import_trait[:format]
           trait.display_format = DisplayFormat.where(:name => import_trait[:format]).first
         end
@@ -253,15 +254,15 @@ class ImportJob < ActiveRecord::Base
       # Find or create a trait set for each level and the last delimiter becomes the name of the trait
       if template.trait_sets?
         path = template.trait_path_from_column(import_trait[:name])
-        set = TraitSet.find_or_create_with_path(path[0..-2])
+        set = TraitSet.find_or_create_with_path(project, path[0..-2])
         continuous_trait = set.continuous_traits.where(:name => path[0]).first_or_create &setup_trait
         set.save
         continuous_trait.save
       else
-        continuous_trait = ContinuousTrait.where(:name => import_trait[:name]).first_or_create &setup_trait
+        continuous_trait = ContinuousTrait.by_project(project).where(:name => import_trait[:name]).first_or_create &setup_trait
       end
       import_trait[:groups].each do |import_group_name|
-        group = TraitGroup.where(:name => import_group_name).first_or_create
+        group = TraitGroup.by_project(project).where(:name => import_group_name).first_or_create
         group.continuous_traits << continuous_trait
         group.save
       end
@@ -272,6 +273,7 @@ class ImportJob < ActiveRecord::Base
       setup_trait = lambda do |trait|
         messages << "Adding categorical trait #{import_trait[:name]}"
         trait.import_job = self
+        trait.project = project
         if import_trait[:format]
           trait.display_format = DisplayFormat.where(:name => import_trait[:format]).first
         end
@@ -280,16 +282,16 @@ class ImportJob < ActiveRecord::Base
       # Find or create a trait set for each level and the last delimiter becomes the name of the trait
       if template.trait_sets?
         path = template.trait_path_from_column(import_trait[:name])
-        set = TraitSet.find_or_create_with_path(path[0..-2])
+        set = TraitSet.find_or_create_with_path(project, path[0..-2])
         categorical_trait = last_set.categorical_traits.where(:name => path[0]).first_or_create &setup_trait
         set.save
         categorical_trait.save
       else
-        categorical_trait = CategoricalTrait.where(:name => import_trait[:name]).first_or_create &setup_trait
+        categorical_trait = CategoricalTrait.by_project(project).where(:name => import_trait[:name]).first_or_create &setup_trait
       end
 
       import_trait[:groups].each do |import_group_name|
-        group = TraitGroup.where(:name => import_group_name).first_or_create
+        group = TraitGroup.by_project(project).where(:name => import_group_name).first_or_create
         group.categorical_traits << categorical_trait
         group.save
       end
@@ -321,17 +323,20 @@ class ImportJob < ActiveRecord::Base
         taxa_map.keys.each do |level|
           # level will be the name of the IcznGroup, e.g. 'htg' or 'family'
           next if taxon[level].nil? || taxon[level].empty? # skip if this row doesn't have taxonomy information at the current level
-          model_taxon = Taxon.where(:name => taxon[level].strip).first_or_create do |t|
+          model_taxon = Taxon.by_project(project).where(:name => taxon[level].strip).first_or_create do |t|
             t.parent = last_parent
             t.import_job = self
             t.iczn_group = IcznGroup.find_by_name(level)
           end
+          # add the named IcznGroup to the project
+          project.iczn_groups << model_taxon.iczn_group
+          project.save
           last_parent = taxa_map[level] = model_taxon
         end
 
         # Create an OTU
         # Tested this in console but not yet web.  Should work just fine
-        otu = Otu.create(:taxa => taxa_map.values.compact,:import_job => self)
+        otu = Otu.by_project(project).create(:taxa => taxa_map.values.compact,:import_job => self)
 
         # Add metadata to the OTU, including notes, entry email, etc
         d[:metadata].each do |k,v|
@@ -353,10 +358,11 @@ class ImportJob < ActiveRecord::Base
           # an array of hashes.  Hashes contain :name, :values, and :source
           # Source may be nil if the template allowed it.  This would have been checked by the validator already
           # find the trait to attach it to
-          trait = CategoricalTrait.where(:name => import_trait[:name]).first
+          # TODO: support trait sets here
+          trait = CategoricalTrait.by_project(project).where(:name => import_trait[:name]).first
           # This will result in erroneous references if source is nil, because where(nil) returns everything!
           if import_trait[:source]
-            source_reference = SourceReference.where(import_trait[:source]).first_or_create do |ref|
+            source_reference = SourceReference.by_project(project).where(import_trait[:source]).first_or_create do |ref|
               import_datasets_messages << "Adding Source Reference #{ref[:title]}"
             end
           end
@@ -391,10 +397,10 @@ class ImportJob < ActiveRecord::Base
 
         d[:continuous_trait_data].each do |import_trait|
           # Array of hashes.  Hashes contain :name, :value, and :source
-          trait = ContinuousTrait.where(:name => import_trait[:name]).first
+          trait = ContinuousTrait.by_project(project).where(:name => import_trait[:name]).first
           # This will result in erroneous references if source is nil, because where(nil) returns everything!
           if import_trait[:source]
-            source_reference = SourceReference.where(import_trait[:source]).first_or_create do |ref|
+            source_reference = SourceReference.by_project(project).where(import_trait[:source]).first_or_create do |ref|
               import_datasets_messages << "Adding Source Reference #{ref[:title]}"
             end
           end
@@ -418,19 +424,20 @@ class ImportJob < ActiveRecord::Base
           otu.save
         end
       end #end of datasets.each
+    project.save
   end
 
   def link_trait_groups
     template = csv_import_template.get_import_template
     template.trait_group_names.each do |trait_group_name|
-      trait_group = TraitGroup.find_by_name(trait_group_name)
+      trait_group = TraitGroup.by_project(project).find_by_name(trait_group_name)
       next if trait_group.nil?
 
-      # Only set groups for taxa created by this import job
-      iczn_group = IcznGroup.where(:name => template.trait_group_rank(trait_group_name)).first
+      # Only set groups for taxa in this project
+      iczn_group = project.iczn_groups.where(:name => template.trait_group_rank(trait_group_name)).first
       next if iczn_group.nil?
 
-      iczn_group.taxa.where(:name => template.trait_group_taxon_name(trait_group_name)).each do |taxon|
+      iczn_group.taxa.by_project(project).where(:name => template.trait_group_taxon_name(trait_group_name)).each do |taxon|
         taxon.trait_groups << trait_group
         taxon.save
       end

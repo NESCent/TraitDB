@@ -14,6 +14,7 @@ class Otu < ActiveRecord::Base
   has_many :otu_metadata_fields, :through =>  :otu_metadata_values
 
   scope :by_iczn_group, lambda{|iczn_group| iczn_group.taxa.otus}
+  scope :by_project, lambda{|p| where(:project_id => p) unless p.nil?}
 
   def taxon_name_for_iczn_group(iczn_group)
     taxon = taxa.where(:iczn_group => iczn_group).first

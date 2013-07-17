@@ -5,15 +5,16 @@ class TraitSet < ActiveRecord::Base
   has_many :categorical_traits
   has_many :continuous_traits
   attr_accessible :level, :name
+  scope :by_project, lambda{|p| where(:project_id => p) unless p.nil?}
 
   # given a path (an array of strings), look for nested trait sets with the provided names
   # Create any missing nodes and return the tip
-  def self.find_or_create_with_path(path)
+  def self.find_or_create_with_path(containing_project, path)
     last_set = nil
     path.each do |pathname|
       h = {:name => pathname}
       h[:parent_trait_set_id] = last_set.id if last_set
-      last_set = TraitSet.where(h).first_or_create
+      last_set = containing_project.trait_sets.where(h).first_or_create
     end
     last_set
   end

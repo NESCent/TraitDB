@@ -14,9 +14,17 @@ require 'pp'
 # which should be a YML file
 
 import_template = TraitDB::ImportTemplate.new(ARGV[0])
+PP.pp(import_template.categorical_trait_column_names)
 
-continuous = import_template.continuous_trait_column_names
-PP.pp(continuous)
+groups = import_template.groups_for_continuous_trait('Demographic Data-Group Size-Mdin')
+
+PP.pp(groups)
+PP.pp(import_template.continuous_trait_column_names)
+PP.pp(import_template.continuous_trait_format('Demographic Data-Group Size-Max'))
+PP.pp(import_template.continuous_trait_format('Demographic Data-Group Size-Min'))
+
+
+
 
 #
 ## Validator takes a template and a path to a CSV file

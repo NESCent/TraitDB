@@ -72,26 +72,22 @@ module TraitDB
     end
 
     def trait_path_from_column(column_name)
-      delimiter = trait_options['set_delimiter'] || DEFAULT_SET_DELIMITER
       column_name.split(delimiter)
     end
 
     # trait names
     def categorical_trait_column_names
-      if @template['trait_sets']
+      if trait_sets?
         # get name array paths, and join with delimiter
-        delimiter = trait_options['set_delimiter'] || DEFAULT_SET_DELIMITER
         trait_set_qualified_categorical_trait_names.map{|n| n.join(delimiter) }
       else
         @template['categorical_trait_columns'].map{|x| x['name'] }
       end
-
     end
 
     def continuous_trait_column_names
-      if @template['trait_sets']
+      if trait_sets?
         # get name array paths, and join with delimiter
-        delimiter = trait_options['set_delimiter'] || DEFAULT_SET_DELIMITER
         trait_set_qualified_continuous_trait_names.map{|n| n.join(delimiter) }
       else
         @template['continuous_trait_columns'].map{|x| x['name'] }
@@ -99,11 +95,27 @@ module TraitDB
     end
     
     def categorical_trait_names_in_group(group_name)
-      @template['categorical_trait_columns'].select{|x| x['groups'].include? group_name}.map{|x| x['name']}
+      if trait_sets?
+        names = []
+        trait_set_qualified_categorical_trait_names.each do |qname|
+          names << qname.join(delimiter) if categorical(qname.join(delimiter))['groups'].include? group_name
+        end
+        names
+      else
+        @template['categorical_trait_columns'].select{|x| x['groups'].include? group_name}.map{|x| x['name']}
+      end
     end
     
     def continuous_trait_names_in_group(group_name)
-      @template['continuous_trait_columns'].select{|x| x['groups'].include? group_name}.map{|x| x['name']}
+      if trait_sets?
+        names = []
+        trait_set_qualified_continuous_trait_names.each do |qname|
+          names << qname.join(delimiter) if continuous(qname.join(delimiter))['groups'].include? group_name
+        end
+        names
+      else
+        @template['continuous_trait_columns'].select{|x| x['groups'].include? group_name}.map{|x| x['name']}
+      end
     end
 
     # trait values
@@ -125,30 +137,52 @@ module TraitDB
     end
 
     def groups_for_categorical_trait(trait_name)
-      categorical(trait_name)['groups']
+      t = categorical(trait_name)
+      t.nil? ? [] : t['groups']
     end
     
     def groups_for_continuous_trait(trait_name)
-      continuous(trait_name)['groups']
+      t = continuous(trait_name)
+      t.nil? ? [] : t['groups']
     end
     
     # formats
     def continuous_trait_format(trait_name)
-      continuous(trait_name)['format']
+      t = continuous(trait_name)
+      t.nil? ? [] : t['format']
     end
 
     def categorical_trait_format(trait_name)
-      categorical(trait_name)['format']
+      t = categorical(trait_name)
+      t.nil? ? [] : t['format']
     end
 
     private
-    
-    def continuous(trait_name)
-      @template['continuous_trait_columns'].find{|x| x['name'] == trait_name}
+
+    def delimiter
+      trait_options['set_delimiter'] || DEFAULT_SET_DELIMITER
     end
-    
+
+    def continuous(trait_name)
+      if trait_sets?
+        path = trait_path_from_column(trait_name)
+        t = trait_set_continuous_traits(path[0..-2])
+        trait_name = path[-1] #reassigning the name
+      else
+        t = @template['continuous_trait_columns']
+      end
+      t.find{|x| x['name'] == trait_name}
+    end
+
     def categorical(trait_name)
-      @template['categorical_trait_columns'].find{|x| x['name'] == trait_name}
+      if trait_sets?
+        path = trait_path_from_column(trait_name)
+        t = trait_set_categorical_traits(path[0..-2])
+        trait_name = path[-1] #reassigning the name
+      else
+        t = @template['categorical_trait_columns']
+      end
+      t.find{|x| x['name'] == trait_name}
     end
 
     # returns arrays of path components
@@ -167,7 +201,7 @@ module TraitDB
         names = tree[terminal_path].map{|x| x['name']}
         names.map{|n| prefixes + [n]}
       else
-        prefixes
+        []
       end
     end
 

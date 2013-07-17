@@ -35,9 +35,9 @@ traitdb_spreadsheet_template:
       trait_sets:
         -
           name: Group Size
-          depth: 1 # if depth is 0, this is a trait
+          depth: 1
           continuous_trait_columns:
-            - 
+            -
               name: Mean
               format: float
               groups: [Birds]
@@ -64,12 +64,12 @@ traitdb_spreadsheet_template:
             -
               name: N
               format: float
-              groups: [Birds]          
+              groups: [Birds]
         -
           name: Male Reproductives
-          depth: 1 # if depth is 0, this is a trait
+          depth: 1
           continuous_trait_columns:
-            - 
+            -
               name: Mean
               format: float
               groups: [Birds]
@@ -96,4 +96,4 @@ traitdb_spreadsheet_template:
             -
               name: N
               format: float
-              groups: [Birds]          
+              groups: [Birds]

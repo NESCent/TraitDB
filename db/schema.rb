@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130716200155) do
+ActiveRecord::Schema.define(:version => 20130718142524) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -193,6 +193,7 @@ ActiveRecord::Schema.define(:version => 20130716200155) do
     t.integer "project_id"
   end
 
+  add_index "iczn_groups_projects", ["iczn_group_id", "project_id"], :name => "by_iczn_group_and_project", :unique => true
   add_index "iczn_groups_projects", ["iczn_group_id"], :name => "index_iczn_groups_projects_on_iczn_group_id"
   add_index "iczn_groups_projects", ["project_id"], :name => "index_iczn_groups_projects_on_project_id"
 
@@ -245,6 +246,8 @@ ActiveRecord::Schema.define(:version => 20130716200155) do
     t.integer "taxon_id"
   end
 
+  add_index "otus_taxa", ["otu_id", "taxon_id"], :name => "by_otu_and_taxon"
+
   create_table "parse_issues", :force => true do |t|
     t.integer  "import_job_id"
     t.integer  "row_location",       :null => false
@@ -272,6 +275,7 @@ ActiveRecord::Schema.define(:version => 20130716200155) do
     t.integer "user_id"
   end
 
+  add_index "projects_users", ["project_id", "user_id"], :name => "by_project_and_user", :unique => true
   add_index "projects_users", ["project_id", "user_id"], :name => "index_projects_users_on_project_id_and_user_id"
   add_index "projects_users", ["user_id", "project_id"], :name => "index_projects_users_on_user_id_and_project_id"
 
@@ -309,6 +313,7 @@ ActiveRecord::Schema.define(:version => 20130716200155) do
     t.integer "trait_group_id"
   end
 
+  add_index "taxa_trait_groups", ["taxon_id", "trait_group_id"], :name => "by_taxon_and_trait_group", :unique => true
   add_index "taxa_trait_groups", ["taxon_id"], :name => "index_taxa_trait_groups_on_taxon_id"
   add_index "taxa_trait_groups", ["trait_group_id"], :name => "index_taxa_trait_groups_on_trait_group_id"
 

@@ -332,7 +332,7 @@ class ImportJob < ActiveRecord::Base
             t.iczn_group = IcznGroup.find_by_name(level)
           end
           # add the named IcznGroup to the project
-          project.iczn_groups << model_taxon.iczn_group
+          project.iczn_groups << model_taxon.iczn_group unless model_taxon.iczn_group.in? project.iczn_groups
           project.save
           last_parent = taxa_map[level] = model_taxon
         end

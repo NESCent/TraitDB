@@ -17,7 +17,7 @@
             <a class="dropdown-toggle" href="#" data-toggle="dropdown"> Project: <%= session[:current_project].name %><b class="caret"></b></a>
             <ul class="dropdown-menu">
               <% @projects.each do |p| %>
-                <li><%= link_to(p.name, {:controller => 'projects', :action => 'selected_project', :id => p.id}) %></li>
+                <li><%= link_to(p.name, {:controller => '/projects', :action => 'selected_project', :id => p.id}) %></li>
               <% end %>
             </ul>
            </li>

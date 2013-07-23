@@ -6,7 +6,7 @@ class SearchController < ApplicationController
 
     @trait_groups = []
     @trait_types = [['Categorical', :categorical], ['Continuous', :continuous]]
-    @trait_names = {:categorical => CategoricalTrait.sorted, :continuous => ContinuousTrait.sorted }
+    @trait_names = {:categorical => CategoricalTrait.by_project(@project).sorted, :continuous => ContinuousTrait.by_project(@project).sorted }
     @categorical_trait_values = categorical_trait_values_for_trait(@trait_names[:categorical].first)
   end
 

@@ -1,5 +1,7 @@
 class Project < ActiveRecord::Base
-  attr_accessible :name
+  attr_accessible :name, :summary_description, :detail_description, :url, :url_text
+  validates_presence_of :name
+  validates_uniqueness_of :name
   has_and_belongs_to_many :users
 
   has_many :categorical_traits, :dependent => :destroy

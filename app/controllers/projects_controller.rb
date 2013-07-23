@@ -1,4 +1,6 @@
 class ProjectsController < ApplicationController
+  before_filter :authenticate_user!, :except => [:select_project, :selected_project]
+  before_filter :verify_is_admin, :except => [:select_project, :selected_project, :show, :index]
   def index
   end
 
@@ -12,6 +14,7 @@ class ProjectsController < ApplicationController
 
   def update
     @project = Project.find(params[:id])
+    @project.update_attributes(params[:project])
     if @project.save
       flash[:notice] = "Project '#{@project.name}' updated successfully"
       redirect_to(:action => 'show', :id => @project.id)

@@ -14,7 +14,7 @@
         <%= link_to("TraitDB", root_path, :class => :brand) %>
         <ul class="nav pull-left">
           <li class="dropdown">
-            <a class="dropdown-toggle" href="#" data-toggle="dropdown"> Project: <%= session[:current_project].name %><b class="caret"></b></a>
+            <a class="dropdown-toggle" href="#" data-toggle="dropdown"> Project: <%= session[:current_project].name if session[:current_project]%><b class="caret"></b></a>
             <ul class="dropdown-menu">
               <% @projects.each do |p| %>
                 <li><%= link_to(p.name, {:controller => '/projects', :action => 'selected_project', :id => p.id}) %></li>

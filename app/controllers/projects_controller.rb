@@ -1,6 +1,5 @@
 class ProjectsController < ApplicationController
   def index
-    @projects = Project.sorted
   end
 
   def show
@@ -49,7 +48,6 @@ class ProjectsController < ApplicationController
   end
 
   def select_project
-    @projects = Project.sorted
     render 'select_project'
   end
 

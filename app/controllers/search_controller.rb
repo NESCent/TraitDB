@@ -258,8 +258,9 @@ class SearchController < ApplicationController
       # select all was not checked, create filters based on form selections
       continuous_trait_filters = {}
       # Continuous Trait Values
-      if params['continuous_trait_name']
-        params['continuous_trait_name'].reject{|k,v| v.empty?}.each do |k,v|
+      continuous_trait_indices = params['trait_type'].select{|k,v| v == 'continuous'}.keys
+      unless continuous_trait_indices.empty?
+        params['trait_name'].select{|k,v| k.in?(continuous_trait_indices)}.reject{|k,v| v.empty?}.each do |k,v|
           trait_id = Integer(v)
           # This block is invoked for each filter on the search form
           # Multiple filters may reference the same trait, so keep the values/predicates for each trait together
@@ -271,10 +272,10 @@ class SearchController < ApplicationController
 
           # Check for the equals/less than/etc
           # get the predicate for this row
-          if params['continuous_trait_value_predicates'][k] && params['continuous_trait_entries'][k]
-            unless params['continuous_trait_entries'][k].blank?
-              field_value = Float(params['continuous_trait_entries'][k])
-              case params['continuous_trait_value_predicates'][k]
+          if params['trait_values'][k] && params['trait_entries'][k]
+            unless params['trait_entries'][k].blank?
+              field_value = Float(params['trait_entries'][k])
+              case params['trait_values'][k]
                 when 'gt'
                   predicates << 'value > ?'
                   values << field_value
@@ -304,14 +305,15 @@ class SearchController < ApplicationController
       end
 
       # Categorical Trait Values
-      if params['categorical_trait_name']
-        params['categorical_trait_name'].reject{|k,v| v.empty?}.each do |k,v|
+      categorical_trait_indices = params['trait_type'].select{|k,v| v == 'categorical'}.keys
+      unless categorical_trait_indices.empty?
+        params['trait_name'].select{|k,v| k.in?(categorical_trait_indices)}.reject{|k,v| v.empty?}.each do |k,v|
           trait_id = Integer(v)
           trait_category_ids = @categorical_trait_category_map[trait_id] || []
 
-          if params['categorical_trait_values'][k]
-            unless params['categorical_trait_values'][k].blank?
-              trait_category_ids << Integer(params['categorical_trait_values'][k])
+          if params['trait_values'][k]
+            unless params['trait_values'][k].blank?
+              trait_category_ids << Integer(params['trait_values'][k])
             end
           end
           @categorical_trait_category_map[trait_id] = trait_category_ids

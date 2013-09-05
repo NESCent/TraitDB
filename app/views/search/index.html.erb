@@ -72,7 +72,7 @@
                         <span class="operator_placeholder"></span>
                       </td>
                       <td>
-                        <%= select_tag(:"#{:trait_types}[0]", options_for_select(@trait_types), :prompt => '-- Select --', :class => 'trait_type input-medium') %>
+                        <%= select_tag(:"#{:trait_type}[0]", options_for_select(@trait_types), :prompt => '-- Select --', :class => 'trait_type input-medium') %>
                       </td>
                       <% if @project.trait_sets.empty? %>
                         <td>

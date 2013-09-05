@@ -32,18 +32,14 @@ function addTraitFilterRow(animation) {
     uniqueRowId++;
 
     var traitTypeId = "trait_type_" + uniqueRowId;
-    var categoricalTraitNameId = "categorical_trait_name_" + uniqueRowId;
-    var categoricalTraitValuesId = "categorical_trait_values_" + uniqueRowId;
-    var continuousTraitNameId = "continuous_trait_name_" + uniqueRowId;
-    var continuousTraitValuePredicatesId = "continuous_trait_value_predicates_" + uniqueRowId;
-    var continuousTraitEntriesId = "continous_trait_entries_" + uniqueRowId;
+    var traitNameId = "trait_name_" + uniqueRowId;
+    var traitValuesId = "trait_values_" + uniqueRowId;
+    var traitEntriesId = "trait_entries_" + uniqueRowId; // should only exist for continuous traits
 
     el.find('select.trait_type').attr('id',traitTypeId).attr('name','trait_type[' + uniqueRowId + ']');
-    el.find('select.categorical_trait_name').attr('id',categoricalTraitNameId).attr('name','categorical_trait_name[' + uniqueRowId + ']');
-    el.find('select.categorical_trait_values').attr('id',categoricalTraitValuesId).attr('name','categorical_trait_values[' + uniqueRowId + ']');
-    el.find('select.continuous_trait_name').attr('id',continuousTraitNameId).attr('name','continuous_trait_name[' + uniqueRowId + ']');
-    el.find('select.continuous_trait_value_predicates').attr('id',continuousTraitValuePredicatesId).attr('name','continuous_trait_value_predicates[' + uniqueRowId + ']');
-    el.find('input.continuous_trait_entries').attr('id',continuousTraitEntriesId).attr('name','continuous_trait_entries[' + uniqueRowId + ']');
+    el.find('select.trait_name').attr('id',traitNameId).attr('name','trait_name[' + uniqueRowId + ']');
+    el.find('select.trait_values').attr('id',traitValuesId).attr('name','trait_values[' + uniqueRowId + ']');
+    el.find('input.trait_entries').attr('id',traitEntriesId).attr('name','trait_entries[' + uniqueRowId + ']');
     el.hide();
     lastTraitFilterRow.after(el);
     el.show(animation, function() {
@@ -114,7 +110,7 @@ function addButtonHandlers() {
 
 function updateCategoricalTraitNames(traitTypeElement, traitList) {
     // find the trait names select element
-    var traitElement = $(traitTypeElement).closest(".trait-filter-row").find(".categorical_trait_name");
+    var traitElement = $(traitTypeElement).closest(".trait-filter-row").find(".trait_name");
     // remove all options from the select
     traitElement.find('option').remove();
     traitElement.append($('<option value>-- Select --</option>'));
@@ -128,7 +124,7 @@ function updateCategoricalTraitNames(traitTypeElement, traitList) {
 
 function updateContinuousTraitNames(traitTypeElement, traitList) {
     // find the trait names select element
-    var traitElement = $(traitTypeElement).closest(".trait-filter-row").find(".continuous_trait_name");
+    var traitElement = $(traitTypeElement).closest(".trait-filter-row").find(".trait_name");
     // remove all options from the select
     traitElement.find('option').remove();
     traitElement.append($('<option value>-- Select --</option>'));
@@ -141,7 +137,7 @@ function updateContinuousTraitNames(traitTypeElement, traitList) {
 }
 
 function updateContinuousTraitValuePredicates(traitElement) {
-    var traitValuesElement = $(traitElement).closest(".trait-filter-row").find(".continuous_trait_value_predicates");
+    var traitValuesElement = $(traitElement).closest(".trait-filter-row").find(".trait_values");
     traitValuesElement.find('option').remove();
     traitValuesElement.append($('<option value>-- All Values --</option>'));
     traitValuesElement.append($('<option value="eq">= (Equals)</option>'));
@@ -155,16 +151,16 @@ function updateContinuousTraitEntries(traitValuesElement) {
     if (traitValuesElement.value == 'in') {
         // show the second field
         // would be good to resize too
-        $(traitValuesElement).closest(".trait-filter-row").find('.continuous_trait_entries').children('.field2').show();
+        $(traitValuesElement).closest(".trait-filter-row").find('.trait_entries').children('.field2').show();
     } else {
         // hide the second field
-        $(traitValuesElement).closest(".trait-filter-row").find('.continuous_trait_entries').children('.field2').hide();
+        $(traitValuesElement).closest(".trait-filter-row").find('.trait_entries').children('.field2').hide();
     }
 }
 
 function updateCategoricalTraitValues(traitElement, valueList) {
     // find the trait values select element
-    var traitValuesElement = $(traitElement).closest(".trait-filter-row").find('.categorical_trait_values');
+    var traitValuesElement = $(traitElement).closest(".trait-filter-row").find('.trait_values');
     // remove all options from the select
     traitValuesElement.find('option').remove();
     traitValuesElement.append($('<option value>-- Select --</option>'));
@@ -213,36 +209,65 @@ function updateGroupList(destinationSelectElement, taxa) {
         });
 }
 
+function getIndex(element) {
+    var index = $(element).attr('id').lastIndexOf('_') + 1;
+    return $(element).attr('id').substring(index);
+}
+
 // need an update trait types
 function traitTypeChanged(traitTypeElement, traitTypeId) {
     // When getting traits, need to supply the selected taxonomy
     var selectedTaxonIds = jQuery.map($('#taxa').find('select'), function(e, i) { return $(e).val(); }).filter( function(e, i) { return e.length > 0});
+    // TODO: support levels
+    $(traitTypeElement).closest(".trait-filter-row").find(".trait_name").find('option').remove();
+    $(traitTypeElement).closest(".trait-filter-row").find(".trait_values").find('option').remove();
+    var traitNameElement = $(traitTypeElement).closest(".trait-filter-row").find(".trait_name").first();
     if(traitTypeElement.value == 'continuous') {
-        $(traitTypeElement).closest(".trait-filter-row").find(".continuous_trait_name").find('option').remove();
-        $(traitTypeElement).closest(".trait-filter-row").find(".continuous_trait_name, .continuous_trait_value_predicates, .continuous_trait_entries").show('fast');
-        $(traitTypeElement).closest(".trait-filter-row").find(".categorical_trait_name, .categorical_trait_values").hide('fast');
+        if($(traitTypeElement).closest(".trait-filter-row").find(".trait_entries").length == 0) {
+            // no trait_entries element, create one
+            var traitEntriesElement = $('<input></input>');
+            traitEntriesElement.addClass('trait_entries input-medium');
+            traitEntriesElement.attr('type', 'number');
+            traitEntriesElement.attr('id', 'trait_entries_' + getIndex(traitTypeElement));
+            traitEntriesElement.attr('name','trait_entries[' + getIndex(traitTypeElement) + ']');
+            var traitEntriesCell = $('<td></td>');
+            $(traitEntriesCell).append(traitEntriesElement);
+            // have the cell, append it to the table
+            $(traitTypeElement).closest(".trait-filter-row").find(".trait_values").parent().after(traitEntriesCell);
+        }
         $.ajax({
             url: "/search/list_continuous_trait_names.json",
             data: {
                 taxon_ids: selectedTaxonIds
             }
-        }).done(function(data, textstatus, jqXHR) { updateContinuousTraitNames(traitTypeElement, data); });
+        }).done(function(data, textstatus, jqXHR) {
+                updateContinuousTraitNames(traitTypeElement, data);
+                traitNameElement.change(function(){
+                    continuousTraitNameChanged(this, this.value);
+                });
+            });
     } else {
-        $(traitTypeElement).closest(".trait-filter-row").find(".categorical_trait_name").find('option').remove();
-        $(traitTypeElement).closest(".trait-filter-row").find(".continuous_trait_name, .continuous_trait_value_predicates, .continuous_trait_entries").hide('fast');
-        $(traitTypeElement).closest(".trait-filter-row").find(".categorical_trait_name, .categorical_trait_values").show('fast');
+        if($(traitTypeElement).closest(".trait-filter-row").find(".trait_entries").length > 0) {
+            // have a trait entries, remove its parent
+            $(traitTypeElement).closest(".trait-filter-row").find(".trait_entries").parent().remove();
+        }
       $.ajax({
             url: "/search/list_categorical_trait_names.json",
             data: {
                 taxon_ids: selectedTaxonIds
             }
-        }).done(function(data, textstatus, jqXHR) { updateCategoricalTraitNames(traitTypeElement, data); });
+        }).done(function(data, textstatus, jqXHR) {
+              updateCategoricalTraitNames(traitTypeElement, data);
+              traitNameElement.change(function(){
+                  categoricalTraitNameChanged(this, this.value);
+              });
+          });
     }
 
 }
 
 function categoricalTraitNameChanged(categoricalTraitNameElement, traitId) {
-    $(categoricalTraitNameElement).closest(".trait-filter-row").find(".categorical_trait_values").find('option').remove();
+    $(categoricalTraitNameElement).closest(".trait-filter-row").find(".trait_values").find('option').remove();
     $.ajax({
         url: "/search/list_categorical_trait_values.js",
         data: { trait_id: traitId }
@@ -253,43 +278,15 @@ function continuousTraitNameChanged(continuousTraitNameElement, traitId) {
     updateContinuousTraitValuePredicates(continuousTraitNameElement);
 }
 
-function continuousTraitValuePredicateChanged(continuousTraitValuePredicateElement, predicateId) {
-
-}
-
-function continuousTraitEntryChanged(continuousTraitEntryElement, entryId) {
-
-}
-
 function addSelectionChangeListeners() {
     // taxonomy
     $('select[data-groupid]').change(function() {
         groupChanged(this,this.value);
     });
-
     // trait
     $('select.trait_type').change(function() {
         traitTypeChanged(this,this.value);
     });
-    $('select.categorical_trait_name').change(function() {
-        categoricalTraitNameChanged(this,this.value);
-    });
-    $('select.continuous_trait_name').change(function() {
-        continuousTraitNameChanged(this,this.value);
-    });
-    $('select.continuous_trait_value_predicates').change(function() {
-        continuousTraitValuePredicateChanged(this,this.value);
-    });
-    $('input.continuous_trait_entries').change(function() {
-        continuousTraitEntryChanged(this,this.value);
-    });
-
-}
-
-function hideContinuousFields() {
-    $('select.continuous_trait_name').hide();
-    $('select.continuous_trait_value_predicates').hide();
-    $('input.continuous_trait_entries').hide();
 }
 
 function resetTaxonomy() {

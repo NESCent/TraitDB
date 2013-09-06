@@ -81,17 +81,43 @@ function populateInitialTraitSets() {
     }).done(function(data) {
             // If we somehow have more than one taxon-filter row, go ahead and update it
             var rootTraitSetSelects = $('.trait-filter-row td:nth-child(2) select.trait_set_level');
-            rootTraitSetSelects.find('option').remove();
-            rootTraitSetSelects.each(function(i) {
-                data.forEach(function(trait_set) {
-                    var optionElement = $('<option>', {value:trait_set.id}).text(trait_set.name);
-                    $(rootTraitSetSelects[i]).append(optionElement);
-                });
-            });
+            updateTraitSets(rootTraitSetSelects, data);
         }
     );
 }
 
+function updateTraitSets(traitSetSelectElements, traitSets) {
+    traitSetSelectElements.find('option').remove();
+    traitSetSelectElements.each(function(i) {
+        $(traitSetSelectElements[i]).append($('<option>-- Select --</option>'));
+        traitSets.forEach(function(trait_set) {
+            var optionElement = $('<option>', {value:trait_set.id}).text(trait_set.name);
+            $(traitSetSelectElements[i]).append(optionElement);
+        });
+        $(traitSetSelectElements[i]).change(function() {
+            traitSetChanged(this);
+        });
+    });
+}
+
+function traitSetChanged(traitSetSelectElement) {
+    // get the level of the changed element
+    var level = $(traitSetSelectElement).attr('data-trait-set-level');
+    var row = $(traitSetSelectElement).attr('data-trait-filter-row');
+    // get the value that was changed
+    var parentTraitSetId = traitSetSelectElement.value;
+    // Now call the server and ask for the trait sets with the parent
+    $.ajax({
+        url: "/search/list_trait_sets.json", // no parent, get root trait set for this project
+        data: {'parent_trait_set_id': parentTraitSetId }
+    }).done(function(data) {
+            // update the child trait set if any
+            var childLevel = parseInt(level, 10) + 1;
+            var childTraitSetSelect = $('select.trait_set_level[data-trait-set-level=' + childLevel + '][data-trait-filter-row=' + row + ']'); // should be one element
+            updateTraitSets(childTraitSetSelect, data);
+        }
+    );
+}
 
 function addButtonHandlers() {
     $('.add_taxon').bind('click', function() {

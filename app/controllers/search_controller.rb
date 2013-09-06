@@ -8,6 +8,8 @@ class SearchController < ApplicationController
     @trait_types = [['Categorical', :categorical], ['Continuous', :continuous]]
     @trait_names = {:categorical => CategoricalTrait.by_project(@project).sorted, :continuous => ContinuousTrait.by_project(@project).sorted }
     @categorical_trait_values = categorical_trait_values_for_trait(@trait_names[:categorical].first)
+    # Trait set support
+    @trait_set_levels = @project.trait_sets.levels
   end
 
   def list_taxa # needs iczn_group_id and parent_ids
@@ -17,7 +19,8 @@ class SearchController < ApplicationController
     render :json => @taxa_list
   end
 
-  def list_categorical_trait_names # needs taxon_ids
+  # TODO: send trait set ids as params and filter on them!
+  def list_categorical_trait_names # needs taxon_ids and optionally trait_set_ids
     @categorical_trait_names = []
     @project.taxa.where(:id => params[:taxon_ids]).each do |taxon|
       @categorical_trait_names = @categorical_trait_names | taxon.grouped_categorical_traits
@@ -36,6 +39,11 @@ class SearchController < ApplicationController
   def list_categorical_trait_values
     @trait_values = categorical_trait_values_for_trait(params[:trait_id])
     render :json => @trait_values
+  end
+
+  def list_trait_sets # needs parent_trait_set_id, may be nil for project's root trait sets
+    @trait_sets = @project.trait_sets.where(:parent_trait_set_id => params[:parent_trait_set_id])
+    render :json => @trait_sets
   end
 
   def results

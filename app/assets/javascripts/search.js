@@ -69,17 +69,29 @@ function removeTraitFilterRow(removeButton) {
 function selectAllTraitsChanged(selectAllTraitsElement) {
     resetTraits();
     var allTraits = $(selectAllTraitsElement).is(':checked');
-    if(allTraits) {
-        // TODO: resetting traits clones the existing row so if we change them this breaks
-        // TODO: need to create trait rows from scratch on reset and enable this
-
-        // if all are selected, update the <select>s and disable them
-
-//        $('tr.trait-filter-row select option').remove();
-//        $('tr.trait-filter-row select').append($('<option value>-- All --</option>'));
-    }
+    // TODO: resetting traits clones the existing row so if we change them this breaks
+    // TODO: need to create trait rows from scratch on reset and enable this
     $('tr.trait-filter-row select, tr.trait-filter-row input').prop('disabled', allTraits);
 }
+
+function populateInitialTraitSets() {
+    // The initial trait sets <select> element is empty, and must be populated via ajax
+    $.ajax({
+        url: "/search/list_trait_sets.json" // no parent, get root trait set for this project
+    }).done(function(data) {
+            // If we somehow have more than one taxon-filter row, go ahead and update it
+            var rootTraitSetSelects = $('.trait-filter-row td:nth-child(2) select.trait_set_level');
+            rootTraitSetSelects.find('option').remove();
+            rootTraitSetSelects.each(function(i) {
+                data.forEach(function(trait_set) {
+                    var optionElement = $('<option>', {value:trait_set.id}).text(trait_set.name);
+                    $(rootTraitSetSelects[i]).append(optionElement);
+                });
+            });
+        }
+    );
+}
+
 
 function addButtonHandlers() {
     $('.add_taxon').bind('click', function() {
@@ -173,8 +185,8 @@ function updateCategoricalTraitValues(traitElement, valueList) {
 
 function groupChanged(groupElement, groupId) {
     // when a group changes, reload the possible values for everything that is more specific
-    var level = parseInt(groupElement.attributes['data-grouplevel'].value);
-    var groupLevelsToSend = icznGroups.map(function(g) { return g.level; }).filter(function(l) { return l <= level});
+    var level = parseInt(groupElement.attributes['data-grouplevel'].value, 10);
+    var groupLevelsToSend = icznGroups.map(function(g) { return g.level; }).filter(function(l) { return l <= level; });
     var parentIds = new Array();
     groupLevelsToSend.forEach(function(groupLevel) {
         parentIds.push($(groupElement).closest(".taxon-filter-row").find('select[data-grouplevel=' + groupLevel + ']').val());
@@ -191,7 +203,7 @@ function groupChanged(groupElement, groupId) {
                 parent_ids: parentIds
             }
         }).done(function(data) {
-                var specificGroupElement = $(groupElement).closest(".taxon-filter-row").find('select[data-grouplevel=' + group.level + ']').first()
+                var specificGroupElement = $(groupElement).closest(".taxon-filter-row").find('select[data-grouplevel=' + group.level + ']').first();
                 updateGroupList(specificGroupElement, data);
                 console.log('received response from list taxa for group id : ' + group.id + ' data: ' + data);
             }
@@ -217,13 +229,13 @@ function getIndex(element) {
 // need an update trait types
 function traitTypeChanged(traitTypeElement, traitTypeId) {
     // When getting traits, need to supply the selected taxonomy
-    var selectedTaxonIds = jQuery.map($('#taxa').find('select'), function(e, i) { return $(e).val(); }).filter( function(e, i) { return e.length > 0});
+    var selectedTaxonIds = jQuery.map($('#taxa').find('select'), function(e, i) { return $(e).val(); }).filter( function(e, i) { return e.length > 0; });
     // TODO: support levels
     $(traitTypeElement).closest(".trait-filter-row").find(".trait_name").find('option').remove();
     $(traitTypeElement).closest(".trait-filter-row").find(".trait_values").find('option').remove();
     var traitNameElement = $(traitTypeElement).closest(".trait-filter-row").find(".trait_name").first();
     if(traitTypeElement.value == 'continuous') {
-        if($(traitTypeElement).closest(".trait-filter-row").find(".trait_entries").length == 0) {
+        if($(traitTypeElement).closest(".trait-filter-row").find(".trait_entries").length === 0) {
             // no trait_entries element, create one
             var traitEntriesElement = $('<input></input>');
             traitEntriesElement.addClass('trait_entries input-medium');
@@ -263,7 +275,6 @@ function traitTypeChanged(traitTypeElement, traitTypeId) {
               });
           });
     }
-
 }
 
 function categoricalTraitNameChanged(categoricalTraitNameElement, traitId) {

@@ -54,15 +54,13 @@
                   <thead>
                     <tr>
                       <th>&nbsp;</th>
-                      <th>Type</th>
-                      <% if @project.trait_sets.empty? %>
-                        <th>Name</th>
-                        <th>Value</th>
-                      <% else %>
-                        <% @project.trait_sets.levels.each do |l|%>
-                          <th>&nbsp;</th>
-                        <% end %>
+                      <!--make room for levels -->
+                      <% @trait_set_levels.each do |l| %>
+                        <th>&nbsp;</th>
                       <% end %>
+                      <th>Type</th>
+                      <th>Name</th>
+                      <th>Value</th>
                       <th>&nbsp;</th>
                     </tr>
                   </thead>
@@ -71,24 +69,20 @@
                       <td>
                         <span class="operator_placeholder"></span>
                       </td>
+                      <% @trait_set_levels.each do |level| %>
+                        <!--# make a select for each level and an option for each trait_set at that level-->
+                        <!-- initially not putting any data in here, will populate with javascript -->
+                        <td><%= select_tag(:"level#{level}[0]", nil, :prompt => '-- Select --', :class => 'trait_set_level input-medium') %></td>
+                      <% end %>
                       <td>
                         <%= select_tag(:"#{:trait_type}[0]", options_for_select(@trait_types), :prompt => '-- Select --', :class => 'trait_type input-medium') %>
                       </td>
-                      <% if @project.trait_sets.empty? %>
-                        <td>
-                          <%= select_tag(:"#{:trait_name}[0]", nil, :prompt => '-- Select --', :class => 'trait_name input-medium') %>
-                        </td>
-                        <td>
-                          <%= select_tag("#{:trait_values}[0]", nil, :prompt => '-- All Values --', :class => 'trait_values input-medium') %>
-                        </td>
-                      <% else
-                        levels = @project.trait_sets.levels
-                        levels.each do |level| %>
-                        <!--# make a select for each level and an option for each trait_set at that level-->
-                        <!-- initially not putting any data in here, will populate with javascript -->
-                          <td><%= select_tag(:"level#{level}[0]", nil, :prompt => '-- Select --', :class => 'trait_level input-medium') %></td>
-                        <% end %>
-                      <% end %>
+                      <td>
+                        <%= select_tag(:"#{:trait_name}[0]", nil, :prompt => '-- Select --', :class => 'trait_name input-medium') %>
+                      </td>
+                      <td>
+                        <%= select_tag("#{:trait_values}[0]", nil, :prompt => '-- All Values --', :class => 'trait_values input-medium') %>
+                      </td>
                       <td>
                         <a href="#" class="btn add_trait"><i class="icon-plus-sign"></i></a>
                         <a href="#" class="btn remove_trait"><i class="icon-minus-sign"></i></a>
@@ -130,6 +124,6 @@
         // add button handlers
         addButtonHandlers();
         addSelectionChangeListeners();
-        hideContinuousFields();
+        populateInitialTraitSets();
     });
 </script>

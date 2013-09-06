@@ -8,6 +8,7 @@ class TraitSet < ActiveRecord::Base
   scope :by_project, lambda{|p| where(:project_id => p) unless p.nil?}
   scope :by_level, lambda{|l| where(:level => l) unless l.nil?}
   scope :sorted, order('name ASC')
+  scope :roots, where(:parent_trait_set_id =>  nil)
 
   # works on a relation/scope
   def self.levels

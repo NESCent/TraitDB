@@ -20,19 +20,26 @@ class SearchController < ApplicationController
   end
 
   # TODO: send trait set ids as params and filter on them!
-  def list_categorical_trait_names # needs taxon_ids and optionally trait_set_ids
+  def list_categorical_trait_names # needs taxon_ids and optionally trait_set_id
     @categorical_trait_names = []
     @project.taxa.where(:id => params[:taxon_ids]).each do |taxon|
-      @categorical_trait_names = @categorical_trait_names | taxon.grouped_categorical_traits
+      @categorical_trait_names = @categorical_trait_names | taxon.grouped_categorical_traits # filter on trait set id if provided
+    end
+    if params[:trait_set_id]
+      @categorical_trait_names = @categorical_trait_names.select{|x| x.trait_set_id == Integer(params[:trait_set_id])}
     end
     render :json => @categorical_trait_names
   end
 
-  def list_continuous_trait_names # needs taxon_ids
+  def list_continuous_trait_names # needs taxon_ids and optionally trait_set_id
     @continuous_trait_names = []
     @project.taxa.where(:id => params[:taxon_ids]).each do |taxon|
-      @continuous_trait_names = @continuous_trait_names | taxon.grouped_continuous_traits
+      @continuous_trait_names = @continuous_trait_names | taxon.grouped_continuous_traits # Filter on trait_set_id if provided
     end
+    if params[:trait_set_id]
+      @continuous_trait_names = @continuous_trait_names.select{|x| x.trait_set_id == Integer(params[:trait_set_id])}
+    end
+
     render :json => @continuous_trait_names
   end
 

@@ -256,11 +256,15 @@ function getIndex(element) {
 function traitTypeChanged(traitTypeElement, traitTypeId) {
     // When getting traits, need to supply the selected taxonomy
     var selectedTaxonIds = jQuery.map($('#taxa').find('select'), function(e, i) { return $(e).val(); }).filter( function(e, i) { return e.length > 0; });
-    // TODO: support levels
-    $(traitTypeElement).closest(".trait-filter-row").find(".trait_name").find('option').remove();
-    $(traitTypeElement).closest(".trait-filter-row").find(".trait_values").find('option').remove();
-    var traitNameElement = $(traitTypeElement).closest(".trait-filter-row").find(".trait_name").first();
+    // TODO: support levels / trait sets
+    var traitFilterRow = $(traitTypeElement).attr('data-trait-filter-row');
+    var traitSetId = $('select.trait_set_level[data-trait-filter-row=' + traitFilterRow + '] :last')[0].value;
+
+    $('select.trait_name[data-trait-filter-row=' + traitFilterRow + ']').find('option').remove();
+    $('select.trait_values[data-trait-filter-row=' + traitFilterRow + ']').find('option').remove();
+    var traitNameElement = $('select.trait_name[data-trait-filter-row=' + traitFilterRow + ']').first();
     if(traitTypeElement.value == 'continuous') {
+        // TODO: rewrite to use row data attributes
         if($(traitTypeElement).closest(".trait-filter-row").find(".trait_entries").length === 0) {
             // no trait_entries element, create one
             var traitEntriesElement = $('<input></input>');
@@ -276,7 +280,8 @@ function traitTypeChanged(traitTypeElement, traitTypeId) {
         $.ajax({
             url: "/search/list_continuous_trait_names.json",
             data: {
-                taxon_ids: selectedTaxonIds
+                taxon_ids: selectedTaxonIds,
+                trait_set_id: traitSetId
             }
         }).done(function(data, textstatus, jqXHR) {
                 updateContinuousTraitNames(traitTypeElement, data);
@@ -292,7 +297,8 @@ function traitTypeChanged(traitTypeElement, traitTypeId) {
       $.ajax({
             url: "/search/list_categorical_trait_names.json",
             data: {
-                taxon_ids: selectedTaxonIds
+                taxon_ids: selectedTaxonIds,
+                trait_set_id: traitSetId
             }
         }).done(function(data, textstatus, jqXHR) {
               updateCategoricalTraitNames(traitTypeElement, data);

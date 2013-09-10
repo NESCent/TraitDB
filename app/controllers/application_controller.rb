@@ -10,8 +10,8 @@ class ApplicationController < ActionController::Base
   end
 
   def set_project
-    if session[:current_project]
-      @project = Project.find(session[:current_project])
+    if session[:current_project_id]
+      @project = Project.find(session[:current_project_id])
     else
       redirect_to({:controller => 'projects', :action => 'select_project' })
       false

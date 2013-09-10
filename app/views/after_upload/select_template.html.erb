@@ -12,7 +12,7 @@
         <div class="control-group">
           <%= f.label(:csv_import_template_id, "Template", :class => 'control-label') %>
           <div class="controls">
-            <%= f.select(:csv_import_template_id, options_from_collection_for_select(CsvImportTemplate.all, 'id', 'name')) %>
+            <%= f.select(:csv_import_template_id, options_from_collection_for_select(CsvImportTemplate.by_project(@project).all, 'id', 'name')) %>
           </div>
         </div>
         <div class="control-group">

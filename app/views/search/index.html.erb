@@ -54,6 +54,10 @@
                   <thead>
                     <tr>
                       <th>&nbsp;</th>
+                      <!--make room for levels -->
+                      <% @trait_set_levels.each do |l| %>
+                        <th>&nbsp;</th>
+                      <% end %>
                       <th>Type</th>
                       <th>Name</th>
                       <th>Value</th>
@@ -62,22 +66,23 @@
                   </thead>
                   <tbody>
                     <tr class="trait-filter-row">
+                      <% trait_filter_row = 0 %>
                       <td>
                         <span class="operator_placeholder"></span>
                       </td>
+                      <% @trait_set_levels.each do |level| %>
+                        <!--# make a select for each level and an option for each trait_set at that level-->
+                        <!-- initially not putting any data in here, will populate with javascript -->
+                        <td><%= select_tag(:"level#{level}[#{trait_filter_row}]", nil, :prompt => '-- Select --', :class => 'trait_set_level input-medium', :data => {'trait-set-level' => level, 'trait-filter-row' => trait_filter_row}) %></td>
+                      <% end %>
                       <td>
-                        <%= select_tag(:"#{:trait_types}[0]", options_for_select(@trait_types), :prompt => '-- Select --', :class => 'trait_type input-medium') %>
+                        <%= select_tag(:"#{:trait_type}[#{trait_filter_row}]", options_for_select(@trait_types), :prompt => '-- Select --', :class => 'trait_type input-medium', :data => {'trait-filter-row' => trait_filter_row}) %>
                       </td>
                       <td>
-                        <%= select_tag(:"#{:categorical_trait_name}[0]", nil, :prompt => '-- Select --', :class => 'categorical_trait_name input-medium') %>
-                        <%= select_tag(:"#{:continuous_trait_name}[0]", nil, :prompt => '-- Select --', :class => 'continuous_trait_name input-medium') %>
+                        <%= select_tag(:"#{:trait_name}[#{trait_filter_row}]", nil, :prompt => '-- Select --', :class => 'trait_name input-medium', :data => {'trait-filter-row' => trait_filter_row}) %>
                       </td>
                       <td>
-                        <%= select_tag("#{:categorical_trait_values}[0]", nil, :prompt => '-- All Values --', :class => 'categorical_trait_values input-medium') %>
-                        <%= select_tag("#{:continuous_trait_value_predicates}[0]", nil, :prompt => '-- All Values --', :class => 'continuous_trait_value_predicates input-medium') %>
-                      </td>
-                      <td>
-                        <%= number_field_tag("#{:continuous_trait_entries}[0]", nil, :class => 'continuous_trait_entries input-medium') %>
+                        <%= select_tag("#{:trait_values}[#{trait_filter_row}]", nil, :prompt => '-- All Values --', :class => 'trait_values input-medium', :data => {'trait-filter-row' => trait_filter_row}) %>
                       </td>
                       <td>
                         <a href="#" class="btn add_trait"><i class="icon-plus-sign"></i></a>
@@ -120,6 +125,6 @@
         // add button handlers
         addButtonHandlers();
         addSelectionChangeListeners();
-        hideContinuousFields();
+        populateInitialTraitSets();
     });
 </script>

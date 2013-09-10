@@ -13,6 +13,14 @@
       <div class="container-fluid">
         <%= link_to("TraitDB", root_path, :class => :brand) %>
         <ul class="nav pull-left">
+          <li class="dropdown">
+            <a class="dropdown-toggle" href="#" data-toggle="dropdown"> Project: <%= session[:current_project].name if session[:current_project]%><b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <% @projects.each do |p| %>
+                <li><%= link_to(p.name, {:controller => '/projects', :action => 'selected_project', :id => p.id}) %></li>
+              <% end %>
+            </ul>
+           </li>
         </ul>
         <ul class="nav pull-right">
           <li class="<%= 'active' if params[:controller] == 'about' -%>"><%= link_to("About", :controller => '/about') %></li>
@@ -23,8 +31,9 @@
             <li class="dropdown">
               <a class="dropdown-toggle" href="#" data-toggle="dropdown">Admin<b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li class="<%= 'active' if params[:controller] == 'csv_import_templates' -%>"><%= link_to("Templates", csv_import_templates_path) %></li>
-                <li class="<%= 'active' if params[:controller] == 'csv_datasets' -%>"><%= link_to("Datasets", csv_datasets_path) %></li>
+                <li><%= link_to('Projects', projects_path) %></li>
+                <li><%= link_to("Templates", csv_import_templates_path) %></li>
+                <li><%= link_to("Datasets", csv_datasets_path) %></li>
               </ul>
             </li>
 

@@ -14,17 +14,29 @@ require 'pp'
 # which should be a YML file
 
 import_template = TraitDB::ImportTemplate.new(ARGV[0])
+PP.pp(import_template.categorical_trait_column_names)
 
-# Validator takes a template and a path to a CSV file
-validator = TraitDB::Validator.new(import_template, ARGV[1])
-results = validator.validate
-PP.pp(results)
-results = validator.parse
-PP.pp(results)
-datasets = validator.datasets
-headers = validator.trait_headers
-PP.pp(headers)
-PP.pp(datasets)
+groups = import_template.groups_for_continuous_trait('Demographic Data-Group Size-Mdin')
+
+PP.pp(groups)
+PP.pp(import_template.continuous_trait_column_names)
+PP.pp(import_template.continuous_trait_format('Demographic Data-Group Size-Max'))
+PP.pp(import_template.continuous_trait_format('Demographic Data-Group Size-Min'))
+
+
+
+
+#
+## Validator takes a template and a path to a CSV file
+#validator = TraitDB::Validator.new(import_template, ARGV[1])
+#results = validator.validate
+#PP.pp(results)
+#results = validator.parse
+#PP.pp(results)
+#datasets = validator.datasets
+#headers = validator.trait_headers
+#PP.pp(headers)
+#PP.pp(datasets)
 # 
 # validator = TreeOfSexImport::Validator.new(ARGV[0])
 # validator.quantitative_header_start = "Chromosome number (female)"

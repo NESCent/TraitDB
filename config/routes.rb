@@ -4,6 +4,12 @@ TraitDB::Application.routes.draw do
   devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }
 
   # Resourceful routes
+  resources :projects do
+    member do
+      get 'delete'
+    end
+  end
+
   resources :continuous_trait_values
   resources :categorical_trait_values
   resources :categorical_trait_categories
@@ -28,6 +34,9 @@ TraitDB::Application.routes.draw do
   end
 
   # Non-resourceful routes
+  match 'select_project' => 'projects#select_project'
+  match 'selected_project' => 'projects#selected_project'
+
   match 'search(/:action)(.:format)' => "search"
   match 'about' => 'about#index'
   match 'upload(/:action)(/:id)(.:format)' => 'upload'

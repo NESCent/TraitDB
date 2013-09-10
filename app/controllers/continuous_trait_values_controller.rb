@@ -1,4 +1,5 @@
 class ContinuousTraitValuesController < ApplicationController
+  # Not project specific
   def index
     where_options = {}
     if params[:otu]

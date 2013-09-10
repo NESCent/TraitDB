@@ -1,7 +1,26 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
+  before_filter :set_projects
 
   def verify_is_admin
-    (current_user.nil?) ? redirect_to(root_path) : (redirect_to(root_path) unless current_user.admin?)
+    if current_user.nil? || !current_user.admin?
+      redirect_to root_path
+      false
+    end
+  end
+
+  def set_project
+    if session[:current_project]
+      @project = Project.find(session[:current_project])
+    else
+      redirect_to({:controller => 'projects', :action => 'select_project' })
+      false
+    end
+  end
+
+  private
+
+  def set_projects
+    @projects = Project.sorted
   end
 end

@@ -2,6 +2,7 @@ require 'yaml'
 
 module TraitDB
   class ImportTemplate
+    DEFAULT_SET_DELIMITER = '::'
     def initialize(path=nil)
       @template_file = path
       if file_usable?
@@ -31,22 +32,90 @@ module TraitDB
     def trait_options # a hash that includes things like source_prefix, require_source, and notes_prefix
       @template['trait_options']
     end
-    
-    # trait names
-    def categorical_trait_names
-      @template['categorical_trait_columns'].map{|x| x['name'] }
+
+    def trait_sets?
+      @template['trait_sets'].nil? ? false : true
     end
 
-    def continuous_trait_names
-      @template['continuous_trait_columns'].map{|x| x['name'] }
+    # trait sets
+    def trait_set(path=[], tree=@template)
+      # path will be a list of names to follow
+      # tree must be a hash
+      if path.length == 0
+        tree
+      else
+        # slice off the first element in the path and return the subtree
+        trait_set(path[1..-1], tree['trait_sets'].find{|x| x['name'] == path[0]})
+      end
+    end
+
+    def trait_set_names(path=[], tree=@template)
+      trait_set(path, tree)['trait_sets'].map{|x| x['name']}
+    end
+
+    def trait_set_continuous_traits(path=[], tree=@template)
+      trait_set(path, tree)['continuous_trait_columns']
+    end
+
+    def trait_set_categorical_traits(path=[], tree=@template)
+      trait_set(path, tree)['categorical_trait_columns']
+    end
+
+    # returns array of path components
+    def trait_set_qualified_continuous_trait_names
+      trait_set_qualified_trait_names([], @template, 'continuous_trait_columns')
+    end
+
+    # returns array of path components
+    def trait_set_qualified_categorical_trait_names
+      trait_set_qualified_trait_names([], @template, 'categorical_trait_columns')
+    end
+
+    def trait_path_from_column(column_name)
+      column_name.split(delimiter)
+    end
+
+    # trait names
+    def categorical_trait_column_names
+      if trait_sets?
+        # get name array paths, and join with delimiter
+        trait_set_qualified_categorical_trait_names.map{|n| n.join(delimiter) }
+      else
+        @template['categorical_trait_columns'].map{|x| x['name'] }
+      end
+    end
+
+    def continuous_trait_column_names
+      if trait_sets?
+        # get name array paths, and join with delimiter
+        trait_set_qualified_continuous_trait_names.map{|n| n.join(delimiter) }
+      else
+        @template['continuous_trait_columns'].map{|x| x['name'] }
+      end
     end
     
     def categorical_trait_names_in_group(group_name)
-      @template['categorical_trait_columns'].select{|x| x['groups'].include? group_name}.map{|x| x['name']}
+      if trait_sets?
+        names = []
+        trait_set_qualified_categorical_trait_names.each do |qname|
+          names << qname.join(delimiter) if categorical(qname.join(delimiter))['groups'].include? group_name
+        end
+        names
+      else
+        @template['categorical_trait_columns'].select{|x| x['groups'].include? group_name}.map{|x| x['name']}
+      end
     end
     
     def continuous_trait_names_in_group(group_name)
-      @template['continuous_trait_columns'].select{|x| x['groups'].include? group_name}.map{|x| x['name']}
+      if trait_sets?
+        names = []
+        trait_set_qualified_continuous_trait_names.each do |qname|
+          names << qname.join(delimiter) if continuous(qname.join(delimiter))['groups'].include? group_name
+        end
+        names
+      else
+        @template['continuous_trait_columns'].select{|x| x['groups'].include? group_name}.map{|x| x['name']}
+      end
     end
 
     # trait values
@@ -68,30 +137,72 @@ module TraitDB
     end
 
     def groups_for_categorical_trait(trait_name)
-      categorical(trait_name)['groups']
+      t = categorical(trait_name)
+      t.nil? ? [] : t['groups']
     end
     
     def groups_for_continuous_trait(trait_name)
-      continuous(trait_name)['groups']
+      t = continuous(trait_name)
+      t.nil? ? [] : t['groups']
     end
     
     # formats
     def continuous_trait_format(trait_name)
-      continuous(trait_name)['format']
+      t = continuous(trait_name)
+      t.nil? ? [] : t['format']
     end
 
     def categorical_trait_format(trait_name)
-      categorical(trait_name)['format']
+      t = categorical(trait_name)
+      t.nil? ? [] : t['format']
     end
 
     private
-    
-    def continuous(trait_name)
-      @template['continuous_trait_columns'].find{|x| x['name'] == trait_name}
+
+    def delimiter
+      trait_options['set_delimiter'] || DEFAULT_SET_DELIMITER
     end
-    
+
+    def continuous(trait_name)
+      if trait_sets?
+        path = trait_path_from_column(trait_name)
+        t = trait_set_continuous_traits(path[0..-2])
+        trait_name = path[-1] #reassigning the name
+      else
+        t = @template['continuous_trait_columns']
+      end
+      t.find{|x| x['name'] == trait_name}
+    end
+
     def categorical(trait_name)
-      @template['categorical_trait_columns'].find{|x| x['name'] == trait_name}
+      if trait_sets?
+        path = trait_path_from_column(trait_name)
+        t = trait_set_categorical_traits(path[0..-2])
+        trait_name = path[-1] #reassigning the name
+      else
+        t = @template['categorical_trait_columns']
+      end
+      t.find{|x| x['name'] == trait_name}
+    end
+
+    # returns arrays of path components
+    def trait_set_qualified_trait_names(prefixes, tree, terminal_path)
+      # Build up an array of paths
+      # start at the root
+      if tree['trait_sets']
+        # have trait sets, recurse!
+        paths = []
+        tree['trait_sets'].each do |t|
+          paths += trait_set_qualified_trait_names(prefixes + [t['name']], t, terminal_path)
+        end
+        paths
+      elsif tree[terminal_path]
+        # At the tip, return the column names
+        names = tree[terminal_path].map{|x| x['name']}
+        names.map{|n| prefixes + [n]}
+      else
+        []
+      end
     end
 
     def file_usable?

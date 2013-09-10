@@ -1,0 +1,23 @@
+<% @page_title = 'Select Project' %>
+<div class="row-fluid">
+  <div class="row-fluid">
+    <p class="lead">Select a Project:</p>
+  </div>
+  <div class="row-fluid">
+    <%= form_tag({:action => 'selected_project'},  :html => {:class =>'form form-horizontal'}) do %>
+      <div class="span9 offset1 well">
+        <div class="control-group">
+          <%= label_tag(:id, 'Project', :class => 'control-label') %>
+          <div class="controls">
+            <%= select_tag(:id, options_from_collection_for_select(@projects, 'id', 'name')) %>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="controls">
+            <%= button_tag("Select Project", :type => 'submit', :class => 'btn btn-primary') %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,14 @@
+<% @page_title = "CreateProject" %>
+<div class="row-fluid">
+  <p class="lead">Create Project</p>
+</div>
+<div class="row-fluid">
+  <%= form_for(@project, :url => {:action => 'create'}, :html => { :class => "form form-horizontal" }) do |f| %>
+    <%= render(:partial => "form", :locals => { :f => f }) %>
+    <div class="controls">
+      <%= submit_tag("Create New Project", :class => 'btn btn-primary') %>
+      <%= link_to('Cancel', projects_path, :class => 'btn') %>
+    </div>
+  <% end %>
+</div>
+

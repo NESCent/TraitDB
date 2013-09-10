@@ -1,8 +1,10 @@
 class ImportJobsController < ApplicationController
   # A Job to import a dataset
   # nested within CsvDataset?
+  # Mostly obsolete
   before_filter :authenticate_user!
   before_filter :verify_is_admin
+  before_filter :set_project
   before_filter :find_dataset
   
   # add a method to run the import
@@ -88,7 +90,7 @@ class ImportJobsController < ApplicationController
   private
   
   def find_dataset
-    @dataset = CsvDataset.find(params[:csv_dataset_id])
+    @dataset = @project.csv_datasets.find(params[:csv_dataset_id])
   end
   
 end

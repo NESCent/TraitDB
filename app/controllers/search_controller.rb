@@ -69,12 +69,12 @@ class SearchController < ApplicationController
 
     # Output columns should include chosen continuous traits
     @results[:columns][:continuous_traits] = @project.continuous_traits.where(:id => @continuous_trait_predicate_map.keys).map do |continuous_trait|
-      {:id => continuous_trait.id, :name => continuous_trait.name}
+      {:id => continuous_trait.id, :name => continuous_trait.full_name}
     end
 
     # output columns should include chosen categorical traits
     @results[:columns][:categorical_traits] = @project.categorical_traits.where(:id => @categorical_trait_category_map.keys).map do |categorical_trait|
-      {:id => categorical_trait.id, :name => categorical_trait.name}
+      {:id => categorical_trait.id, :name => categorical_trait.full_name}
     end
 
     # Arrays to hold ids of the traits where notes were recorded

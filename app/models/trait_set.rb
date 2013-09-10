@@ -28,4 +28,12 @@ class TraitSet < ActiveRecord::Base
     end
     last_set
   end
+
+  def full_name
+    if parent_trait_set
+      return "#{parent_trait_set.full_name}: #{name}"
+    else
+      return name
+    end
+  end
 end

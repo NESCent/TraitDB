@@ -1,17 +1,8 @@
 class ContinuousTrait < ActiveRecord::Base
-  attr_accessible :name, :display_format_id
-  belongs_to :project
-  belongs_to :import_job
-  has_one :csv_dataset, :through => :import_job
+  include TraitCommon
   has_many :continuous_trait_values
   has_many :otus, :through => :continuous_trait_values
-  belongs_to :display_format
   has_many :continuous_trait_notes
-  has_and_belongs_to_many :trait_groups
-  belongs_to :trait_set
-  scope :by_project, lambda{|p| where(:project_id => p) unless p.nil?}
-
-  scope :sorted, order('name ASC')
 
   def display_format_name
     if display_format
@@ -19,9 +10,5 @@ class ContinuousTrait < ActiveRecord::Base
     else
       'Default'
     end
-  end
-
-  def dataset_name
-    csv_dataset.csv_file_file_name if csv_dataset
   end
 end

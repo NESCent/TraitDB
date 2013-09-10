@@ -32,18 +32,14 @@ function addTraitFilterRow(animation) {
     uniqueRowId++;
 
     var traitTypeId = "trait_type_" + uniqueRowId;
-    var categoricalTraitNameId = "categorical_trait_name_" + uniqueRowId;
-    var categoricalTraitValuesId = "categorical_trait_values_" + uniqueRowId;
-    var continuousTraitNameId = "continuous_trait_name_" + uniqueRowId;
-    var continuousTraitValuePredicatesId = "continuous_trait_value_predicates_" + uniqueRowId;
-    var continuousTraitEntriesId = "continous_trait_entries_" + uniqueRowId;
+    var traitNameId = "trait_name_" + uniqueRowId;
+    var traitValuesId = "trait_values_" + uniqueRowId;
+    var traitEntriesId = "trait_entries_" + uniqueRowId; // should only exist for continuous traits
 
     el.find('select.trait_type').attr('id',traitTypeId).attr('name','trait_type[' + uniqueRowId + ']');
-    el.find('select.categorical_trait_name').attr('id',categoricalTraitNameId).attr('name','categorical_trait_name[' + uniqueRowId + ']');
-    el.find('select.categorical_trait_values').attr('id',categoricalTraitValuesId).attr('name','categorical_trait_values[' + uniqueRowId + ']');
-    el.find('select.continuous_trait_name').attr('id',continuousTraitNameId).attr('name','continuous_trait_name[' + uniqueRowId + ']');
-    el.find('select.continuous_trait_value_predicates').attr('id',continuousTraitValuePredicatesId).attr('name','continuous_trait_value_predicates[' + uniqueRowId + ']');
-    el.find('input.continuous_trait_entries').attr('id',continuousTraitEntriesId).attr('name','continuous_trait_entries[' + uniqueRowId + ']');
+    el.find('select.trait_name').attr('id',traitNameId).attr('name','trait_name[' + uniqueRowId + ']');
+    el.find('select.trait_values').attr('id',traitValuesId).attr('name','trait_values[' + uniqueRowId + ']');
+    el.find('input.trait_entries').attr('id',traitEntriesId).attr('name','trait_entries[' + uniqueRowId + ']');
     el.hide();
     lastTraitFilterRow.after(el);
     el.show(animation, function() {
@@ -73,16 +69,54 @@ function removeTraitFilterRow(removeButton) {
 function selectAllTraitsChanged(selectAllTraitsElement) {
     resetTraits();
     var allTraits = $(selectAllTraitsElement).is(':checked');
-    if(allTraits) {
-        // TODO: resetting traits clones the existing row so if we change them this breaks
-        // TODO: need to create trait rows from scratch on reset and enable this
-
-        // if all are selected, update the <select>s and disable them
-
-//        $('tr.trait-filter-row select option').remove();
-//        $('tr.trait-filter-row select').append($('<option value>-- All --</option>'));
-    }
+    // TODO: resetting traits clones the existing row so if we change them this breaks
+    // TODO: need to create trait rows from scratch on reset and enable this
     $('tr.trait-filter-row select, tr.trait-filter-row input').prop('disabled', allTraits);
+}
+
+function populateInitialTraitSets() {
+    // The initial trait sets <select> element is empty, and must be populated via ajax
+    $.ajax({
+        url: "/search/list_trait_sets.json" // no parent, get root trait set for this project
+    }).done(function(data) {
+            // If we somehow have more than one taxon-filter row, go ahead and update it
+            var rootTraitSetSelects = $('.trait-filter-row td:nth-child(2) select.trait_set_level');
+            updateTraitSets(rootTraitSetSelects, data);
+        }
+    );
+}
+
+function updateTraitSets(traitSetSelectElements, traitSets) {
+    traitSetSelectElements.find('option').remove();
+    traitSetSelectElements.each(function(i) {
+        $(traitSetSelectElements[i]).append($('<option>-- Select --</option>'));
+        traitSets.forEach(function(trait_set) {
+            var optionElement = $('<option>', {value:trait_set.id}).text(trait_set.name);
+            $(traitSetSelectElements[i]).append(optionElement);
+        });
+        $(traitSetSelectElements[i]).change(function() {
+            traitSetChanged(this);
+        });
+    });
+}
+
+function traitSetChanged(traitSetSelectElement) {
+    // get the level of the changed element
+    var level = $(traitSetSelectElement).attr('data-trait-set-level');
+    var row = $(traitSetSelectElement).attr('data-trait-filter-row');
+    // get the value that was changed
+    var parentTraitSetId = traitSetSelectElement.value;
+    // Now call the server and ask for the trait sets with the parent
+    $.ajax({
+        url: "/search/list_trait_sets.json", // no parent, get root trait set for this project
+        data: {'parent_trait_set_id': parentTraitSetId }
+    }).done(function(data) {
+            // update the child trait set if any
+            var childLevel = parseInt(level, 10) + 1;
+            var childTraitSetSelect = $('select.trait_set_level[data-trait-set-level=' + childLevel + '][data-trait-filter-row=' + row + ']'); // should be one element
+            updateTraitSets(childTraitSetSelect, data);
+        }
+    );
 }
 
 function addButtonHandlers() {
@@ -114,7 +148,7 @@ function addButtonHandlers() {
 
 function updateCategoricalTraitNames(traitTypeElement, traitList) {
     // find the trait names select element
-    var traitElement = $(traitTypeElement).closest(".trait-filter-row").find(".categorical_trait_name");
+    var traitElement = $(traitTypeElement).closest(".trait-filter-row").find(".trait_name");
     // remove all options from the select
     traitElement.find('option').remove();
     traitElement.append($('<option value>-- Select --</option>'));
@@ -128,7 +162,7 @@ function updateCategoricalTraitNames(traitTypeElement, traitList) {
 
 function updateContinuousTraitNames(traitTypeElement, traitList) {
     // find the trait names select element
-    var traitElement = $(traitTypeElement).closest(".trait-filter-row").find(".continuous_trait_name");
+    var traitElement = $(traitTypeElement).closest(".trait-filter-row").find(".trait_name");
     // remove all options from the select
     traitElement.find('option').remove();
     traitElement.append($('<option value>-- Select --</option>'));
@@ -141,7 +175,7 @@ function updateContinuousTraitNames(traitTypeElement, traitList) {
 }
 
 function updateContinuousTraitValuePredicates(traitElement) {
-    var traitValuesElement = $(traitElement).closest(".trait-filter-row").find(".continuous_trait_value_predicates");
+    var traitValuesElement = $(traitElement).closest(".trait-filter-row").find(".trait_values");
     traitValuesElement.find('option').remove();
     traitValuesElement.append($('<option value>-- All Values --</option>'));
     traitValuesElement.append($('<option value="eq">= (Equals)</option>'));
@@ -155,16 +189,16 @@ function updateContinuousTraitEntries(traitValuesElement) {
     if (traitValuesElement.value == 'in') {
         // show the second field
         // would be good to resize too
-        $(traitValuesElement).closest(".trait-filter-row").find('.continuous_trait_entries').children('.field2').show();
+        $(traitValuesElement).closest(".trait-filter-row").find('.trait_entries').children('.field2').show();
     } else {
         // hide the second field
-        $(traitValuesElement).closest(".trait-filter-row").find('.continuous_trait_entries').children('.field2').hide();
+        $(traitValuesElement).closest(".trait-filter-row").find('.trait_entries').children('.field2').hide();
     }
 }
 
 function updateCategoricalTraitValues(traitElement, valueList) {
     // find the trait values select element
-    var traitValuesElement = $(traitElement).closest(".trait-filter-row").find('.categorical_trait_values');
+    var traitValuesElement = $(traitElement).closest(".trait-filter-row").find('.trait_values');
     // remove all options from the select
     traitValuesElement.find('option').remove();
     traitValuesElement.append($('<option value>-- Select --</option>'));
@@ -177,8 +211,8 @@ function updateCategoricalTraitValues(traitElement, valueList) {
 
 function groupChanged(groupElement, groupId) {
     // when a group changes, reload the possible values for everything that is more specific
-    var level = parseInt(groupElement.attributes['data-grouplevel'].value);
-    var groupLevelsToSend = icznGroups.map(function(g) { return g.level; }).filter(function(l) { return l <= level});
+    var level = parseInt(groupElement.attributes['data-grouplevel'].value, 10);
+    var groupLevelsToSend = icznGroups.map(function(g) { return g.level; }).filter(function(l) { return l <= level; });
     var parentIds = new Array();
     groupLevelsToSend.forEach(function(groupLevel) {
         parentIds.push($(groupElement).closest(".taxon-filter-row").find('select[data-grouplevel=' + groupLevel + ']').val());
@@ -195,7 +229,7 @@ function groupChanged(groupElement, groupId) {
                 parent_ids: parentIds
             }
         }).done(function(data) {
-                var specificGroupElement = $(groupElement).closest(".taxon-filter-row").find('select[data-grouplevel=' + group.level + ']').first()
+                var specificGroupElement = $(groupElement).closest(".taxon-filter-row").find('select[data-grouplevel=' + group.level + ']').first();
                 updateGroupList(specificGroupElement, data);
                 console.log('received response from list taxa for group id : ' + group.id + ' data: ' + data);
             }
@@ -213,36 +247,72 @@ function updateGroupList(destinationSelectElement, taxa) {
         });
 }
 
+function getIndex(element) {
+    var index = $(element).attr('id').lastIndexOf('_') + 1;
+    return $(element).attr('id').substring(index);
+}
+
 // need an update trait types
 function traitTypeChanged(traitTypeElement, traitTypeId) {
     // When getting traits, need to supply the selected taxonomy
-    var selectedTaxonIds = jQuery.map($('#taxa').find('select'), function(e, i) { return $(e).val(); }).filter( function(e, i) { return e.length > 0});
+    var selectedTaxonIds = jQuery.map($('#taxa').find('select'), function(e, i) { return $(e).val(); }).filter( function(e, i) { return e.length > 0; });
+    var traitFilterRow = $(traitTypeElement).attr('data-trait-filter-row');
+    var traitSetElement = $('select.trait_set_level[data-trait-filter-row=' + traitFilterRow + '] :last')[0];
+    if(traitSetElement) {
+        var traitSetId = traitSetElement.value;
+    }
+
+    $('select.trait_name[data-trait-filter-row=' + traitFilterRow + ']').find('option').remove();
+    $('select.trait_values[data-trait-filter-row=' + traitFilterRow + ']').find('option').remove();
+    var traitNameElement = $('select.trait_name[data-trait-filter-row=' + traitFilterRow + ']').first();
     if(traitTypeElement.value == 'continuous') {
-        $(traitTypeElement).closest(".trait-filter-row").find(".continuous_trait_name").find('option').remove();
-        $(traitTypeElement).closest(".trait-filter-row").find(".continuous_trait_name, .continuous_trait_value_predicates, .continuous_trait_entries").show('fast');
-        $(traitTypeElement).closest(".trait-filter-row").find(".categorical_trait_name, .categorical_trait_values").hide('fast');
+        // TODO: rewrite to use row data attributes
+        if($(traitTypeElement).closest(".trait-filter-row").find(".trait_entries").length === 0) {
+            // no trait_entries element, create one
+            var traitEntriesElement = $('<input></input>');
+            traitEntriesElement.addClass('trait_entries input-medium');
+            traitEntriesElement.attr('type', 'number');
+            traitEntriesElement.attr('id', 'trait_entries_' + getIndex(traitTypeElement));
+            traitEntriesElement.attr('name','trait_entries[' + getIndex(traitTypeElement) + ']');
+            var traitEntriesCell = $('<td></td>');
+            $(traitEntriesCell).append(traitEntriesElement);
+            // have the cell, append it to the table
+            $(traitTypeElement).closest(".trait-filter-row").find(".trait_values").parent().after(traitEntriesCell);
+        }
         $.ajax({
             url: "/search/list_continuous_trait_names.json",
             data: {
-                taxon_ids: selectedTaxonIds
+                taxon_ids: selectedTaxonIds,
+                trait_set_id: traitSetId
             }
-        }).done(function(data, textstatus, jqXHR) { updateContinuousTraitNames(traitTypeElement, data); });
+        }).done(function(data, textstatus, jqXHR) {
+                updateContinuousTraitNames(traitTypeElement, data);
+                traitNameElement.change(function(){
+                    continuousTraitNameChanged(this, this.value);
+                });
+            });
     } else {
-        $(traitTypeElement).closest(".trait-filter-row").find(".categorical_trait_name").find('option').remove();
-        $(traitTypeElement).closest(".trait-filter-row").find(".continuous_trait_name, .continuous_trait_value_predicates, .continuous_trait_entries").hide('fast');
-        $(traitTypeElement).closest(".trait-filter-row").find(".categorical_trait_name, .categorical_trait_values").show('fast');
+        if($(traitTypeElement).closest(".trait-filter-row").find(".trait_entries").length > 0) {
+            // have a trait entries, remove its parent
+            $(traitTypeElement).closest(".trait-filter-row").find(".trait_entries").parent().remove();
+        }
       $.ajax({
             url: "/search/list_categorical_trait_names.json",
             data: {
-                taxon_ids: selectedTaxonIds
+                taxon_ids: selectedTaxonIds,
+                trait_set_id: traitSetId
             }
-        }).done(function(data, textstatus, jqXHR) { updateCategoricalTraitNames(traitTypeElement, data); });
+        }).done(function(data, textstatus, jqXHR) {
+              updateCategoricalTraitNames(traitTypeElement, data);
+              traitNameElement.change(function(){
+                  categoricalTraitNameChanged(this, this.value);
+              });
+          });
     }
-
 }
 
 function categoricalTraitNameChanged(categoricalTraitNameElement, traitId) {
-    $(categoricalTraitNameElement).closest(".trait-filter-row").find(".categorical_trait_values").find('option').remove();
+    $(categoricalTraitNameElement).closest(".trait-filter-row").find(".trait_values").find('option').remove();
     $.ajax({
         url: "/search/list_categorical_trait_values.js",
         data: { trait_id: traitId }
@@ -253,43 +323,15 @@ function continuousTraitNameChanged(continuousTraitNameElement, traitId) {
     updateContinuousTraitValuePredicates(continuousTraitNameElement);
 }
 
-function continuousTraitValuePredicateChanged(continuousTraitValuePredicateElement, predicateId) {
-
-}
-
-function continuousTraitEntryChanged(continuousTraitEntryElement, entryId) {
-
-}
-
 function addSelectionChangeListeners() {
     // taxonomy
     $('select[data-groupid]').change(function() {
         groupChanged(this,this.value);
     });
-
     // trait
     $('select.trait_type').change(function() {
         traitTypeChanged(this,this.value);
     });
-    $('select.categorical_trait_name').change(function() {
-        categoricalTraitNameChanged(this,this.value);
-    });
-    $('select.continuous_trait_name').change(function() {
-        continuousTraitNameChanged(this,this.value);
-    });
-    $('select.continuous_trait_value_predicates').change(function() {
-        continuousTraitValuePredicateChanged(this,this.value);
-    });
-    $('input.continuous_trait_entries').change(function() {
-        continuousTraitEntryChanged(this,this.value);
-    });
-
-}
-
-function hideContinuousFields() {
-    $('select.continuous_trait_name').hide();
-    $('select.continuous_trait_value_predicates').hide();
-    $('input.continuous_trait_entries').hide();
 }
 
 function resetTaxonomy() {

@@ -6,6 +6,7 @@ class CsvImportTemplate < ActiveRecord::Base
   belongs_to :user
   has_many :import_jobs
   validates_attachment_presence :template_file
+  scope :by_project, lambda{|p| where(:project_id => p) unless p.nil?}
 
   def get_import_template
     TraitDB::ImportTemplate.new(template_file.path)

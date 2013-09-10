@@ -1,9 +1,10 @@
 class TaxaController < ApplicationController
   before_filter :authenticate_user!, :except => [:index, :show]
   before_filter :verify_is_admin, :except => [:index, :show]
+  before_filter :set_project
 
   def index
-    parent = Taxon.find(params[:parent_id]) if params[:parent_id]
+    parent = @project.taxa.find(params[:parent_id]) if params[:parent_id]
     where_options = {}
     if params[:iczn_group_name]
       iczn_group = IcznGroup.find_by_name(params[:iczn_group_name])
@@ -26,22 +27,22 @@ class TaxaController < ApplicationController
       @total = parent.children.where(where_options).count
       @taxa = parent.children.where(where_options).sorted.limit(@count).offset(@start)
     else
-      @total = Taxon.where(where_options).count
-      @taxa = Taxon.where(where_options).sorted.limit(@count).offset(@start)
+      @total = @project.taxa.where(where_options).count
+      @taxa = @project.taxa.where(where_options).sorted.limit(@count).offset(@start)
     end
 
   end
 
   def show
-    @taxon = Taxon.find(params[:id])
+    @taxon = @project.taxa.find(params[:id])
   end
   
   def edit
-    @taxon = Taxon.find(params[:id])
+    @taxon = @project.taxa.find(params[:id])
   end
 
   def update
-    @taxon = Taxon.find(params[:id])
+    @taxon = @project.taxa.find(params[:id])
     if @taxon.update_attributes(params[:taxon])
       flash[:notice] = 'Taxon updated successfully'
       redirect_to(:action => 'show', :id => @taxon.id)
@@ -51,7 +52,7 @@ class TaxaController < ApplicationController
   end
 
   def destroy
-    taxon = Taxon.find(params[:id])
+    taxon = @project.taxa.find(params[:id])
     taxon.otus.destroy_all
     taxon.children.destroy_all
     taxon.destroy

@@ -130,7 +130,7 @@ module TraitDB
     def read_continuous_trait_headers
       # Try to find all the names listed in the template
       # Note that headers appearing in the template but not the CSV will not be in the output data
-      found_headers = @template.continuous_trait_names & @csvfile.headers
+      found_headers = @template.continuous_trait_column_names & @csvfile.headers
       @trait_headers[:continuous] += found_headers.map{|x|
         {:name => x,
          :groups => @template.groups_for_continuous_trait(x),
@@ -146,7 +146,7 @@ module TraitDB
       # Try to find all the names listed in the template
       # This assumes the values are not embedded in the column name
       # Note that headers appearing in the template but not the CSV will not be in the output data
-      found_headers = @template.categorical_trait_names & @csvfile.headers
+      found_headers = @template.categorical_trait_column_names & @csvfile.headers
       @trait_headers[:categorical] += found_headers.map{|x|
         {:name => x,
          :groups => @template.groups_for_categorical_trait(x),

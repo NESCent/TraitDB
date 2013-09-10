@@ -1,9 +1,10 @@
 class CsvImportTemplatesController < ApplicationController
   before_filter :authenticate_user!
   before_filter :verify_is_admin
+  before_filter :set_project
 
   def index
-    @templates = CsvImportTemplate.order('created_at DESC')
+    @templates = @project.csv_import_templates.order('created_at DESC')
   end
 
   def new
@@ -12,6 +13,7 @@ class CsvImportTemplatesController < ApplicationController
 
   def create
     @template = CsvImportTemplate.new(params[:template])
+    @template.project = @project
     @template.user = current_user
     if @template.save
       @template.update_name
@@ -24,15 +26,15 @@ class CsvImportTemplatesController < ApplicationController
   end
 
   def show
-    @template = CsvImportTemplate.find(params[:id])
+    @template = @project.csv_import_templates.find(params[:id])
   end
 
   def edit
-    @template = CsvImportTemplate.find(params[:id])
+    @template = @project.csv_import_templates.find(params[:id])
   end
 
   def update
-    @template = CsvImportTemplate.find(params[:id])
+    @template = @project.csv_import_templates.find(params[:id])
     if @template.update_attributes(params[:template])
       flash[:notice] = 'Template updated successfully'
       redirect_to(:action => 'show', :id => @template.id)
@@ -42,7 +44,7 @@ class CsvImportTemplatesController < ApplicationController
   end
 
   def destroy
-    template = CsvImportTemplate.find(params[:id])
+    template = @project.csv_import_templates.find(params[:id])
     template.template_file = nil
     template.destroy
     flash[:notice] = 'Template destroyed successfully'

@@ -1,9 +1,10 @@
 class CsvDatasetsController < ApplicationController
   before_filter :authenticate_user!
   before_filter :verify_is_admin
+  before_filter :set_project
 
   def index
-    @datasets = CsvDataset.order('created_at DESC')
+    @datasets = @project.csv_datasets.order('created_at DESC')
   end
 
   def new
@@ -12,7 +13,7 @@ class CsvDatasetsController < ApplicationController
 
   def create
     @dataset = CsvDataset.new(params[:dataset])
-    #@dataset.project = Project.first
+    @dataset.project = @project
     @dataset.user = current_user
     if @dataset.save
       flash[:notice] = 'Dataset created successsfully'
@@ -23,15 +24,15 @@ class CsvDatasetsController < ApplicationController
   end
 
   def show
-    @dataset = CsvDataset.find(params[:id])
+    @dataset = @project.csv_datasets.find(params[:id])
   end
   
   def edit
-    @dataset = CsvDataset.find(params[:id])
+    @dataset = @project.csv_datasets.find(params[:id])
   end
 
   def update
-    @dataset = CsvDataset.find(params[:id])
+    @dataset = @project.csv_datasets.find(params[:id])
     if @dataset.update_attributes(params[:dataset])
       flash[:notice] = 'Dataset updated successfully'
       redirect_to(:action => 'show', :id => @dataset.id)
@@ -42,7 +43,7 @@ class CsvDatasetsController < ApplicationController
 
   def destroy
     # accepts the delete form
-    dataset = CsvDataset.find(params[:id])
+    dataset = @project.csv_datasets.find(params[:id])
     dataset.csv_file = nil
     dataset.destroy
     flash[:notice] = 'Dataset destroyed successfully'

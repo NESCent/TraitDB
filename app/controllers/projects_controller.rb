@@ -55,7 +55,12 @@ class ProjectsController < ApplicationController
   end
 
   def selected_project
-    session[:current_project] = Project.where(:id => params[:id]).first
+    # Make sure project exists before setting it into the session
+    if Project.exists?(params[:id])
+      session[:current_project_id] = params[:id]
+    else
+      session[:current_project_id] = nil
+    end
     redirect_to root_url
   end
 end

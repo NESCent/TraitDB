@@ -10,6 +10,9 @@ class ApplicationController < ActionController::Base
   end
 
   def set_project
+    if @project
+      return true
+    end
     if session[:current_project_id]
       @project = Project.find(session[:current_project_id])
     else

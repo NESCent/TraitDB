@@ -1,7 +1,21 @@
 module ProfilingHelper
   class ContinuousSearch
     def search_test(taxon)
+      # in the production code, rows is an array.
+      # what if it's a hash indexed by otu id
+      # and another hash of otu names to otu ids
       @continuous_trait_predicate_map = {815 => [], 813 => [], 814 => [], 816 => []}
+      # Need to build a matrix of OTU x TRAIT x VALUE x NOTE
+      otu_ids = taxon.otus.pluck(:otu_id)
+      ContinuousTraitValue.where(:otu_id => otu_ids).where(:continuous_trait_id => @continuous_trait_predicate_map.keys).includes(:otu, :continuous_trait).each do |continuous_trait_value|
+        # loops over the continuous_trait_value
+        puts continuous_trait_value.continuous_trait.name
+        puts continuous_trait_value.formatted_value
+        #puts continuous_trait_value.otu.name # This still generates a select statement every time
+        # need to have a data structure of rows
+
+      end
+      if false
       taxon.otus.each do |otu|
         # Start with a hash containing the OTU
         # This row will only be included in the output set if the criteria is met
@@ -35,6 +49,7 @@ module ProfilingHelper
                                      :matched_count => matched_count}
         end
         row[:continuous_trait_values] = continuous_trait_values # may be an empty array
+      end
       end
     end
   end

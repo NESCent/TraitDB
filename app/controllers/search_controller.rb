@@ -54,6 +54,7 @@ class SearchController < ApplicationController
   end
 
   def results
+    @cn = 0
     @trait_operator = params['trait_operator']
     # trait_operator must be 'and' or 'or'.
     # This string is used in database queries and defaults to 'or'
@@ -86,8 +87,10 @@ class SearchController < ApplicationController
 
     rows = []
 
-
     # At this point, we'll have a list of the most specific taxa requested at each level
+    # Slow section has to be here
+
+    # perhaps it would be faster to switch the loops - make the traits the outer loops and the otus the inner
     @lowest_requested_taxa.each do |lowest_requested_taxon|
       lowest_requested_taxon.otus.each do |otu|
         # Start with a hash containing the OTU
@@ -95,6 +98,8 @@ class SearchController < ApplicationController
         row = { :otu => otu, :sort_name => otu.name }
         match_map = {:continuous => [], :categorical => []}
         # for each Otu in the list, see if it has the specified trait values
+
+        ### Continuous Trait Search
         continuous_trait_values = []
         @continuous_trait_predicate_map.each do |trait_id, predicate_array|
           matched_values = otu.continuous_trait_values.where(:continuous_trait_id => trait_id)
@@ -120,6 +125,8 @@ class SearchController < ApplicationController
                                      :matched_count => matched_count}
         end
         row[:continuous_trait_values] = continuous_trait_values # may be an empty array
+
+        ### Categorical Trait Search
 
         categorical_trait_values = []
         @categorical_trait_category_map.each do |trait_id, category_ids|
@@ -148,6 +155,7 @@ class SearchController < ApplicationController
                                       :matched_count => matched_count}
         end
         row[:categorical_trait_values] = categorical_trait_values # may be an empty array
+        ### Traits have been assembled
 
         # for the case of AND, make sure the matched count is >= the coded count
         # Only the sums of these are used, so the intermediate hash is unnecessary
@@ -177,7 +185,7 @@ class SearchController < ApplicationController
         otu.taxa.each{|t| taxonomy[t.iczn_group_id] = t.name}
         row[:taxonomy] = taxonomy
       end # otu
-    end
+    end # taxon
     rows.sort! {|a,b| a[:sort_name] <=> b[:sort_name]}
 
     @results[:columns][:categorical_trait_notes_ids] = categorical_trait_notes_ids

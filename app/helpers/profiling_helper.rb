@@ -1,11 +1,14 @@
 module ProfilingHelper
-  class ContinuousSearch
+  class Search
     OPERATORS = { :or => 'or', :and => 'and' }
     def search_test(taxon)
       # in the production code, rows is an array.
       # what if it's a hash indexed by otu id
-      @continuous_trait_predicate_map = Hash[[813, 814, 815, 816].map{|v| [v, [] ]}]
-      @categorical_trait_category_map = Hash[[136, 137, 138, 139, 140, 141].map{|v| [v, []]}]
+      #@continuous_trait_predicate_map = Hash[[813, 814, 815, 816].map{|v| [v, [] ]}]
+      @continuous_trait_predicate_map = {814 => ['value > 35.9 and value < 36.1']}
+      #@categorical_trait_category_map = Hash[[136, 137, 138, 139, 140, 141].map{|v| [v, []]}]
+      @categorical_trait_category_map = {}
+
       include_references = true
       operator = :or
       only_with_data = true

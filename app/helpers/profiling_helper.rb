@@ -8,7 +8,7 @@ module ProfilingHelper
       @categorical_trait_category_map = Hash[[136, 137, 138, 139, 140, 141].map{|v| [v, []]}]
       include_references = true
       operator = :or
-      remove_empty = true
+      only_with_data = true
 
       # Need to build a matrix of OTU x TRAIT x VALUE x NOTE
       # Start with an array of Otu IDs, ordered by OTU Id
@@ -32,7 +32,7 @@ module ProfilingHelper
           :values => [], #
           :sources => [], # Array of strings of sources
           :notes => nil, # Array of notes attached to a categorical trait value.
-          :value_matches => [] # Array of categorical_trait_value_id => true|false
+          :value_matches => {} # Hash of categorical_trait_value_id => true|false
         }
         result_arrays[:values] << { value_id => continuous_trait_value.formatted_value }
         result_arrays[:sources] << { value_id => continuous_trait_value.source_reference.to_s } if include_references
@@ -43,9 +43,9 @@ module ProfilingHelper
         # Record a match if no predicate or if the predicate was matched
         # Note that the database will not be queried again unless there is a predicate
         if predicate.length == 0 || ContinuousTraitValue.where(:id => value_id).where(predicate).count > 0
-          result_arrays[:value_matches] << { value_id => true }
+          result_arrays[:value_matches][value_id] = true
         else
-          result_arrays[:value_matches] << { value_id => false }
+          result_arrays[:value_matches][value_id] = false
         end
       end
       CategoricalTraitValue.where(:otu_id => otu_ids).where(:categorical_trait_id => @categorical_trait_category_map.keys).includes(:otu, :categorical_trait, :categorical_trait_category, :source_reference).each do |categorical_trait_value|
@@ -64,7 +64,7 @@ module ProfilingHelper
           :values => [], #
           :sources => [], # Array of strings of sources
           :notes => nil, # Array of notes attached to a categorical trait value.
-          :value_matches => [] # Array of categorical_trait_value_id => true|false
+          :value_matches => {} # Hash of categorical_trait_value_id => true|false
         }
         result_arrays[:values] << { value_id => categorical_trait_value.formatted_value }
         result_arrays[:sources] << { value_id => categorical_trait_value.source_reference.to_s } if include_references
@@ -76,14 +76,14 @@ module ProfilingHelper
         # Note that the database will not be queried again unless there is a predicate
         if category_ids.length == 0 || CategoricalTraitValue.where(:id => value_id, :categorical_trait_category_id => category_ids)
           # No category id specified or value matched input criteria
-          result_arrays[:value_matches] << {value_id => true }
+          result_arrays[:value_matches][value_id] = true
         else
-          result_arrays[:value_matches] << {value_id => false }
+          result_arrays[:value_matches][value_id] = false
         end
       end
 
       # Filter the rows hash: Remove empty rows and rows that should be left out due to filtering options
-      rows.reject!{|otu_id, row_hash| row_hash.nil? || !include_in_results?(otu_id, row_hash, operator, remove_empty)}
+      rows.reject!{|otu_id, row_hash| row_hash.nil? || !include_in_results?(otu_id, row_hash, operator, only_with_data)}
       # and another hash of otu names to otu ids
       # Get the name for each OTU in the rows hash and stuff it back into the hash
       #
@@ -94,8 +94,36 @@ module ProfilingHelper
     end
 
     # otu_id may not be used
-    def include_in_results?(otu_id, row_hash, operator, remove_empty)
-      true # Include everything for now
+    def include_in_results?(otu_id, row_hash, operator, only_with_data)
+      x = {otu_id => row_hash}
+      puts x.to_s
+      if operator == :and
+        # AND: include if
+        # continuous: all values in :value_matches are true and
+        # categorical: all values in value_matches are true
+        def all_match(row_hash, type)
+          return false if row_hash[type].nil?
+          row_hash[type].values.map{|x| x[:value_matches]}.all{|x| true.in? x.values}
+        end
+        return all_match(row_hash, :categorical) && all_match(row_hash, :continuous)
+      else
+        # assume :or
+        def any_match(row_hash, type)
+          return false if row_hash[type].nil?
+          row_hash[type].values.map{|x| x[:value_matches]}.any?{|x| true.in? x.values}
+        end
+        def none_coded(row_hash, type)
+          return true if row_hash[type].nil?
+          row_hash[type].values.all?{|x| x[:value_matches].size == 0}
+        end
+        # OR: include if
+        # continuous: any value in :value_matches is true
+        # or categorical: any value in :value_matches is true
+        return true if any_match(row_hash, :categorical) || any_match(row_hash, :continuous)
+        # or (only_with_data == false AND :value_matches is empty for both
+        return true if !only_with_data && none_coded(row_hash, :categorical) && none_coded(row_hash, :continuous)
+        return false
+      end
     end
   end
 end

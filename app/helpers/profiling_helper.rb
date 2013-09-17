@@ -6,8 +6,8 @@ module ProfilingHelper
       # what if it's a hash indexed by otu id
       #@continuous_trait_predicate_map = Hash[[813, 814, 815, 816].map{|v| [v, [] ]}]
       @continuous_trait_predicate_map = {814 => ['value > 35.9 and value < 36.1']}
-      #@categorical_trait_category_map = Hash[[136, 137, 138, 139, 140, 141].map{|v| [v, []]}]
-      @categorical_trait_category_map = {138 => [20259]}
+      @categorical_trait_category_map = Hash[[136, 137, 138, 139, 140, 141].map{|v| [v, []]}]
+      #@categorical_trait_category_map = {138 => [20259]}
 
       include_references = true
       operator = :or

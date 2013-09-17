@@ -37,36 +37,33 @@
             <th><%= metadata_field %></th>
           <% end %>
         </tr>
-        <% @results[:rows].each do |row| %>
+        <% @results[:rows].each do |otu_id, row_hash| %>
         <tr>
-          <td>
-          <% @results[:columns][:iczn_groups].each do |group| %>
-            <%= row[:taxonomy][group[:id]] %>
-          <% end %>
+          <td><%= row_hash[:name] %>
           </td>
             <% @results[:columns][:categorical_traits].each do |trait|
-              categorical_trait_values = row[:categorical_trait_values].find{|v| v[:categorical_trait_id] == trait[:id] } %>
+              categorical_trait_values = row_hash[:categorical][trait[:id]] if row_hash[:categorical] %>
             <td>
-              <%= categorical_trait_values[:values].join(', ') if categorical_trait_values %>
+              <%= categorical_trait_values[:values].map{|x| x.values}.join(',') if categorical_trait_values %>
             </td>
             <% if @results[:columns][:categorical_trait_notes_ids].include? trait[:id] %>
               <td><%= categorical_trait_values[:notes] if categorical_trait_values %></td>
             <% end %>
             <% if @results[:include_references] %>
-              <td><%= categorical_trait_values[:sources].first if categorical_trait_values %></td>
+              <td><%= categorical_trait_values[:sources].map{|x| x.values}.join(', ') if categorical_trait_values %></td>
             <% end %>
           <% end %>
           <% @results[:columns][:continuous_traits].each do |trait|
-            continuous_trait_values = row[:continuous_trait_values].find{|v| v[:continuous_trait_id] == trait[:id] } %>
+            continuous_trait_values = row_hash[:continuous][trait[:id]] if row_hash[:continuous] %>
             <td>
-              <%= continuous_trait_values[:values].join(', ') if continuous_trait_values %>
+              <%= continuous_trait_values[:values].map{|x| x.values}.join(', ') if continuous_trait_values %>
             </td>
             <% if @results[:columns][:continuous_trait_notes_ids].include? trait[:id] %>
               <td><%= continuous_trait_values[:notes] if continuous_trait_values %></td>
             <% end %>
             <% if @results[:include_references] %>
               <td>
-                <%= continuous_trait_values[:sources].first if continuous_trait_values %>
+                <%= continuous_trait_values[:sources].map{|x| x.values}.join(', ') if continuous_trait_values %>
               </td>
             <% end %>
           <% end %>

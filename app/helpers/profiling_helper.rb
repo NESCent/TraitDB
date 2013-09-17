@@ -7,7 +7,7 @@ module ProfilingHelper
       #@continuous_trait_predicate_map = Hash[[813, 814, 815, 816].map{|v| [v, [] ]}]
       @continuous_trait_predicate_map = {814 => ['value > 35.9 and value < 36.1']}
       #@categorical_trait_category_map = Hash[[136, 137, 138, 139, 140, 141].map{|v| [v, []]}]
-      @categorical_trait_category_map = {}
+      @categorical_trait_category_map = {138 => [20259]}
 
       include_references = true
       operator = :or
@@ -86,20 +86,18 @@ module ProfilingHelper
       end
 
       # Filter the rows hash: Remove empty rows and rows that should be left out due to filtering options
-      rows.reject!{|otu_id, row_hash| row_hash.nil? || !include_in_results?(otu_id, row_hash, operator, only_with_data)}
+      rows.reject!{|otu_id, row_hash| row_hash.nil? || !include_in_results?(row_hash, operator, only_with_data)}
       # and another hash of otu names to otu ids
       # Get the name for each OTU in the rows hash and stuff it back into the hash
       #
       Otu.where(:id => rows.keys).each do |otu|
         rows[otu.id][:sort_name] = otu.sort_name
       end
+      rows = Hash[rows.sort{|a,b| a[1][:sort_name] <=> b[1][:sort_name]}]
       rows
     end
 
-    # otu_id may not be used
-    def include_in_results?(otu_id, row_hash, operator, only_with_data)
-      x = {otu_id => row_hash}
-      puts x.to_s
+    def include_in_results?(row_hash, operator, only_with_data)
       if operator == :and
         # AND: include if
         # continuous: all values in :value_matches are true and

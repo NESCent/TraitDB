@@ -8,11 +8,13 @@
         <td><%= @otu.name %></td>
       </tr>
       <tr>
-        <th>Taxon</th>
+        <th>Taxa</th>
         <td>
-          <% if @otu.taxon%>
-              <%= link_to(@otu.taxon.name, taxon_path(@otu.taxon)) %>
+          <ul>
+          <% @otu.taxa.each do |taxon| %>
+              <li><%= link_to(taxon.name, taxon_path(taxon)) %></li>
           <% end %>
+          </ul>
         </td>
       </tr>
       <tr>

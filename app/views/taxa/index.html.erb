@@ -21,7 +21,7 @@
       <td><%= taxon.iczn_group_name %></td>
       <td><% if taxon.parent %><%= link_to(taxon.parent_name, taxon_path(taxon.parent)) %><% end %></td>
       <td><%= link_to("#{taxon.children.count}", taxa_path({:parent_id => taxon.id })) %></td>
-      <td><%= link_to("#{taxon.otus.count}", "#") %></td>
+      <td><%= link_to("#{taxon.otus.count}", otus_path({:taxon => taxon.id})) %></td>
       <td>
         <div class="btn-group">
           <%= link_to("Show", taxon_path(taxon), :class => 'btn btn-small' ) %>

@@ -5,7 +5,7 @@ class OtusController < ApplicationController
   def index
     where_options = {}
     if params[:taxon]
-      where_options[:taxon_id] = params[:taxon].to_i
+      where_options['taxa.id'] = params[:taxon].to_i
     end
     if params[:import_job]
       where_options[:import_job_id] = params[:import_job].to_i
@@ -21,8 +21,8 @@ class OtusController < ApplicationController
     else
       @count = 20
     end
-    @total = @project.otus.where(where_options).count
-    @otus = @project.otus.where(where_options).limit(@count).offset(@start)
+    @total = @project.otus.joins(:taxa).where(where_options).count
+    @otus = @project.otus.joins(:taxa).where(where_options).limit(@count).offset(@start)
 
   end
 

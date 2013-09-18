@@ -1,7 +1,9 @@
 class Otu < ActiveRecord::Base
   attr_accessible :author, :import_job, :notes, :taxa
   belongs_to :project
-  has_and_belongs_to_many :taxa
+  # name and sort_name are based on taxa.
+  # For performance reasons, these are cached in the otus table
+  has_and_belongs_to_many :taxa, :after_add => :update_names, :after_remove => :update_names
   has_many :iczn_groups, :through => :taxa
   belongs_to :import_job
   has_one :csv_dataset, :through => :import_job
@@ -30,14 +32,6 @@ class Otu < ActiveRecord::Base
     iczn_groups.sorted.last
   end
 
-  def lowest_name
-    names_by_group.last
-  end
-
-  def names_by_group # Returns an array of hashes - ordered in descending hierarchy
-    taxa.sorted_by_iczn.map{|taxon| { :iczn_group_name => taxon.iczn_group_name, :name => taxon.name }}
-  end
-
   def categorical_traits
     categorical_trait_categories.map{|x| x.categorical_trait}.uniq
   end
@@ -50,51 +44,15 @@ class Otu < ActiveRecord::Base
     csv_dataset.csv_file_file_name if csv_dataset
   end
 
-  def name
-    "#{genus_name} #{species_name}"
+  def generate_names
+    names = taxa.sorted_by_iczn.pluck('taxa.name')
+    self.sort_name = names.join(' ')
+    # name is constructed from the last two taxa names.
+    self.name = names.length >= 2 ? names[-2,2].join(' ') : names.join(' ')
   end
 
-  def sort_name
-    names_by_group().join(' ')
-  end
-
-  # TODO: get rid of all of these
-  def species_name
-    names_by_group().find{|x| x[:name] == 'species'}
-  end
-
-  def genus_name
-    names_by_group().find{|x| x[:name] == 'genus'}
-  end
-
-  def family_name
-    names_by_group().find{|x| x[:name] == 'family'}
-  end
-
-  def order_name
-    names_by_group().find{|x| x[:name] == 'order'}
-  end
-
-  def htg_name
-    names_by_group().find{|x| x[:name] == 'htg'}
-  end
-
-  def continuous_trait_notes_text(continuous_trait_id)
-    trait_notes = continuous_trait_notes.where(:continuous_trait_id => continuous_trait_id).first
-    if trait_notes
-      trait_notes.notes
-    else
-      nil
-    end
-  end
-
-  def categorical_trait_notes_text(categorical_trait_id)
-    trait_notes = categorical_trait_notes.where(:categorical_trait_id => categorical_trait_id).first
-    if trait_notes
-      trait_notes.notes
-    else
-      nil
-    end
+  def update_names(taxon)
+    generate_names
   end
 
   def metadata_hash

@@ -340,6 +340,8 @@ class ImportJob < ActiveRecord::Base
         # Create an OTU
         # Tested this in console but not yet web.  Should work just fine
         otu = Otu.by_project(project).create(:taxa => taxa_map.values.compact,:import_job => self)
+        otu.generate_names
+        otu.save
 
         # Add metadata to the OTU, including notes, entry email, etc
         d[:metadata].each do |k,v|

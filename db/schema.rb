@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130910151840) do
+ActiveRecord::Schema.define(:version => 20130913143203) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -236,6 +236,8 @@ ActiveRecord::Schema.define(:version => 20130910151840) do
     t.datetime "updated_at",                   :null => false
     t.text     "notes"
     t.integer  "project_id",    :default => 1, :null => false
+    t.string   "name"
+    t.string   "sort_name"
   end
 
   add_index "otus", ["import_job_id"], :name => "index_otus_on_import_job_id"

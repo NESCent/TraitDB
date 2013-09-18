@@ -69,10 +69,10 @@
           <% end %>
           <% @results[:columns][:otu_metadata_field_names].each do |metadata_field_name| %>
             <td>
-              <% if (row[:metadata][metadata_field_name] || '').length > 30 %>
-                <span class="notes_popover" rel="popover" data-content="<%= row[:metadata][metadata_field_name] %>" data-original-title="<%= metadata_field_name %>"><%= truncate(row[:metadata][metadata_field_name]) %></span>
+              <% if (row_hash[:metadata][metadata_field_name] || '').length > 30 %>
+                <span class="notes_popover" rel="popover" data-content="<%= row_hash[:metadata][metadata_field_name] %>" data-original-title="<%= metadata_field_name %>"><%= truncate(row_hash[:metadata][metadata_field_name]) %></span>
               <% else %>
-                <%= row[:metadata][metadata_field_name] %>
+                <%= row_hash[:metadata][metadata_field_name] %>
               <% end %>
             </td>
           <% end %>

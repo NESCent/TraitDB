@@ -181,16 +181,16 @@ class SearchController < ApplicationController
     # and another hash of otu names to otu ids
     # Get the name for each OTU in the rows hash and stuff it back into the hash
     #
-    Otu.where(:id => rows.keys).each do |otu|
+    Otu.where(:id => rows.keys).includes(:otu_metadata_values => [:otu_metadata_field]).each do |otu|
       rows[otu.id][:sort_name] = otu.sort_name
       rows[otu.id][:name] = otu.name
-      # TODO: Populate :metadata and metadata_field_names
+      rows[otu.id][:metadata] = otu.metadata_hash
+      otu.metadata_hash.keys.each{|field_name| otu_metadata_field_names << field_name unless field_name.in? otu_metadata_field_names}
     end
     # When sorting a hash, it is converted to an array where element 0 is the key and element 1 is the value
     # sort based on the :sort_name in the value and convert back to a hash
     rows = Hash[rows.sort{|a,b| a[1][:sort_name] <=> b[1][:sort_name]}]
 
-    # TODO: Put back metadata_field_names
     @results[:columns][:categorical_trait_notes_ids] = categorical_trait_notes_ids
     @results[:columns][:continuous_trait_notes_ids] = continuous_trait_notes_ids
     @results[:columns][:otu_metadata_field_names] = otu_metadata_field_names

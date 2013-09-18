@@ -51,24 +51,6 @@ class Otu < ActiveRecord::Base
     self.name = names.length >= 2 ? names[-2,2].join(' ') : names.join(' ')
   end
 
-  def continuous_trait_notes_text(continuous_trait_id)
-    trait_notes = continuous_trait_notes.where(:continuous_trait_id => continuous_trait_id).first
-    if trait_notes
-      trait_notes.notes
-    else
-      nil
-    end
-  end
-
-  def categorical_trait_notes_text(categorical_trait_id)
-    trait_notes = categorical_trait_notes.where(:categorical_trait_id => categorical_trait_id).first
-    if trait_notes
-      trait_notes.notes
-    else
-      nil
-    end
-  end
-
   def metadata_hash
     otu_metadata_values.map{|x| {x.otu_metadata_field.name => x.value}}.inject{|memo, x| memo.merge!(x)}
   end

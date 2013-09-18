@@ -97,7 +97,7 @@ class SearchController < ApplicationController
       # Create a hash populated with Otu IDs.  Sparse
       rows.merge!(Hash[otu_ids.map {|v| [v, nil]}])
       # Could split this out to loop over the predicates
-      ContinuousTraitValue.where(:otu_id => otu_ids).where(:continuous_trait_id => @continuous_trait_predicate_map.keys).includes(:otu, :continuous_trait, :source_reference).each do |continuous_trait_value|
+      ContinuousTraitValue.where(:otu_id => otu_ids).where(:continuous_trait_id => @continuous_trait_predicate_map.keys).includes(:otu => [:continuous_trait_notes]).includes(:continuous_trait, :source_reference).each do |continuous_trait_value|
         trait_id = continuous_trait_value.continuous_trait_id
         value_id = continuous_trait_value.id
         # loops over the continuous_trait_value
@@ -117,8 +117,14 @@ class SearchController < ApplicationController
         }
         result_arrays[:values] << { value_id => continuous_trait_value.formatted_value }
         result_arrays[:sources] << { value_id => continuous_trait_value.source_reference.to_s } if include_references
-        # Notes are only stored once per OTUxTrait
-        result_arrays[:notes] ||= continuous_trait_value.otu.continuous_trait_notes_text(trait_id)
+        # Notes are optional and only stored once per OTUxTrait
+        # When a note is found, we record the trait_id so that the view can display a notes column for the trait
+        # Notes are expected to be rare, so we only display the column if we have data
+        note = continuous_trait_value.otu.continuous_trait_notes.by_continuous_trait(trait_id).first
+        if note
+          continuous_trait_notes_ids << trait_id
+          result_arrays[:notes] ||= note.notes
+        end
 
         predicate = @continuous_trait_predicate_map[trait_id]
         # Record a match if no predicate or if the predicate was matched
@@ -129,7 +135,7 @@ class SearchController < ApplicationController
           result_arrays[:value_matches][value_id] = false
         end
       end
-      CategoricalTraitValue.where(:otu_id => otu_ids).where(:categorical_trait_id => @categorical_trait_category_map.keys).includes(:otu, :categorical_trait, :categorical_trait_category, :source_reference).each do |categorical_trait_value|
+      CategoricalTraitValue.where(:otu_id => otu_ids).where(:categorical_trait_id => @categorical_trait_category_map.keys).includes(:otu => [:categorical_trait_notes]).includes(:categorical_trait, :categorical_trait_category, :source_reference).each do |categorical_trait_value|
         trait_id = categorical_trait_value.categorical_trait_id
         value_id = categorical_trait_value.id
         # loops over the categorical_trait_value
@@ -149,9 +155,14 @@ class SearchController < ApplicationController
         }
         result_arrays[:values] << { value_id => categorical_trait_value.formatted_value }
         result_arrays[:sources] << { value_id => categorical_trait_value.source_reference.to_s } if include_references
-        # Notes are only stored once per OTUxTrait
-        # TODO: Move notes into categorical_trait_values and prefetch
-        result_arrays[:notes] ||= categorical_trait_value.otu.categorical_trait_notes_text(trait_id)
+        # Notes are optional and only stored once per OTUxTrait
+        # When a note is found, we record the trait_id so that the view can display a notes column for the trait
+        # Notes are expected to be rare, so we only display the column if we have data
+        note = categorical_trait_value.otu.categorical_trait_notes.by_categorical_trait(trait_id).first
+        if note
+          categorical_trait_notes_ids << trait_id
+          result_arrays[:notes] ||= note.notes
+        end
 
         category_ids = @categorical_trait_category_map[trait_id]
         # Record a match if no predicate or if the predicate was matched
@@ -173,12 +184,13 @@ class SearchController < ApplicationController
     Otu.where(:id => rows.keys).each do |otu|
       rows[otu.id][:sort_name] = otu.sort_name
       rows[otu.id][:name] = otu.name
+      # TODO: Populate :metadata and metadata_field_names
     end
     # When sorting a hash, it is converted to an array where element 0 is the key and element 1 is the value
     # sort based on the :sort_name in the value and convert back to a hash
     rows = Hash[rows.sort{|a,b| a[1][:sort_name] <=> b[1][:sort_name]}]
 
-    # TODO: Put back notes_ids and metadata_field_names
+    # TODO: Put back metadata_field_names
     @results[:columns][:categorical_trait_notes_ids] = categorical_trait_notes_ids
     @results[:columns][:continuous_trait_notes_ids] = continuous_trait_notes_ids
     @results[:columns][:otu_metadata_field_names] = otu_metadata_field_names

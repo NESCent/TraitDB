@@ -14,7 +14,7 @@
     <div class="row-fluid">
       <table class="table table-condensed table-bordered table-striped table-hover ">
         <tr>
-          <th>Taxonomy</th>
+          <th>OTU</th>
           <% @results[:columns][:categorical_traits].each do |trait| %>
             <th><%= trait[:name] %></th>
             <% if @results[:columns][:categorical_trait_notes_ids].include? trait[:id] %>

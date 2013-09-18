@@ -89,7 +89,6 @@ class SearchController < ApplicationController
     only_with_data = !params['only_rows_with_data'].nil?
 
     # At this point, we'll have a list of the most specific taxa requested at each level
-    # perhaps it would be faster to switch the loops - make the traits the outer loops and the otus the inner
     @lowest_requested_taxa.each do |taxon|
       # Need to build a matrix of OTU x TRAIT x VALUE x NOTE
       # Start with an array of Otu IDs, ordered by OTU Id

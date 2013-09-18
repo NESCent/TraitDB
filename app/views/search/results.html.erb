@@ -20,17 +20,11 @@
             <% if @results[:columns][:categorical_trait_notes_ids].include? trait[:id] %>
               <th>Notes: <%= trait[:name] %></th>
             <% end %>
-            <% if @results[:include_references] %>
-              <th>Source:<%= trait[:name] %></th>
-            <% end %>
           <% end %>
           <% @results[:columns][:continuous_traits].each do |trait| %>
             <th><%= trait[:name] %></th>
             <% if @results[:columns][:continuous_trait_notes_ids].include? trait[:id] %>
               <th>Notes: <%= trait[:name] %></th>
-            <% end %>
-            <% if @results[:include_references] %>
-              <th>Source:<%= trait[:name] %></th>
             <% end %>
           <% end %>
           <% @results[:columns][:otu_metadata_field_names].each do |metadata_field| %>
@@ -44,27 +38,39 @@
             <% @results[:columns][:categorical_traits].each do |trait|
               categorical_trait_values = row_hash[:categorical][trait[:id]] if row_hash[:categorical] %>
             <td>
-              <%= categorical_trait_values[:values].map{|x| x.values}.join(',') if categorical_trait_values %>
+              <% if categorical_trait_values
+                   categorical_trait_values[:values].each do |value_hash|
+                     value_hash.each do |value_id, formatted_value| %>
+                      <%= formatted_value %>
+                      <% if @results[:include_references]
+                        source_number = categorical_trait_values[:sources][value_id] %>
+                        [<%= link_to("#{source_number}", "#source_#{source_number}") %>]
+                      <% end %>
+                      <% end %>
+                  <% end %>
+              <% end %>
             </td>
             <% if @results[:columns][:categorical_trait_notes_ids].include? trait[:id] %>
               <td><%= categorical_trait_values[:notes] if categorical_trait_values %></td>
-            <% end %>
-            <% if @results[:include_references] %>
-              <td><%= categorical_trait_values[:sources].map{|x| x.values}.join(', ') if categorical_trait_values %></td>
             <% end %>
           <% end %>
           <% @results[:columns][:continuous_traits].each do |trait|
             continuous_trait_values = row_hash[:continuous][trait[:id]] if row_hash[:continuous] %>
             <td>
-              <%= continuous_trait_values[:values].map{|x| x.values}.join(', ') if continuous_trait_values %>
+              <% if continuous_trait_values
+                   continuous_trait_values[:values].each do |value_hash|
+                     value_hash.each do |value_id, formatted_value| %>
+                    <%= formatted_value %>
+                    <% if @results[:include_references]
+                      source_number = continuous_trait_values[:sources][value_id] %>
+                      [<%= link_to("#{source_number}", "#source_#{source_number}") %>]
+                    <% end %>
+                  <% end %>
+                <% end %>
+              <% end %>
             </td>
             <% if @results[:columns][:continuous_trait_notes_ids].include? trait[:id] %>
               <td><%= continuous_trait_values[:notes] if continuous_trait_values %></td>
-            <% end %>
-            <% if @results[:include_references] %>
-              <td>
-                <%= continuous_trait_values[:sources].map{|x| x.values}.join(', ') if continuous_trait_values %>
-              </td>
             <% end %>
           <% end %>
           <% @results[:columns][:otu_metadata_field_names].each do |metadata_field_name| %>
@@ -80,6 +86,19 @@
         <% end %>
       </table>
     </div>
+    <% if @results[:include_references] %>
+      <div class="row-fluid">
+        <table class="table table-condensed table-bordered table-striped table-hover ">
+          <tr></tr><th>#</th><th>Source</th></tr>
+          <% @results[:sources].each do |source| %>
+          <tr id="<%= "source_#{source[:id]}" %>">
+            <td><%= source[:id] %></td>
+            <td><%= source[:name] %></td>
+          </tr>
+          <% end %>
+        </table>
+      </div>
+    <% end %>
    </div>
 </div>
 <script type="text/javascript">

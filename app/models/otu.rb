@@ -44,11 +44,15 @@ class Otu < ActiveRecord::Base
     csv_dataset.csv_file_file_name if csv_dataset
   end
 
-  def update_names(taxon)
+  def generate_names
     names = taxa.sorted_by_iczn.pluck('taxa.name')
     self.sort_name = names.join(' ')
     # name is constructed from the last two taxa names.
     self.name = names.length >= 2 ? names[-2,2].join(' ') : names.join(' ')
+  end
+
+  def update_names(taxon)
+    generate_names
   end
 
   def metadata_hash

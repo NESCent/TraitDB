@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130913143203) do
+ActiveRecord::Schema.define(:version => 20130923165419) do
 
   create_table "categorical_trait_categories", :force => true do |t|
     t.string   "name"
@@ -286,20 +286,14 @@ ActiveRecord::Schema.define(:version => 20130913143203) do
   add_index "projects_users", ["user_id", "project_id"], :name => "index_projects_users_on_user_id_and_project_id"
 
   create_table "source_references", :force => true do |t|
-    t.string   "last_name"
-    t.string   "first_name"
-    t.integer  "year"
-    t.text     "title"
-    t.string   "url"
+    t.text     "source"
     t.datetime "created_at",                :null => false
     t.datetime "updated_at",                :null => false
     t.integer  "project_id", :default => 1, :null => false
   end
 
-  add_index "source_references", ["last_name", "first_name", "year", "title", "url"], :name => "by_ln_fn_year_title_url", :length => {"last_name"=>10, "first_name"=>10, "year"=>nil, "title"=>25, "url"=>25}
   add_index "source_references", ["project_id"], :name => "index_source_references_on_project_id"
-  add_index "source_references", ["title"], :name => "index_source_references_on_title", :length => {"title"=>25}
-  add_index "source_references", ["url"], :name => "index_source_references_on_url"
+  add_index "source_references", ["source"], :name => "index_source_references_on_source", :length => {"source"=>25}
 
   create_table "taxa", :force => true do |t|
     t.string   "name"

@@ -31,6 +31,7 @@
             <th><%= metadata_field %></th>
           <% end %>
         </tr>
+        <% source_ids = [] %>
         <% @results[:rows].each do |otu_id, row_hash| %>
         <tr>
           <td><%= row_hash[:name] %>
@@ -43,7 +44,10 @@
                      value_hash.each do |value_id, formatted_value| %>
                       <%= formatted_value %>
                       <% if @results[:include_references]
-                        source_number = categorical_trait_values[:sources][value_id] %>
+                        source_reference_id = categorical_trait_values[:sources][value_id]
+                        source_ids << source_reference_id unless source_reference_id.in? source_ids
+                        source_number = source_ids.index(source_reference_id) + 1
+                      %>
                         [<%= link_to("#{source_number}", "#source_#{source_number}") %>]
                       <% end %>
                       <% end %>
@@ -62,7 +66,10 @@
                      value_hash.each do |value_id, formatted_value| %>
                     <%= formatted_value %>
                     <% if @results[:include_references]
-                      source_number = continuous_trait_values[:sources][value_id] %>
+                         source_reference_id = continuous_trait_values[:sources][value_id]
+                         source_ids << source_reference_id unless source_reference_id.in? source_ids
+                         source_number = source_ids.index(source_reference_id) + 1
+                    %>
                       [<%= link_to("#{source_number}", "#source_#{source_number}") %>]
                     <% end %>
                   <% end %>
@@ -90,10 +97,10 @@
       <div class="row-fluid">
         <table class="table table-condensed table-bordered table-striped table-hover ">
           <tr></tr><th>#</th><th>Source</th></tr>
-          <% @results[:sources].each do |source| %>
-          <tr id="<%= "source_#{source[:id]}" %>">
-            <td><%= source[:id] %></td>
-            <td><%= source[:name] %></td>
+          <% source_ids.each_with_index do |source_id, index| %>
+          <tr id="<%= "source_#{index + 1}" %>">
+            <td><%= index + 1 %></td>
+            <td><%= @results[:sources].find{|x| x[:id] == source_id}[:name] %></td>
           </tr>
           <% end %>
         </table>

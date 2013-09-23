@@ -304,7 +304,7 @@ module TraitDB
                 :suggested_solution => "Make sure data is valid for '#{expected_name}' or remove source info from '#{k}'"
             }
           else
-            trait_data_hash[:source] = source_string_to_hash(v)
+            trait_data_hash[:source] = v
           end
         end
         dataset[:continuous_trait_data] = continuous_trait_data
@@ -339,21 +339,6 @@ module TraitDB
       end
     end
 
-    def uri?(string)
-      true if string.match(/^http/)
-    end
-
-    def source_string_to_hash(string)
-      if uri?(string)
-        {:url => string, :title => string}
-      elsif string.match(/\|/)
-        a = string.split('|')
-        {:last_name => a[0], :first_name => a[1], :year => a[2], :title => a[3]}
-      else
-        {:title => string}
-      end
-    end
-  
     def file_usable?
       return false unless @filepath
       return false unless File.exists?(@filepath)

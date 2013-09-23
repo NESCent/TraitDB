@@ -235,7 +235,7 @@ class SearchController < ApplicationController
   # Generates a map of source_id => source text
   def sources_from_rows(rows)
     source_ids = rows.values.map{|x| [x[:continuous], x[:categorical]]}.flatten.compact.map{|x| x.values}.flatten.map{|x| x[:sources]}.map{|x| x.values}.flatten.uniq
-    SourceReference.where(:id => source_ids).map{|s| {:id => s.id, :name => s.to_s}}
+    SourceReference.where(:id => source_ids).map{|s| {:id => s.id, :name => s.source }}
   end
 
   # Used to filter OTUs based on AND/OR criteria

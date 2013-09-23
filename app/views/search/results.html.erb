@@ -95,6 +95,9 @@
     </div>
     <% if @results[:include_references] %>
       <div class="row-fluid">
+        <p class="lead">Sources</p>
+      </div>
+      <div class="row-fluid">
         <table class="table table-condensed table-bordered table-striped table-hover ">
           <tr></tr><th>#</th><th>Source</th></tr>
           <% source_ids.each_with_index do |source_id, index| %>

@@ -3,27 +3,30 @@
     <p class="lead">Template: <strong><%= @template.name %></strong>: Group: <strong><%= @group.name %></strong></p>
   </div>
   <div class="well well-large">
-    <div class="row-fluid">Taxonomy Column</div>
+    <div class="row-fluid">Taxonomy Columns</div>
       <% @info[:taxonomy_columns].each do |col| %>
         <div class="row-fluid offset1"><strong><%= col %></strong></div>
       <% end %>
   </div>
   <div class="well well-large">
-    <div class="row-fluid">Categorical Trait Column</div>
+    <div class="row-fluid">Categorical Trait Columns</div>
         <% @info[:categorical_traits].each do |cat| %>
           <div class="row-fluid offset1">
-            <span class="span3"><strong><%= cat[:name] %></strong></span>
+            <span class="span3">
+              <strong><%= cat[:name] %></strong>
+            </span>
             <span class="span7">
-              <i>Allowed values:</i>
+              <ul>
               <% cat[:values].each do |v| %>
                 <li><%= v %></li>
               <% end %>
+              </ul>
             </span>
           </div>
         <% end %>
   </div>
   <div class="well well-large">
-    <div class="row-fluid">Continuous Trait Column</div>
+    <div class="row-fluid">Continuous Trait Columns</div>
     <% @info[:continuous_traits].each do |con| %>
       <div class="row-fluid offset1">
         <span class="span3"><strong><%= con[:name] %></strong></span>
@@ -32,7 +35,7 @@
     <% end %>
   </div>
   <div class="well well-large">
-    <div class="row-fluid">Source Column</div>
+    <div class="row-fluid">Source Columns</div>
     <% @info[:categorical_traits].each do |cat| %>
       <div class="row-fluid offset1">
         <span class="span3"><strong><%= cat[:source_name] %></strong></span>
@@ -45,14 +48,14 @@
     <% end %>
   </div>
   <div class="well well-large">
-    <div class="row-fluid">Metadata Column</div>
+    <div class="row-fluid">Metadata Columns</div>
     <% @info[:metadata_columns].each do |col| %>
       <div class="row-fluid offset1"><strong><%= col %></strong></div>
     <% end %>
   </div>
 
   <div class="well well-large">
-    <div class="row-fluid">Notes Column (optional)</div>
+    <div class="row-fluid">Notes Columns (optional)</div>
     <% @info[:categorical_traits].each do |cat| %>
       <div class="row-fluid offset1">
         <span class="span3"><strong><%= cat[:notes_name] %></strong></span>

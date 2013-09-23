@@ -1,5 +1,9 @@
 <% @page_title = 'Upload Data' %>
 <div class="row-fluid">
+  <div class="row-fluid alert">
+    <p>Uploaded CSV files must conform to an <%= link_to('Import Template', csv_import_templates_path) %>.  For information on templates or to download a blank CSV file, click <%= link_to('here', {:controller => 'csv_template'}) %>.</p>
+  </div>
+
   <div class="row-fluid">
     <p class="lead">Upload Data:</p>
   </div>

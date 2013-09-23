@@ -372,8 +372,8 @@ class ImportJob < ActiveRecord::Base
 
           # This will result in erroneous references if source is nil, because where(nil) returns everything!
           if import_trait[:source]
-            source_reference = SourceReference.by_project(project).where(import_trait[:source]).first_or_create do |ref|
-              import_datasets_messages << "Adding Source Reference #{ref[:title]}"
+            source_reference = SourceReference.by_project(project).where(:source => import_trait[:source]).first_or_create do |ref|
+              import_datasets_messages << "Adding Source Reference #{ref[:source]}"
             end
           end
 
@@ -417,8 +417,8 @@ class ImportJob < ActiveRecord::Base
 
           # This will result in erroneous references if source is nil, because where(nil) returns everything!
           if import_trait[:source]
-            source_reference = SourceReference.by_project(project).where(import_trait[:source]).first_or_create do |ref|
-              import_datasets_messages << "Adding Source Reference #{ref[:title]}"
+            source_reference = SourceReference.by_project(project).where(:source => import_trait[:source]).first_or_create do |ref|
+              import_datasets_messages << "Adding Source Reference #{ref[:source]}"
             end
           end
 

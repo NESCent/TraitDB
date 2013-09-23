@@ -110,12 +110,15 @@ class SearchController < ApplicationController
         # There may be more than one trait value, and each could have a source and notes
         result_arrays = result_hash[trait_id] ||= {
           :values => [], #
-          :sources => [], # Array of strings of sources
+          :sources => {}, # Hash of continuous_trait_value_id => source_reference_id
           :notes => nil, # Array of notes attached to a categorical trait value.
-          :value_matches => {} # Hash of categorical_trait_value_id => true|false
+          :value_matches => {} # Hash of continuous_trait_value_id => true|false
         }
         result_arrays[:values] << { value_id => continuous_trait_value.formatted_value }
-        result_arrays[:sources] << { value_id => continuous_trait_value.source_reference.to_s } if include_references
+        if include_references
+          source_id = continuous_trait_value.source_reference.id
+          result_arrays[:sources][value_id] = source_id
+        end
         # Notes are optional and only stored once per OTUxTrait
         # When a note is found, we record the trait_id so that the view can display a notes column for the trait
         # Notes are expected to be rare, so we only display the column if we have data
@@ -148,12 +151,15 @@ class SearchController < ApplicationController
         # There may be more than one trait value, and each could have a source and notes
         result_arrays = result_hash[trait_id] ||= {
           :values => [], #
-          :sources => [], # Array of strings of sources
+          :sources => {}, # Hash of categorical_trait_value_id => source_reference_id
           :notes => nil, # Array of notes attached to a categorical trait value.
           :value_matches => {} # Hash of categorical_trait_value_id => true|false
         }
         result_arrays[:values] << { value_id => categorical_trait_value.formatted_value }
-        result_arrays[:sources] << { value_id => categorical_trait_value.source_reference.to_s } if include_references
+        if include_references
+          source_id = categorical_trait_value.source_reference.id
+          result_arrays[:sources][value_id] = source_id
+        end
         # Notes are optional and only stored once per OTUxTrait
         # When a note is found, we record the trait_id so that the view can display a notes column for the trait
         # Notes are expected to be rare, so we only display the column if we have data
@@ -194,6 +200,8 @@ class SearchController < ApplicationController
     @results[:columns][:continuous_trait_notes_ids] = continuous_trait_notes_ids
     @results[:columns][:otu_metadata_field_names] = otu_metadata_field_names
 
+    # extract sources
+    @results[:sources] = sources_from_rows(rows)
     # data to return to view
     # @results[:columns] is a hash with keys :categorical_traits and :continuous_traits
     @results[:rows] = rows # rows is an array of hashes.  Each hash has :otu, :categorical_trait_values, and :continuous_trait_values
@@ -223,6 +231,12 @@ class SearchController < ApplicationController
   end
 
   private
+
+  # Generates a map of source_id => source text
+  def sources_from_rows(rows)
+    source_ids = rows.values.map{|x| [x[:continuous], x[:categorical]]}.flatten.compact.map{|x| x.values}.flatten.map{|x| x[:sources]}.map{|x| x.values}.flatten.uniq
+    SourceReference.where(:id => source_ids).map{|s| {:id => s.id, :name => s.source }}
+  end
 
   # Used to filter OTUs based on AND/OR criteria
   def include_in_results?(row_hash, operator, only_with_data)

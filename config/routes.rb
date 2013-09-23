@@ -48,6 +48,7 @@ TraitDB::Application.routes.draw do
       end
     end
   end
+  match 'csv_templates(/:action)(/:id)(.:format)' => 'csv_template'
   root :to => "about#index"
 
   # The priority is based upon order of creation:

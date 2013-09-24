@@ -25,9 +25,8 @@
         <ul class="nav pull-right">
           <li class="<%= 'active' if params[:controller] == 'about' -%>"><%= link_to("About", :controller => '/about') %></li>
           <li class="<%= 'active' if params[:controller] == 'search' -%>"><%= link_to("Search", :controller => '/search') %></li>
-          <!-- Upload will require login -->
-          <li class="<%= 'active' if params[:controller] == 'upload' -%>"><%= link_to("Upload", :controller => '/upload') %></li>
           <% if user_signed_in? %>
+            <li class="<%= 'active' if params[:controller] == 'upload' -%>"><%= link_to("Upload", :controller => '/upload') %></li>
             <li class="dropdown">
               <a class="dropdown-toggle" href="#" data-toggle="dropdown">Admin<b class="caret"></b></a>
               <ul class="dropdown-menu">
@@ -53,6 +52,9 @@
                 <li><%= link_to("Logout", destroy_user_session_path, :method => :delete ) %></li>
               </ul>
             </li>
+          <% else %>
+          <%# Not signed in %>
+            <li><%= link_to("Sign in", new_user_session_path) %>
           <% end %>
         </ul>
       </div>

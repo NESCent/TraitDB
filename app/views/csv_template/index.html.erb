@@ -1,0 +1,31 @@
+<div class="row-fluid"><p class="lead">CSV Templates</p></div>
+<div class="row-fluid">
+  <div class="row-fluid">
+    <table class="table table-bordered table-condensed table-striped" summary="Template List">
+      <tr class="header">
+        <th>Template name</th>
+        <th>Template Info</th>
+        <th>Download Blank CSV</th>
+      </tr>
+      <% @templates.each do |template| %>
+        <tr>
+          <td><%= template.name %></td>
+          <td>
+            <div class="btn-group">
+            <% @project.trait_groups.each do |trait_group| %>
+              <%= link_to(trait_group.name, {:action => :info, :id => template.id, :trait_group_id => trait_group.id }, :class => 'btn btn-small') %>
+            <% end %>
+            </div>
+          </td>
+          <td>
+            <div class="btn-group">
+            <% @project.trait_groups.each do |trait_group| %>
+              <%= link_to(raw("<i class='icon-download-alt icon-white'></i>#{trait_group.name}"), {:action => :download, :format => :csv, :id => template.id, :trait_group_id => trait_group.id}, :class => 'btn btn-small btn-primary') %>
+            <% end %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+</div>

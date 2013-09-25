@@ -24,10 +24,9 @@
         <td><%= @dataset.updated_at %></td>
       </tr>
       <tr>
-        <th>Import</th>
+        <th>Import Job</th>
         <td>
-          <%= link_to("Job", csv_dataset_import_job_path(@dataset.id, @dataset.import_job.id), :class => 'btn btn-small') if @dataset.import_job%>
-          <%= link_to("Create", new_csv_dataset_import_job_path(@dataset), :class => 'btn btn-small btn-primary') %>
+          <%= link_to("Job Info", csv_dataset_import_job_path(@dataset.id, @dataset.import_job.id), :class => 'btn btn-small') if @dataset.import_job%>
         </td>
       </tr>
     </table>

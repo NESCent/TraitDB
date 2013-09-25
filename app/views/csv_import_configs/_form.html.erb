@@ -1,0 +1,7 @@
+<%= error_messages_for(@config) %>
+  <table>
+    <tr>
+      <th><%= f.label(:config_file, "Select a CSV Import Config File (YAML) to upload") %></th>
+      <td><%= f.file_field(:config_file) %></td>
+    </tr>
+  </table>

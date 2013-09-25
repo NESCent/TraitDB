@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class CsvImportTemplateTest < ActiveSupport::TestCase
+class CsvImportConfigTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

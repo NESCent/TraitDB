@@ -7,22 +7,6 @@ class CsvDatasetsController < ApplicationController
     @datasets = @project.csv_datasets.order('created_at DESC')
   end
 
-  def new
-    @dataset = CsvDataset.new
-  end
-
-  def create
-    @dataset = CsvDataset.new(params[:dataset])
-    @dataset.project = @project
-    @dataset.user = current_user
-    if @dataset.save
-      flash[:notice] = 'Dataset created successsfully'
-      redirect_to(:action => 'index')
-    else
-      render('new')
-    end
-  end
-
   def show
     @dataset = @project.csv_datasets.find(params[:id])
   end

@@ -18,19 +18,21 @@ TraitDB::Application.routes.draw do
   resources :otus
   resources :taxa
   resources :source_references
-  resources :csv_import_templates
+  resources :csv_import_configs
 
-  # import jobs are nested within csv datasets
-  resources :csv_datasets do
-    resources :import_jobs do
+  # wizard import interface after uploading
+  resources :import_jobs do
+    resources :after_upload, :controller => 'after_upload' do
       member do
-        get 'background_import'
-        post 'validate'
-        post 'parse'
-        post 'import'
-        post 'reset_job'
+        get 'download_problematic_rows'
+        get 'download_issues'
       end
     end
+  end
+
+  # read-only interface for browsing import jobs
+  resources :csv_datasets do
+    resources :import_jobs
   end
 
   # Non-resourceful routes
@@ -40,14 +42,6 @@ TraitDB::Application.routes.draw do
   match 'search(/:action)(.:format)' => "search"
   match 'about' => 'about#index'
   match 'upload(/:action)(/:id)(.:format)' => 'upload'
-  resources :import_jobs do
-    resources :after_upload, :controller => 'after_upload' do
-      member do
-        get 'download_problematic_rows'
-        get 'download_issues'
-      end
-    end
-  end
   match 'csv_templates(/:action)(/:id)(.:format)' => 'csv_template'
   root :to => "about#index"
 

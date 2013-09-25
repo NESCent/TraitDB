@@ -8,17 +8,6 @@
         <td><%= link_to(@dataset.csv_file_file_name, csv_dataset_path(@dataset)) %></td>
       </tr>
       <tr>
-        <th>Character Header Field bookends</th>
-        <td>
-          <ul>
-            <li><%= @import_job.quantitative_header_start.column_name %></li>
-            <li><%= @import_job.quantitative_header_end.column_name %></li>
-            <li><%= @import_job.qualitative_header_start.column_name %></li>
-            <li><%= @import_job.qualitative_header_end.column_name %></li>
-          </ul>
-        </td>
-      </tr>
-      <tr>
         <th>CSV Rows</th>
         <td><%= @import_job.csv_row_count.to_s %></td>
       </tr>
@@ -42,27 +31,6 @@
             <td><%= render(:partial => "import_jobs/issues", :locals => { :issues => @import_job.validation_issues}) %></td>
           </tr>
       <% end %>
-      <tr>
-        <th>Job Control</th>
-        <td><% case @import_job.state
-                 when 'new' %>
-              <%= link_to('Validate Headers', {:id => @import_job.id, :action => 'validate'}, {:class => 'btn btn-primary btn-small', :method => :post})%>
-            <% when 'validated' %>
-              <%= link_to('Parse Row Data', {:id => @import_job.id, :action => 'parse'}, {:class => 'btn btn-primary btn-small', :method => :post})%>
-            <% when 'parsed' %>
-              <%= link_to('Import Row Data', {:id => @import_job.id, :action => 'import'}, {:class => 'btn btn-primary btn-small', :method => :post})%>
-          <% when 'parse_warnings'
-               row_count = @import_job.csv_row_count
-               valid_count = @import_job.csv_row_count - @import_job.problem_rows.count
-                link_label = "Import #{valid_count} of #{row_count} rows"
-          %>
-              <%= link_to(link_label, {:id => @import_job.id, :action => 'import'}, {:class => 'btn btn-primary btn-small', :method => :post})%>
-              <%= link_to('Reset', {:id => @import_job.id, :action => 'reset_job'}, {:class => 'btn btn-warning btn-small', :method => :post})%>
-            <% else %>
-              <%= link_to('Reset', {:id => @import_job.id, :action => 'reset_job'}, {:class => 'btn btn-warning btn-small', :method => :post})%>
-            <% end %>
-         </td>
-      </tr>
       <tr>
         <th>Created</th>
         <td><%= @import_job.created_at %></td>

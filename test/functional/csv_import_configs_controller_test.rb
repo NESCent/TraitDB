@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class CsvImportTemplatesControllerTest < ActionController::TestCase
+class CsvImportConfigsControllerTest < ActionController::TestCase
   # test "the truth" do
   #   assert true
   # end

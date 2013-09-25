@@ -8,15 +8,15 @@ class ImportJob < ActiveRecord::Base
   has_many :parse_issues, :dependent => :destroy
   has_many :validation_issues, :dependent => :destroy
   has_many :headers, :dependent => :destroy
-  belongs_to :csv_import_template
+  belongs_to :csv_import_config
   has_one :project, :through => :csv_dataset
 
-  before_save :update_template_state
+  before_save :update_config_state
 
   attr_accessible :state, :csv_dataset
-  attr_accessible :csv_import_template_id
+  attr_accessible :csv_import_config_id
   
-  IMPORT_STATES = %w(new reading_headers read_headers headers_failed count_failed counted_rows selecting_template selected_template validating validated validation_failed parsing parsed parse_warnings importing imported import_failed)
+  IMPORT_STATES = %w(new reading_headers read_headers headers_failed count_failed counted_rows selecting_config selected_config validating validated validation_failed parsing parsed parse_warnings importing imported import_failed)
   validates_inclusion_of :state, :in => IMPORT_STATES
   def file_name
     csv_dataset.csv_file_file_name
@@ -54,8 +54,8 @@ class ImportJob < ActiveRecord::Base
     IMPORT_STATES.index(state) >= IMPORT_STATES.index('counted_rows')
   end
 
-  def selected_template?
-    IMPORT_STATES.index(state) >= IMPORT_STATES.index('selected_template')
+  def selected_config?
+    IMPORT_STATES.index(state) >= IMPORT_STATES.index('selected_config')
   end
 
   def validated_headers?
@@ -137,10 +137,10 @@ class ImportJob < ActiveRecord::Base
     save
   end
 
-  def update_template_state
+  def update_config_state
     if state =='counted_rows'
-      if csv_import_template
-        self.state = 'selected_template'
+      if csv_import_config
+        self.state = 'selected_config'
       end
     end
   end
@@ -148,7 +148,7 @@ class ImportJob < ActiveRecord::Base
 
   # designed to run async via delayed job
   def do_validation
-    return false unless state == 'selected_template'
+    return false unless state == 'selected_config'
     self.state = 'validating'
     if validate_dataset
       self.state = 'validated'
@@ -193,7 +193,7 @@ class ImportJob < ActiveRecord::Base
 
   def get_validator
     # validator needs a template
-    template = csv_import_template.get_import_template
+    template = csv_import_config.get_import_template
     validator = TraitDB::Validator.new(template, csv_dataset.csv_file.path)
     validator # returns the validator
   end
@@ -241,7 +241,7 @@ class ImportJob < ActiveRecord::Base
 
   def import_traits(traits)
     messages = []
-    template = csv_import_template.get_import_template
+    template = csv_import_config.get_import_template
     # trait definitions to be imported into database.
     traits[:continuous].each do |import_trait|
       setup_trait = lambda do |trait|
@@ -310,7 +310,7 @@ class ImportJob < ActiveRecord::Base
 
   def import_datasets(datasets)
     # datasets is an Array of Hashes
-    template = csv_import_template.get_import_template
+    template = csv_import_config.get_import_template
     import_datasets_messages = []
     import_datasets_messages << "Received #{datasets.size} datasets"
     @duplicates = []
@@ -445,7 +445,7 @@ class ImportJob < ActiveRecord::Base
   end
 
   def link_trait_groups
-    template = csv_import_template.get_import_template
+    template = csv_import_config.get_import_template
     template.trait_group_names.each do |trait_group_name|
       trait_group = TraitGroup.by_project(project).find_by_name(trait_group_name)
       next if trait_group.nil?

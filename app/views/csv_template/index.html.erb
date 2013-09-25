@@ -12,15 +12,15 @@
           <td><%= config.name %></td>
           <td>
             <div class="btn-group">
-            <% @project.trait_groups.each do |trait_group| %>
-              <%= link_to(trait_group.name, {:action => :info, :id => config.id, :trait_group_id => trait_group.id }, :class => 'btn btn-small') %>
+            <% config.trait_group_names.each do |trait_group_name| %>
+              <%= link_to(trait_group_name, {:action => :info, :id => config.id, :trait_group_name => trait_group_name }, :class => 'btn btn-small') %>
             <% end %>
             </div>
           </td>
           <td>
             <div class="btn-group">
-            <% @project.trait_groups.each do |trait_group| %>
-              <%= link_to(raw("<i class='icon-download-alt icon-white'></i>#{trait_group.name}"), {:action => :download, :format => :csv, :id => config.id, :trait_group_id => trait_group.id}, :class => 'btn btn-small btn-primary') %>
+              <% config.trait_group_names.each do |trait_group_name| %>
+              <%= link_to(raw("<i class='icon-download-alt icon-white'></i>#{trait_group_name}"), {:action => :download, :format => :csv, :id => config.id, :trait_group_name => trait_group_name}, :class => 'btn btn-small btn-primary') %>
             <% end %>
             </div>
           </td>

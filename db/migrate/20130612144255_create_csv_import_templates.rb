@@ -1,7 +1,7 @@
 class CreateCsvImportTemplates < ActiveRecord::Migration
   def up
     create_table :csv_import_templates do |t|
-      t.attachment :template_file
+      t.attachment :config_file
       t.references :project
       t.references :user
       t.timestamps

@@ -4,7 +4,7 @@ class AfterUploadController < Wicked::WizardController
   before_filter :verify_is_admin
   before_filter :set_project
 
-  steps :read_headers, :count_rows, :select_template, :validate_headers, :parse_rows, :import_rows, :imported
+  steps :read_headers, :count_rows, :select_config, :validate_headers, :parse_rows, :import_rows, :imported
 
   def index
     show
@@ -91,8 +91,8 @@ class AfterUploadController < Wicked::WizardController
         else
           @import_job.count_rows
         end
-      when :select_template
-        if @import_job.csv_import_template
+      when :select_config
+        if @import_job.csv_import_config
           skip_step
         end
       when :validate_headers

@@ -7,7 +7,7 @@ class Project < ActiveRecord::Base
   has_many :categorical_traits, :dependent => :destroy
   has_many :continuous_traits, :dependent => :destroy
   has_many :csv_datasets, :dependent => :destroy
-  has_many :csv_import_templates, :dependent => :destroy
+  has_many :csv_import_configs, :dependent => :destroy
   has_and_belongs_to_many :iczn_groups # will be important for building search form - to know what groups are in use
   has_many :otus, :dependent => :destroy
   has_many :otu_metadata_fields, :dependent => :destroy

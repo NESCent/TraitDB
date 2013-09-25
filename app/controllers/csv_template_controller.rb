@@ -4,22 +4,22 @@ class CsvTemplateController < ApplicationController
   before_filter :set_project
 
   def index
-    @templates = @project.csv_import_templates.order('created_at DESC')
+    @configs = @project.csv_import_configs.order('created_at DESC')
   end
 
   def info
-    @template = @project.csv_import_templates.find(params[:id])
+    @config = @project.csv_import_configs.find(params[:id])
     @group = @project.trait_groups.find(params[:trait_group_id])
-    @info = @template.generate_info(@group.id)
+    @info = @config.generate_info(@group.id)
   end
 
   def download
-    template = @project.csv_import_templates.find(params[:id])
+    config = @project.csv_import_configs.find(params[:id])
     group = @project.trait_groups.find(params[:trait_group_id])
-    @csv_data = template.generate_csv_template(group.id)
+    @csv_data = config.generate_csv_template(group.id)
     respond_to do |format|
       format.csv do
-        filename = "#{template.name}-#{group.name}-upload_template.csv"
+        filename = "#{config.name}-#{group.name}-upload_template.csv"
         if request.env['HTTP_USER_AGENT'] =~ /msie/i
           headers['Pragma'] = 'public'
           headers["Content-type"] = "text/plain"

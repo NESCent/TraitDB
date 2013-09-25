@@ -15,30 +15,30 @@ module TraitDB
     
     # template name
     def name
-      @template['template_name']
+      @config['template_name']
     end
     
     # taxonomy
     def taxonomy_columns # a hash that maps constants to the CSV column names, reverse it to get a map the other way
-      @template['taxonomy_columns']
+      @config['taxonomy_columns']
     end
 
     # metadata
     def metadata_columns # a hash that maps constants to the CSV column names, reverse it to get a map the other way
-      @template['metadata_columns']
+      @config['metadata_columns']
     end
 
     # options
     def trait_options # a hash that includes things like source_prefix, require_source, and notes_prefix
-      @template['trait_options']
+      @config['trait_options']
     end
 
     def trait_sets?
-      @template['trait_sets'].nil? ? false : true
+      @config['trait_sets'].nil? ? false : true
     end
 
     # trait sets
-    def trait_set(path=[], tree=@template)
+    def trait_set(path=[], tree=@config)
       # path will be a list of names to follow
       # tree must be a hash
       if path.length == 0
@@ -49,26 +49,26 @@ module TraitDB
       end
     end
 
-    def trait_set_names(path=[], tree=@template)
+    def trait_set_names(path=[], tree=@config)
       trait_set(path, tree)['trait_sets'].map{|x| x['name']}
     end
 
-    def trait_set_continuous_traits(path=[], tree=@template)
+    def trait_set_continuous_traits(path=[], tree=@config)
       trait_set(path, tree)['continuous_trait_columns']
     end
 
-    def trait_set_categorical_traits(path=[], tree=@template)
+    def trait_set_categorical_traits(path=[], tree=@config)
       trait_set(path, tree)['categorical_trait_columns']
     end
 
     # returns array of path components
     def trait_set_qualified_continuous_trait_names
-      trait_set_qualified_trait_names([], @template, 'continuous_trait_columns')
+      trait_set_qualified_trait_names([], @config, 'continuous_trait_columns')
     end
 
     # returns array of path components
     def trait_set_qualified_categorical_trait_names
-      trait_set_qualified_trait_names([], @template, 'categorical_trait_columns')
+      trait_set_qualified_trait_names([], @config, 'categorical_trait_columns')
     end
 
     def trait_path_from_column(column_name)
@@ -81,7 +81,7 @@ module TraitDB
         # get name array paths, and join with delimiter
         trait_set_qualified_categorical_trait_names.map{|n| n.join(delimiter) }
       else
-        @template['categorical_trait_columns'].map{|x| x['name'] }
+        @config['categorical_trait_columns'].map{|x| x['name'] }
       end
     end
 
@@ -90,7 +90,7 @@ module TraitDB
         # get name array paths, and join with delimiter
         trait_set_qualified_continuous_trait_names.map{|n| n.join(delimiter) }
       else
-        @template['continuous_trait_columns'].map{|x| x['name'] }
+        @config['continuous_trait_columns'].map{|x| x['name'] }
       end
     end
     
@@ -102,7 +102,7 @@ module TraitDB
         end
         names
       else
-        @template['categorical_trait_columns'].select{|x| x['groups'].include? group_name}.map{|x| x['name']}
+        @config['categorical_trait_columns'].select{|x| x['groups'].include? group_name}.map{|x| x['name']}
       end
     end
     
@@ -114,7 +114,7 @@ module TraitDB
         end
         names
       else
-        @template['continuous_trait_columns'].select{|x| x['groups'].include? group_name}.map{|x| x['name']}
+        @config['continuous_trait_columns'].select{|x| x['groups'].include? group_name}.map{|x| x['name']}
       end
     end
 
@@ -125,15 +125,15 @@ module TraitDB
     
     # groups
     def trait_group_names
-      @template['trait_groups'].map{|x| x['name']}
+      @config['trait_groups'].map{|x| x['name']}
     end
 
     def trait_group_rank(group_name)
-      @template['trait_groups'].find{|x| x['name'] == group_name}['taxonomic_rank']
+      @config['trait_groups'].find{|x| x['name'] == group_name}['taxonomic_rank']
     end
 
     def trait_group_taxon_name(group_name)
-      @template['trait_groups'].find{|x| x['name'] == group_name}['taxon_name']
+      @config['trait_groups'].find{|x| x['name'] == group_name}['taxon_name']
     end
 
     def groups_for_categorical_trait(trait_name)
@@ -169,7 +169,7 @@ module TraitDB
         t = trait_set_continuous_traits(path[0..-2])
         trait_name = path[-1] #reassigning the name
       else
-        t = @template['continuous_trait_columns']
+        t = @config['continuous_trait_columns']
       end
       t.find{|x| x['name'] == trait_name}
     end
@@ -180,7 +180,7 @@ module TraitDB
         t = trait_set_categorical_traits(path[0..-2])
         trait_name = path[-1] #reassigning the name
       else
-        t = @template['categorical_trait_columns']
+        t = @config['categorical_trait_columns']
       end
       t.find{|x| x['name'] == trait_name}
     end
@@ -214,10 +214,10 @@ module TraitDB
 
     def read_template
       root_object = YAML.load_file(@template_file)
-      @template = root_object['traitdb_spreadsheet_template']
-      @template['continuous_trait_columns'] ||= []
-      @template['categorical_trait_columns'] ||= []
-      @template['trait_groups'] ||= []
+      @config = root_object['traitdb_spreadsheet_template']
+      @config['continuous_trait_columns'] ||= []
+      @config['categorical_trait_columns'] ||= []
+      @config['trait_groups'] ||= []
     end
     
   end

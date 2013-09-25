@@ -18,7 +18,7 @@ TraitDB::Application.routes.draw do
   resources :otus
   resources :taxa
   resources :source_references
-  resources :csv_import_templates
+  resources :csv_import_configs
 
   # wizard import interface after uploading
   resources :import_jobs do

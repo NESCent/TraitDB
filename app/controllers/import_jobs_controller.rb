@@ -12,22 +12,6 @@ class ImportJobsController < ApplicationController
     @import_jobs = [@dataset.import_job]
   end
 
-  def new
-    @import_job = ImportJob.new(:csv_dataset => @dataset)
-  end
-
-  def create
-    @import_job = ImportJob.new(params[:import_job])
-    @import_job.csv_dataset = @dataset
-    if @import_job.save
-      flash[:notice] = 'Import Job created successsfully'
-      # start the import
-      redirect_to(csv_dataset_import_jobs_path(@dataset))
-    else
-      render('new')
-    end
-  end
-
   def show
     @import_job = ImportJob.find(params[:id])
   end
@@ -51,40 +35,6 @@ class ImportJobsController < ApplicationController
     import_job.destroy
     flash[:notice] = 'Job destroyed successfully'
     redirect_to(csv_dataset_import_jobs_path(@dataset))
-  end
-
-  # uses delayed job
-  def background_import
-    import_job = ImportJob.find(params[:id])
-    import_job.delay.do_import
-    flash[:notice] = 'Import started'
-    redirect_to(csv_dataset_import_job_path(@dataset, import_job))
-  end
-
-  # Does not use delayed job
-
-  def validate
-    import_job = ImportJob.find(params[:id])
-    import_job.do_validation
-    redirect_to(csv_dataset_import_job_path(@dataset, import_job))
-  end
-
-  def parse
-    import_job = ImportJob.find(params[:id])
-    import_job.do_parse
-    redirect_to(csv_dataset_import_job_path(@dataset, import_job))
-  end
-
-  def import
-    import_job = ImportJob.find(params[:id])
-    import_job.do_import
-    redirect_to(csv_dataset_import_job_path(@dataset, import_job))
-  end
-
-  def reset_job
-    import_job = ImportJob.find(params[:id])
-    import_job.reset
-    redirect_to(csv_dataset_import_job_path(@dataset, import_job))
   end
 
   private

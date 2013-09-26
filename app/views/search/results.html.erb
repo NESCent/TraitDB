@@ -106,7 +106,7 @@
             <td>
               <% source = @results[:sources].find{|x| x[:id] == source_id}
                  if source
-                   source_name = source[:name]
+                   source_name = source[:name] || ''
                    source_link = source_name if source_name.uri?
                    source_link ||= source_name.url_for_doi if source_name.doi?
                    if source_link %>

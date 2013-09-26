@@ -20,7 +20,6 @@ class SearchController < ApplicationController
     render :json => @taxa_list
   end
 
-  # TODO: send trait set ids as params and filter on them!
   def list_categorical_trait_names # needs taxon_ids and optionally trait_set_id
     @categorical_trait_names = []
     @project.taxa.where(:id => params[:taxon_ids]).each do |taxon|
@@ -116,7 +115,7 @@ class SearchController < ApplicationController
           :value_matches => {} # Hash of continuous_trait_value_id => true|false
         }
         result_arrays[:values] << { value_id => continuous_trait_value.formatted_value }
-        if include_references
+        if include_references && continuous_trait_value.source_reference
           source_id = continuous_trait_value.source_reference.id
           result_arrays[:sources][value_id] = source_id
         end
@@ -157,7 +156,7 @@ class SearchController < ApplicationController
           :value_matches => {} # Hash of categorical_trait_value_id => true|false
         }
         result_arrays[:values] << { value_id => categorical_trait_value.formatted_value }
-        if include_references
+        if include_references && categorical_trait_value.source_reference
           source_id = categorical_trait_value.source_reference.id
           result_arrays[:sources][value_id] = source_id
         end

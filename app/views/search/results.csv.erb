@@ -35,7 +35,8 @@
           categorical_trait_values[:values].each do |value_hash|
             value_hash.each do |value_id, formatted_value|
               values << formatted_value
-              source_name = @results[:sources].find{|x| x[:id] == categorical_trait_values[:sources][value_id]}[:name]
+              source = @results[:sources].find{|x| x[:id] == categorical_trait_values[:sources][value_id]}
+              source_name = source[:name] if source
               sources << source_name unless source_name.in? sources
             end
           end
@@ -54,7 +55,8 @@
           continuous_trait_values[:values].each do |value_hash|
             value_hash.each do |value_id, formatted_value|
               values << formatted_value
-              source_name = @results[:sources].find{|x| x[:id] == continuous_trait_values[:sources][value_id]}[:name]
+              source = @results[:sources].find{|x| x[:id] == continuous_trait_values[:sources][value_id]}
+              source_name = source[:name] if source
               sources << source_name unless source_name.in? sources
             end
           end

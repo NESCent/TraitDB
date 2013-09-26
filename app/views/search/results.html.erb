@@ -48,7 +48,7 @@
                         source_ids << source_reference_id unless source_reference_id.in? source_ids
                         source_number = source_ids.index(source_reference_id) + 1
                       %>
-                        [<%= link_to("#{source_number}", "#source_#{source_number}") %>]
+                        <sup><%= link_to("#{source_number}", "#source_#{source_number}") %></sup>
                       <% end %>
                       <% end %>
                   <% end %>
@@ -70,7 +70,7 @@
                          source_ids << source_reference_id unless source_reference_id.in? source_ids
                          source_number = source_ids.index(source_reference_id) + 1
                     %>
-                      [<%= link_to("#{source_number}", "#source_#{source_number}") %>]
+                      <sup><%= link_to("#{source_number}", "#source_#{source_number}") %></sup>
                     <% end %>
                   <% end %>
                 <% end %>

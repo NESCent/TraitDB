@@ -104,13 +104,16 @@
           <tr id="<%= "source_#{index + 1}" %>">
             <td><%= index + 1 %></td>
             <td>
-              <% source_name = @results[:sources].find{|x| x[:id] == source_id}[:name]
-                 source_link = source_name if source_name.uri?
-                 source_link ||= source_name.url_for_doi if source_name.doi?
-                 if source_link %>
-                   <%= link_to(source_name, source_link, :target => '_blank') %>
-                <% else %>
-                  <%= source_name %>
+              <% source = @results[:sources].find{|x| x[:id] == source_id}
+                 if source
+                   source_name = source[:name]
+                   source_link = source_name if source_name.uri?
+                   source_link ||= source_name.url_for_doi if source_name.doi?
+                   if source_link %>
+                     <%= link_to(source_name, source_link, :target => '_blank') %>
+                   <% else %>
+                     <%= source_name %>
+                  <% end %>
                 <% end %>
             </td>
           </tr>

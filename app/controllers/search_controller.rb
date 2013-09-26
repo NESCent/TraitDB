@@ -1,3 +1,4 @@
+require 'doi_detector'
 class SearchController < ApplicationController
   before_filter :set_project
   OPERATORS = { :or => 'or', :and => 'and' }

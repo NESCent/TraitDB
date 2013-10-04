@@ -41,11 +41,17 @@ module TraitDB
     def trait_set(path=[], tree=@config)
       # path will be a list of names to follow
       # tree must be a hash
-      if path.length == 0
+      if tree.nil?
+        # dead end
+        return {}
+      elsif path.length == 0
+        # Terminal
         tree
       else
         # slice off the first element in the path and return the subtree
-        trait_set(path[1..-1], tree['trait_sets'].find{|x| x['name'] == path[0]})
+        sliced_path = path[1..-1]
+        subtree = tree['trait_sets'].find{|x| x && x['name'] == path[0]}
+        trait_set(sliced_path,subtree)
       end
     end
 
@@ -98,7 +104,10 @@ module TraitDB
       if trait_sets?
         names = []
         trait_set_qualified_categorical_trait_names.each do |qname|
-          names << qname.join(delimiter) if categorical(qname.join(delimiter))['groups'].include? group_name
+          trait = categorical(qname.join(delimiter))
+          if trait
+            names << qname.join(delimiter) if trait['groups'].include? group_name
+          end
         end
         names
       else
@@ -110,7 +119,11 @@ module TraitDB
       if trait_sets?
         names = []
         trait_set_qualified_continuous_trait_names.each do |qname|
-          names << qname.join(delimiter) if continuous(qname.join(delimiter))['groups'].include? group_name
+          trait = continuous(qname.join(delimiter))
+          if trait
+            names << qname.join(delimiter) if trait['groups'].include? group_name
+          end
+
         end
         names
       else
@@ -129,11 +142,11 @@ module TraitDB
     end
 
     def trait_group_rank(group_name)
-      @config['trait_groups'].find{|x| x['name'] == group_name}['taxonomic_rank']
+      @config['trait_groups'].find{|x| x && x['name'] == group_name}['taxonomic_rank']
     end
 
     def trait_group_taxon_name(group_name)
-      @config['trait_groups'].find{|x| x['name'] == group_name}['taxon_name']
+      @config['trait_groups'].find{|x| x && x['name'] == group_name}['taxon_name']
     end
 
     def groups_for_categorical_trait(trait_name)
@@ -171,7 +184,7 @@ module TraitDB
       else
         t = @config['continuous_trait_columns']
       end
-      t.find{|x| x['name'] == trait_name}
+      t && t.find{|x| x && x['name'] == trait_name}
     end
 
     def categorical(trait_name)
@@ -182,7 +195,7 @@ module TraitDB
       else
         t = @config['categorical_trait_columns']
       end
-      t.find{|x| x['name'] == trait_name}
+      t && t.find{|x| x && x['name'] == trait_name}
     end
 
     # returns arrays of path components

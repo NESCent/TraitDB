@@ -104,7 +104,10 @@ module TraitDB
       if trait_sets?
         names = []
         trait_set_qualified_categorical_trait_names.each do |qname|
-          names << qname.join(delimiter) if categorical(qname.join(delimiter))['groups'].include? group_name
+          trait = categorical(qname.join(delimiter))
+          if trait
+            names << qname.join(delimiter) if trait['groups'].include? group_name
+          end
         end
         names
       else
@@ -116,7 +119,11 @@ module TraitDB
       if trait_sets?
         names = []
         trait_set_qualified_continuous_trait_names.each do |qname|
-          names << qname.join(delimiter) if continuous(qname.join(delimiter))['groups'].include? group_name
+          trait = continuous(qname.join(delimiter))
+          if trait
+            names << qname.join(delimiter) if trait['groups'].include? group_name
+          end
+
         end
         names
       else

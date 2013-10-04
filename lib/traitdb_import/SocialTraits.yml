@@ -6,6 +6,7 @@ traitdb_spreadsheet_template:
   taxonomy_columns: # keys are the local to the app.  Values are literals in the CSV
     htg: Taxa Group
     family: Family
+    subfamily: Subfamily
     genus: Genus
     species: Species
   # Metadata columns are optional, could refactor into two groups
@@ -17,20 +18,31 @@ traitdb_spreadsheet_template:
     study_locality: Study Locality
     latitude: Latitude
     longitude: Longitude
-    study_start_date: Start
-    study_end_date: End
+    study_start_date: Study Start Date
+    study_end_date: Study End Date
     notes_comments: Notes
+    reference_1: Primary Reference
+    reference_2: Secondary Reference
+    reference_3: Tertiary Reference
   trait_groups: # these define a relationship of a taxonomy to a set of traits.  They can only be applied after data is imported
     -
       name: Birds
       taxonomic_rank: htg
       taxon_name: Birds
+    -
+      name: Bees
+      taxonomic_rank: htg
+      taxon_name: Bees
+    -
+      name: Mammals
+      taxonomic_rank: htg
+      taxon_name: Mammals
   trait_options:
-    require_source: false # source rules for formatting?
+    require_source: false
     set_delimiter: '-'
   trait_sets:
     -
-      name: Demographic Data
+      name: Group Structure
       depth: 2
       trait_sets:
         -
@@ -40,60 +52,1152 @@ traitdb_spreadsheet_template:
             -
               name: Mean
               format: float
-              groups: [Birds]
+              groups: [Birds Bees Mammals]
             -
               name: SE
               format: float
-              groups: [Birds]
+              groups: [Birds Bees Mammals]
             -
               name: SD
               format: float
-              groups: [Birds]
+              groups: [Birds Bees Mammals]
             -
               name: Min
               format: float
-              groups: [Birds]
+              groups: [Birds Bees Mammals]
             -
               name: Max
               format: float
-              groups: [Birds]
+              groups: [Birds Bees Mammals]
             -
               name: Median
               format: float
-              groups: [Birds]
+              groups: [Birds Bees Mammals]
             -
               name: N
               format: float
-              groups: [Birds]
+              groups: [Birds Bees Mammals]
         -
-          name: Male Reproductives
+          name: Number of females
           depth: 1
           continuous_trait_columns:
             -
               name: Mean
               format: float
-              groups: [Birds]
+              groups: [Birds Bees Mammals]
             -
               name: SE
               format: float
-              groups: [Birds]
+              groups: [Birds Bees Mammals]
             -
               name: SD
               format: float
-              groups: [Birds]
+              groups: [Birds Bees Mammals]
             -
               name: Min
               format: float
-              groups: [Birds]
+              groups: [Birds Bees Mammals]
             -
               name: Max
               format: float
-              groups: [Birds]
+              groups: [Birds Bees Mammals]
             -
               name: Median
               format: float
-              groups: [Birds]
+              groups: [Birds Bees Mammals]
             -
               name: N
               format: float
-              groups: [Birds]
+              groups: [Birds Bees Mammals]
+        -
+          name: Number of males
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+    -
+      name: Brood or worker
+      depth: 2
+      trait_sets:
+        -
+          name: Sex ratio (fraction of males)
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Frac. of males
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+    -
+      name: Number of reproductives
+      depth: 2
+      trait_sets:
+        -
+          name: Female reproductives
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: Male reproductives
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: Female non-reproductives
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: Male non-reproductives
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: Alloparents
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: Defenders
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+    -
+      name: Relatedness
+      depth: 2
+      trait_sets:
+        -
+          name: Colony/Group
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: M Repro-Worker
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: M Repro-M Repro
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: F Repro-Worker
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: F Repro-F Repro
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: Worker-worker
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: M Rep- F Repro
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+    -
+      name: Queen/Breeder Reproduction (production of S or NS)
+      depth: 2
+      trait_sets:
+        -
+          name: Sexual (Bout)
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: Non-Sexual (Bout)
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: Sexual (Season/Year)
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: Non-Sexual (Season/Year)
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: Sexual (Lifetime)
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: Non-Sexual (Lifetime)
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+    -
+      name: Worker Reproduction (production of S or NS)
+      depth: 2
+      trait_sets:
+        -
+          name: Sexual (Bout)
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: Non-Sexual (Bout)
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: Sexual (Season/Year)
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: Non-Sexual (Season/Year)
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: Sexual (Lifetime)
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: Non-Sexual (Lifetime)
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+    -
+      name: Longevity
+      depth: 2
+      trait_sets:
+        -
+          name: Reproductive
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Female Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Female Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Male Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Male
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Unknown
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: Non-reproductive
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Female Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Female Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Male Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Male
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Unknown
+              format: float
+              groups: [Birds Bees Mammals]
+    -
+      name: Age at first reproduction (years)
+      depth: 2
+      trait_sets:
+        -
+          name: All
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Male
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Female
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Unknown
+              format: float
+              groups: [Birds Bees Mammals]
+    -
+      name: Body Mass (grams)
+      depth: 2
+      trait_sets:
+        -
+          name: Reproductive Female
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: Reproductive Male
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]
+        -
+          name: Worker or non-reproductive
+          depth: 1
+          continuous_trait_columns:
+            -
+              name: Mean
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SE
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: SD
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Min
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Max
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: Median
+              format: float
+              groups: [Birds Bees Mammals]
+            -
+              name: N
+              format: float
+              groups: [Birds Bees Mammals]

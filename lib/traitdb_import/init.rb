@@ -16,7 +16,7 @@ require 'pp'
 import_template = TraitDB::ImportTemplate.new(ARGV[0])
 PP.pp(import_template.categorical_trait_column_names)
 
-groups = import_template.groups_for_continuous_trait('Demographic Data-Group Size-Mdin')
+groups = import_template.groups_for_continuous_trait('Demographic Data-Group Size-Min')
 
 PP.pp(groups)
 PP.pp(import_template.continuous_trait_column_names)

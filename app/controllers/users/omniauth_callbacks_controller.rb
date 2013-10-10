@@ -1,4 +1,5 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
+  skip_before_filter  :verify_authenticity_token
   def open_id
     @user = User.find_for_open_id(request.env["omniauth.auth"], current_user)
     if @user.persisted?

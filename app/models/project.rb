@@ -15,5 +15,5 @@ class Project < ActiveRecord::Base
   has_many :trait_groups, :dependent => :destroy
   has_many :trait_sets, :dependent => :destroy
 
-  scope :sorted, order('name ASC')
+  scope :sorted, -> { order('name ASC') }
 end

@@ -9,7 +9,7 @@ module TraitCommon
     has_and_belongs_to_many :trait_groups
     belongs_to :trait_set
     scope :by_project, lambda{|p| where(:project_id => p) unless p.nil?}
-    scope :sorted, order('name ASC')
+    scope :sorted, -> { order('name ASC') }
   end
 
   def dataset_name

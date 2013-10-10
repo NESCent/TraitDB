@@ -3,5 +3,5 @@ class CategoricalTraitCategory < ActiveRecord::Base
   has_many :categorical_trait_values
   has_many :otus, :through => :categorical_trait_values
   belongs_to :categorical_trait
-  scope :sorted, order('name ASC')
+  scope :sorted, -> { order('name ASC') }
 end

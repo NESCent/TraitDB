@@ -1,5 +1,6 @@
 class CsvDataset < ActiveRecord::Base
   attr_accessible :csv_file
+  attr_accessible :encoding
   has_attached_file :csv_file
   belongs_to :project
   belongs_to :user

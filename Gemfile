@@ -5,6 +5,12 @@ gem 'rails', '4.0.0'
 # Paperclip adds file upload support to ActiveRecord models
 gem "paperclip", "~> 3.4.1"
 
+# Rails 4 removed attr_accessible and attr_protected from your models.
+# Per https://github.com/collectiveidea/delayed_job/blob/master/README.md
+# If you are using the protected_attributes gem, it must appear before delayed_job in your gemfile.
+
+gem 'protected_attributes'
+
 # delayed_job allows background asynchronous jobs
 # it used to import uploaded files
 gem "delayed_job", "~> 4.0.0"
@@ -25,9 +31,6 @@ gem 'wicked'
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 gem 'mysql2'
-
-# Rails 4 removed attr_accessible and attr_protected from your models.
-gem 'protected_attributes'
 
 # Formerly in the assets group
 gem 'sass-rails',   '~> 4.0.0'

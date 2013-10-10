@@ -7,12 +7,12 @@ gem "paperclip", "~> 3.4.1"
 
 # delayed_job allows background asynchronous jobs
 # it used to import uploaded files
-gem "delayed_job", "~> 4.0.0.beta2"
-gem "delayed_job_active_record", "~> 4.0.0.beta3"
+gem "delayed_job", "~> 4.0.0"
+gem "delayed_job_active_record", "~> 4.0.0"
 gem "daemons"
 
 # devise for user accounts
-gem 'devise', '3.0.0.rc'
+gem 'devise', '3.1.1'
 
 # OmniAuth for open id in devise
 gem 'omniauth'

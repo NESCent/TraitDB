@@ -27,6 +27,8 @@
           <li class="<%= 'active' if params[:controller] == 'search' -%>"><%= link_to("Search", :controller => '/search') %></li>
           <% if user_signed_in? %>
             <li class="<%= 'active' if params[:controller] == 'upload' -%>"><%= link_to("Upload", :controller => '/upload') %></li>
+          <% end %>
+          <% if current_user.admin? %>
             <li class="dropdown">
               <a class="dropdown-toggle" href="#" data-toggle="dropdown">Admin<b class="caret"></b></a>
               <ul class="dropdown-menu">
@@ -35,7 +37,8 @@
                 <li><%= link_to("Datasets", csv_datasets_path) %></li>
               </ul>
             </li>
-
+          <% end %>
+          <% if user_signed_in? %>
             <li class="dropdown">
                 <a class="dropdown-toggle" href="#" data-toggle="dropdown">Data<b class="caret"></b></a>
                 <ul class="dropdown-menu">
@@ -45,7 +48,7 @@
                   <li><%=  link_to("Categorical Traits", :controller => '/categorical_traits') %></li>
                   <li><%=  link_to("Continuous Traits", :controller => '/continuous_traits') %></li>
                 </ul>
-              </li>
+            </li>
             <li class="dropdown">
               <a class="dropdown-toggle" href="#" data-toggle="dropdown"><%= current_user.email %> <b class="caret"></b></a>
               <ul class="dropdown-menu">

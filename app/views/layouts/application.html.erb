@@ -16,7 +16,7 @@
           <li class="dropdown">
             <a class="dropdown-toggle" href="#" data-toggle="dropdown"> Project: <%= @project.name if @project %><b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <% @projects.each do |p| %>
+              <% @selectable_projects.each do |p| %>
                 <li><%= link_to(p.name, {:controller => '/projects', :action => 'selected_project', :id => p.id}) %></li>
               <% end %>
             </ul>

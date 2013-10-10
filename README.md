@@ -4,7 +4,7 @@ TraitDB is a Ruby on Rails web application for storing and searching trait data.
 
 ## Installation
 
-TraitDB is a Rails 3.2 application.  It requires [ruby](http://ruby-lang.org) and [rubygems](http://rubygems.org) to run.  Other dependencies are specified in the Gemfile.  To get up and running with the development environment, you will need MySQL installed.  TraitDB supports any database compatible with Rails 3.2, but MySQL is configured by default
+TraitDB is a Rails 4 application.  It requires [ruby](http://ruby-lang.org) and [rubygems](http://rubygems.org) to run.  Other dependencies are specified in the Gemfile.  To get up and running with the development environment, you will need MySQL installed.  TraitDB supports any database compatible with Rails 4, but MySQL is configured by default
 
 1. Clone the repository
 
@@ -22,7 +22,35 @@ TraitDB is a Rails 3.2 application.  It requires [ruby](http://ruby-lang.org) an
 
 ## Usage
 
-TraitDB provides an interface to upload and import CSV datasets.  The import is not complete, but files can be uploaded and Import Jobs can be created to process them.
+### Access
+
+Data in TraitDB is publicly searchable.  Authenticating with OpenID is a prerequisite for uploading data.  User accounts are created in the database on first login with OpenID.
+
+Administrator users can create projects and manage upload configurations.  By default, new user accounts are not administrators.  After installing TraitDB initially, you'll need to upgrade your user account to an admin in order to create a project.:
+
+    ```
+    rake traitdb:upgrade_admin[email@domain.com]
+    ````
+    
+The upgrade_admin task only works for existing user accounts, so you will need to authenticate with OpenID first to create that account.
+
+### Upload
+
+TraitDB accepts data uploads in CSV format, with a specific focus on data validation and organization.  In order to upload data into a project, you must write at least one import configuration file in YAML format. This configuration file will contain the project-specific data for your spreadsheets, as well as allowable values and rules for data relationships and which columns to import, ignore, or convert.
+
+Examples for the configuration files are in the [lib/traitdb_import](lib/traitdb_import) directory.
+
+Generally, the CSV files are required to have the following general characteristics
+
+# The first row contains column header names
+## The column names include Taxonomic ranks (e.g. Order, Genus, Species), names of traits, and column names for metadata.
+# Each data row includes trait data and metadata for **one** Operational Taxonomic Unit (OTU)
+# Data for a single trait (column) may be either categorical (One or more string tokens separated by a delimeter) or continuous (floating point values)
+# Source / Reference information for a trait may be in an associated column
+
+As an admin user, you can upload and manage Import Configs for a project.  Authenticated users will be able to choose an Import Config when they upload data to the project.
+
+At the upload stage, the user can get information about the Import Config, or download a template CSV file that conforms to it.
 
 ## License
 

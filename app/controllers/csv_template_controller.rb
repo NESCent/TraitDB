@@ -1,6 +1,5 @@
 class CsvTemplateController < ApplicationController
   before_filter :authenticate_user!
-  before_filter :verify_is_admin
   before_filter :set_project
 
   def index

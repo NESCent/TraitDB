@@ -2,7 +2,6 @@
 
 class UploadController < ApplicationController
   before_filter :authenticate_user!
-  before_filter :verify_is_admin
   before_filter :set_project # populates @project and makes sure project has been selected
 
   def index

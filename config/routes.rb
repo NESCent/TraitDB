@@ -41,7 +41,7 @@ TraitDB::Application.routes.draw do
 
   match 'search(/:action)(.:format)' => "search", :via => [:get, :post]
   get 'about' => 'about#index'
-  get 'upload(/:action)(/:id)(.:format)' => 'upload'
+  match 'upload(/:action)(/:id)(.:format)' => 'upload', :via => [:get, :post]
   get 'csv_templates(/:action)(/:id)(.:format)' => 'csv_template'
   root :to => "about#index"
 

@@ -28,10 +28,8 @@ Data in TraitDB is publicly searchable.  Authenticating with OpenID is a prerequ
 
 Administrator users can create projects and manage upload configurations.  By default, new user accounts are not administrators.  After installing TraitDB initially, you'll need to upgrade your user account to an admin in order to create a project.:
 
-    ```
     rake traitdb:upgrade_admin[email@domain.com]
-    ````
-    
+
 The upgrade_admin task only works for existing user accounts, so you will need to authenticate with OpenID first to create that account.
 
 ### Upload
@@ -42,11 +40,11 @@ Examples for the configuration files are in the [lib/traitdb_import](lib/traitdb
 
 Generally, the CSV files are required to have the following general characteristics
 
-# The first row contains column header names
-## The column names include Taxonomic ranks (e.g. Order, Genus, Species), names of traits, and column names for metadata.
-# Each data row includes trait data and metadata for **one** Operational Taxonomic Unit (OTU)
-# Data for a single trait (column) may be either categorical (One or more string tokens separated by a delimeter) or continuous (floating point values)
-# Source / Reference information for a trait may be in an associated column
+1. The first row contains column header names
+    The column names include Taxonomic ranks (e.g. Order, Genus, Species), names of traits, and column names for metadata.
+2. Each data row includes trait data and metadata for **one** Operational Taxonomic Unit (OTU)
+3. Data for a single trait (column) may be either categorical (One or more string tokens separated by a delimeter) or continuous (floating point values)
+4. Source / Reference information for a trait may be in an associated column
 
 As an admin user, you can upload and manage Import Configs for a project.  Authenticated users will be able to choose an Import Config when they upload data to the project.
 

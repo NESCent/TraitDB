@@ -12,112 +12,116 @@
     </div>
     <div class="row-fluid">&nbsp;</div>
     <div class="row-fluid">
-      <table class="table table-condensed table-bordered table-striped table-hover ">
-        <tr>
-          <th>OTU</th>
-          <% @results[:columns][:categorical_traits].each do |trait| %>
-            <th><%= trait[:name] %></th>
-            <% if @results[:columns][:categorical_trait_notes_ids].include? trait[:id] %>
-              <th>Notes: <%= trait[:name] %></th>
+      <table id="results" class="table table-condensed table-bordered table-striped table-hover tablesorter">
+        <thead>
+          <tr>
+            <th>OTU</th>
+            <% @results[:columns][:categorical_traits].each do |trait| %>
+              <th><%= trait[:name] %></th>
+              <% if @results[:columns][:categorical_trait_notes_ids].include? trait[:id] %>
+                <th>Notes: <%= trait[:name] %></th>
+              <% end %>
             <% end %>
-          <% end %>
-          <% @results[:columns][:continuous_traits].each do |trait| %>
-            <th><%= trait[:name] %></th>
-            <% if @results[:columns][:continuous_trait_notes_ids].include? trait[:id] %>
-              <th>Notes: <%= trait[:name] %></th>
+            <% @results[:columns][:continuous_traits].each do |trait| %>
+              <th><%= trait[:name] %></th>
+              <% if @results[:columns][:continuous_trait_notes_ids].include? trait[:id] %>
+                <th>Notes: <%= trait[:name] %></th>
+              <% end %>
             <% end %>
-          <% end %>
-          <% @results[:columns][:otu_metadata_field_names].each do |metadata_field| %>
-            <th><%= metadata_field %></th>
-          <% end %>
-        </tr>
-        <% source_ids = [] %>
-        <% @results[:rows].each do |otu_id, row_hash| %>
-        <tr>
-          <td><%= row_hash[:name] %>
-          </td>
-            <% @results[:columns][:categorical_traits].each do |trait|
-              categorical_trait_values = row_hash[:categorical][trait[:id]] if row_hash[:categorical] %>
-            <td>
-              <% if categorical_trait_values
-                   categorical_trait_values[:values].each do |value_hash|
-                     value_hash.each do |value_id, formatted_value| %>
+            <% @results[:columns][:otu_metadata_field_names].each do |metadata_field| %>
+              <th><%= metadata_field %></th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% source_ids = [] %>
+          <% @results[:rows].each do |otu_id, row_hash| %>
+          <tr>
+            <td><%= row_hash[:name] %>
+            </td>
+              <% @results[:columns][:categorical_traits].each do |trait|
+                categorical_trait_values = row_hash[:categorical][trait[:id]] if row_hash[:categorical] %>
+              <td>
+                <% if categorical_trait_values
+                     categorical_trait_values[:values].each do |value_hash|
+                       value_hash.each do |value_id, formatted_value| %>
+                        <%= formatted_value %>
+                        <% if @results[:include_references]
+                          source_reference_id = categorical_trait_values[:sources][value_id]
+                          source_ids << source_reference_id unless source_reference_id.in? source_ids
+                          source_number = source_ids.index(source_reference_id) + 1
+                        %>
+                          [<%= link_to("#{source_number}", "#source_#{source_number}") %>]
+                        <% end %>
+                        <% end %>
+                    <% end %>
+                <% end %>
+              </td>
+              <% if @results[:columns][:categorical_trait_notes_ids].include? trait[:id] %>
+                <td><%= categorical_trait_values[:notes] if categorical_trait_values %></td>
+              <% end %>
+            <% end %>
+            <% @results[:columns][:continuous_traits].each do |trait|
+              continuous_trait_values = row_hash[:continuous][trait[:id]] if row_hash[:continuous] %>
+              <td>
+                <% if continuous_trait_values
+                     continuous_trait_values[:values].each do |value_hash|
+                       value_hash.each do |value_id, formatted_value| %>
                       <%= formatted_value %>
                       <% if @results[:include_references]
-                        source_reference_id = categorical_trait_values[:sources][value_id]
-                        source_ids << source_reference_id unless source_reference_id.in? source_ids
-                        source_number = source_ids.index(source_reference_id) + 1
+                           source_reference_id = continuous_trait_values[:sources][value_id]
+                           source_ids << source_reference_id unless source_reference_id.in? source_ids
+                           source_number = source_ids.index(source_reference_id) + 1
                       %>
                         [<%= link_to("#{source_number}", "#source_#{source_number}") %>]
                       <% end %>
-                      <% end %>
-                  <% end %>
-              <% end %>
-            </td>
-            <% if @results[:columns][:categorical_trait_notes_ids].include? trait[:id] %>
-              <td><%= categorical_trait_values[:notes] if categorical_trait_values %></td>
-            <% end %>
-          <% end %>
-          <% @results[:columns][:continuous_traits].each do |trait|
-            continuous_trait_values = row_hash[:continuous][trait[:id]] if row_hash[:continuous] %>
-            <td>
-              <% if continuous_trait_values
-                   continuous_trait_values[:values].each do |value_hash|
-                     value_hash.each do |value_id, formatted_value| %>
-                    <%= formatted_value %>
-                    <% if @results[:include_references]
-                         source_reference_id = continuous_trait_values[:sources][value_id]
-                         source_ids << source_reference_id unless source_reference_id.in? source_ids
-                         source_number = source_ids.index(source_reference_id) + 1
-                    %>
-                      [<%= link_to("#{source_number}", "#source_#{source_number}") %>]
                     <% end %>
                   <% end %>
                 <% end %>
+              </td>
+              <% if @results[:columns][:continuous_trait_notes_ids].include? trait[:id] %>
+                <td><%= continuous_trait_values[:notes] if continuous_trait_values %></td>
               <% end %>
-            </td>
-            <% if @results[:columns][:continuous_trait_notes_ids].include? trait[:id] %>
-              <td><%= continuous_trait_values[:notes] if continuous_trait_values %></td>
             <% end %>
-          <% end %>
-          <% @results[:columns][:otu_metadata_field_names].each do |metadata_field_name| %>
-            <td>
-              <% if (row_hash[:metadata][metadata_field_name] || '').length > 30 %>
-                <span class="notes_popover" rel="popover" data-content="<%= row_hash[:metadata][metadata_field_name] %>" data-original-title="<%= metadata_field_name %>"><%= truncate(row_hash[:metadata][metadata_field_name]) %></span>
-              <% else %>
-                <%= row_hash[:metadata][metadata_field_name] %>
-              <% end %>
-            </td>
-          <% end %>
-        </tr>
-        <% end %>
-      </table>
-    </div>
-    <% if @results[:include_references] %>
-      <div class="row-fluid">
-        <p class="lead">Sources</p>
-      </div>
-      <div class="row-fluid">
-        <table class="table table-condensed table-bordered table-striped table-hover ">
-          <tr></tr><th>#</th><th>Source</th></tr>
-          <% source_ids.each_with_index do |source_id, index| %>
-          <tr id="<%= "source_#{index + 1}" %>">
-            <td><%= index + 1 %></td>
-            <td>
-              <% source = @results[:sources].find{|x| x[:id] == source_id}
-                 if source
-                   source_name = source[:name] || ''
-                   source_link = source_name if source_name.uri?
-                   source_link ||= source_name.url_for_doi if source_name.doi?
-                   if source_link %>
-                     <%= link_to(source_name, source_link, :target => '_blank') %>
-                   <% else %>
-                     <%= source_name %>
-                  <% end %>
+            <% @results[:columns][:otu_metadata_field_names].each do |metadata_field_name| %>
+              <td>
+                <% if (row_hash[:metadata][metadata_field_name] || '').length > 30 %>
+                  <span class="notes_popover" rel="popover" data-content="<%= row_hash[:metadata][metadata_field_name] %>" data-original-title="<%= metadata_field_name %>"><%= truncate(row_hash[:metadata][metadata_field_name]) %></span>
+                <% else %>
+                  <%= row_hash[:metadata][metadata_field_name] %>
                 <% end %>
-            </td>
+              </td>
+            <% end %>
           </tr>
           <% end %>
+        </table>
+      </div>
+      <% if @results[:include_references] %>
+        <div class="row-fluid">
+          <p class="lead">Sources</p>
+        </div>
+        <div class="row-fluid">
+          <table class="table table-condensed table-bordered table-striped table-hover ">
+            <tr></tr><th>#</th><th>Source</th></tr>
+            <% source_ids.each_with_index do |source_id, index| %>
+            <tr id="<%= "source_#{index + 1}" %>">
+              <td><%= index + 1 %></td>
+              <td>
+                <% source = @results[:sources].find{|x| x[:id] == source_id}
+                   if source
+                     source_name = source[:name] || ''
+                     source_link = source_name if source_name.uri?
+                     source_link ||= source_name.url_for_doi if source_name.doi?
+                     if source_link %>
+                       <%= link_to(source_name, source_link, :target => '_blank') %>
+                     <% else %>
+                       <%= source_name %>
+                    <% end %>
+                  <% end %>
+              </td>
+            </tr>
+            <% end %>
+          </tbody>
         </table>
       </div>
     <% end %>
@@ -126,5 +130,56 @@
 <script type="text/javascript">
   $(document).ready(function() {
     $('.notes_popover, .source_popover').popover({trigger: 'hover', html: true, placement: 'bottom', delay: {hide: 100} });
+
+    // Sortable, filterable, paged table theme
+    // From http://mottie.github.io/tablesorter/docs/example-widget-bootstrap-theme.html
+    $.extend($.tablesorter.themes.bootstrap, {
+      // these classes are added to the table. To see other table classes available,
+      // look here: http://twitter.github.com/bootstrap/base-css.html#tables
+      table      : 'table table-condensed table-bordered table-striped table-hover',
+      header     : 'bootstrap-header', // give the header a gradient background
+      footerRow  : '',
+      footerCells: '',
+      icons      : '', // add "icon-white" to make them white; this icon class is added to the <i> in the header
+      sortNone   : 'bootstrap-icon-unsorted',
+      sortAsc    : 'icon-chevron-up glyphicon glyphicon-chevron-up',     // includes classes for Bootstrap v2 & v3
+      sortDesc   : 'icon-chevron-down glyphicon glyphicon-chevron-down', // includes classes for Bootstrap v2 & v3
+      active     : '', // applied when column is sorted
+      hover      : '', // use custom css here - bootstrap class may not override it
+      filterRow  : '', // filter row class
+      even       : '', // odd row zebra striping
+      odd        : ''  // even row zebra striping
+    });
+
+    // call the tablesorter plugin and apply the uitheme widget
+    $("#results").tablesorter({
+      theme : "bootstrap",
+      widthFixed: true,
+      headerTemplate : '{content} {icon}',
+      // widget code contained in the jquery.tablesorter.widgets.js file
+      // use the zebra stripe widget if you plan on hiding any rows (filter widget)
+      widgets : [ "uitheme", "filter", "zebra" ],
+      widgetOptions : {
+        zebra : ["even", "odd"],
+        filter_reset : ".reset"
+      }
+    })
+    .tablesorterPager({
+
+      // target the pager markup - see the HTML block below
+      container: $(".ts-pager"),
+
+      // target the pager page select dropdown - choose a page
+      cssGoto  : ".pagenum",
+
+      // remove rows from the table to speed up the sort of large tables.
+      // setting this to false, only hides the non-visible rows; needed if you plan to add/remove rows with the pager enabled.
+      removeRows: false,
+
+      // output string - default is '{page}/{totalPages}';
+      // possible variables: {page}, {totalPages}, {filteredPages}, {startRow}, {endRow}, {filteredRows} and {totalRows}
+      output: '{startRow} - {endRow} / {filteredRows} ({totalRows})'
+
+    });
   });
 </script>

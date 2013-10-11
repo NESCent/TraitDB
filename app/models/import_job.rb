@@ -79,7 +79,7 @@ class ImportJob < ActiveRecord::Base
     row_indices = problem_rows
     output_csv_string = CSV.generate do |csv|
       i = 0
-      CSV.foreach(csv_dataset.csv_file.path) do |row|
+      CSV.foreach(csv_dataset.csv_file.path, :encoding => csv_dataset.encoding) do |row|
         # rows are not escaped properly
         if i == 0 || row_indices.include?(i)
           csv << row
@@ -110,28 +110,36 @@ class ImportJob < ActiveRecord::Base
     return false unless state == 'new'
     begin
       headers.clear
-      CSV.read(csv_dataset.csv_file.path, :headers => true).headers.each do |h|
+      CSV.read(csv_dataset.csv_file.path, :headers => true, :encoding => csv_dataset.encoding).headers.each do |h|
         headers << Header.new(:column_name => h)
       end
       self.state = 'read_headers'
       save
     rescue Exception => e
-      # file is not a CSV
-      self.state = 'headers_failed'
-      self.validation_issues.create({:issue_description => e.message, :suggested_solution => 'Please upload a valid CSV file with UTF encoding'})
-      save
+      if e.message == 'invalid byte sequence in UTF-8' && csv_dataset.encoding.nil?
+        # Probably an Excel-encoded ISO-8859-1 file, try again with that encoding
+        csv_dataset.encoding = 'ISO-8859-1'
+        csv_dataset.save
+        # Try again
+        read_headers
+      else
+        # file is not a CSV
+        self.state = 'headers_failed'
+        self.validation_issues.create({:issue_description => e.message, :suggested_solution => 'Please upload a valid CSV file'})
+        save
+      end
     end
   end
 
   def count_rows
     return false unless state == 'read_headers'
     begin
-      self.csv_row_count = CSV.read(csv_dataset.csv_file.path, :headers => true).length
+      self.csv_row_count = CSV.read(csv_dataset.csv_file.path, :headers => true, :encoding => csv_dataset.encoding).length
       self.state = 'counted_rows'
     rescue Exception => e
      # file is not a CSV
       self.state = 'count_failed'
-      self.validation_issues.create({:issue_description => e.message, :suggested_solution => 'Please upload a valid CSV file with UTF encoding'})
+      self.validation_issues.create({:issue_description => e.message, :suggested_solution => 'Please upload a valid CSV file'})
 
     end
     save
@@ -194,7 +202,7 @@ class ImportJob < ActiveRecord::Base
   def get_validator
     # validator needs a template
     template = csv_import_config.get_import_template
-    validator = TraitDB::Validator.new(template, csv_dataset.csv_file.path)
+    validator = TraitDB::Validator.new(template, csv_dataset.csv_file.path, csv_dataset.encoding)
     validator # returns the validator
   end
 

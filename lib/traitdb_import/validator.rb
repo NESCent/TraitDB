@@ -21,9 +21,10 @@ module TraitDB
     attr_reader :datasets, :trait_headers
     # The template specifies what columns are valid
     # If we see a magic value in here it needs to be moved to the template
-    def initialize(template=nil, path=nil)
+    def initialize(template=nil, path=nil, encoding=nil)
       @config = template
       @filepath = path
+      @encoding = encoding
       @validation_results = {:issues => [], :info => []}
       @parse_results = {:issues => [], :info => []}
       # initial empty collections
@@ -73,6 +74,7 @@ module TraitDB
     def read_csv_file
       @csvfile = CSV.read(@filepath,
                           :headers => true,
+                          :encoding => @encoding,
                           :header_converters => lambda{|f| f ? f.strip : nil},
                           :converters => lambda{|f| f ? f.strip : nil}
       )

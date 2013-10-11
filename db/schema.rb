@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130925132733) do
+ActiveRecord::Schema.define(version: 20131010153245) do
 
   create_table "categorical_trait_categories", force: true do |t|
     t.string   "name"
@@ -131,6 +131,7 @@ ActiveRecord::Schema.define(version: 20130925132733) do
     t.integer  "user_id"
     t.datetime "created_at",            null: false
     t.datetime "updated_at",            null: false
+    t.string   "encoding"
   end
 
   add_index "csv_datasets", ["user_id"], name: "index_csv_datasets_on_user_id", using: :btree

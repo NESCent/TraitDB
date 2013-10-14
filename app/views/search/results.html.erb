@@ -1,5 +1,5 @@
 <div class="row-fluid">
-  <div class="offset1 span10 content">
+  <div class="span12">
     <div class="row-fluid">&nbsp;</div>
     <div class="row-fluid">
       <div class="pull-left">
@@ -13,10 +13,11 @@
     <div class="row-fluid">&nbsp;</div>
     <div class="row-fluid table-scrollable">
       <% col_count = 0 -%>
-      <table id="results" class="table table-condensed table-bordered table-striped table-hover scrollable tablesorter">
+      <table id="results" class="scrollable tablesorter">
         <thead>
           <tr>
             <th>OTU</th>
+            <% col_count += 1 -%>
             <% @results[:columns][:categorical_traits].each do |trait| %>
               <th><%= trait[:name] %></th>
               <% col_count += 1 -%>
@@ -41,19 +42,24 @@
         </thead>
         <tfoot>
         <tr>
-          <th colspan="<%= col_count %>" class="ts-pager form-horizontal">
+          <th colspan="<%= col_count %>" class="ts-pager form-inline">
             <button type="button" class="btn first"><i class="icon-step-backward glyphicon glyphicon-step-backward"></i></button>
             <button type="button" class="btn prev"><i class="icon-arrow-left glyphicon glyphicon-backward"></i></button>
             <span class="pagedisplay"></span> <!-- this can be any element, including an input -->
             <button type="button" class="btn next"><i class="icon-arrow-right glyphicon glyphicon-forward"></i></button>
             <button type="button" class="btn last"><i class="icon-step-forward glyphicon glyphicon-step-forward"></i></button>
-            <select class="pagesize input-mini" title="Select page size">
-              <option selected="selected" value="10">10</option>
-              <option value="20">20</option>
-              <option value="30">30</option>
-              <option value="40">40</option>
-            </select>
-            <select class="pagenum input-mini" title="Select page number"></select>
+            <label class="select">Page Size:
+              <select class="pagesize input-mini" title="Select page size">
+                <option selected="selected" value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="40">40</option>
+                <option value="<%= @results[:rows].count -%>">All</option>
+              </select>
+            </label>
+            <label class="select">Page:
+              <select class="pagenum input-mini" title="Select page number"></select>
+            </label>
           </th>
         </tr>
         </tfoot>

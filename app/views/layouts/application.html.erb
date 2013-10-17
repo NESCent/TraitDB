@@ -28,7 +28,7 @@
           <% if user_signed_in? %>
             <li class="<%= 'active' if params[:controller] == 'upload' -%>"><%= link_to("Upload", :controller => '/upload') %></li>
           <% end %>
-          <% if current_user.admin? %>
+          <% if current_user && current_user.admin? %>
             <li class="dropdown">
               <a class="dropdown-toggle" href="#" data-toggle="dropdown">Admin<b class="caret"></b></a>
               <ul class="dropdown-menu">

@@ -35,7 +35,7 @@ gem 'mysql2'
 # Formerly in the assets group
 gem 'sass-rails',   '~> 4.0.0'
 gem 'coffee-rails', '~> 4.0.0'
-gem 'jquery-tablesorter', '~> 1.5.0'
+gem 'jquery-tablesorter', '~> 1.7.0'
 
 # See https://github.com/sstephenson/execjs#readme for more supported runtimes
 

@@ -18,6 +18,10 @@
           <tr>
             <th>OTU</th>
             <% col_count += 1 -%>
+            <% if current_user %>
+              <th>Uploader</th>
+              <% col_count += 1 -%>
+            <% end %>
             <% @results[:columns][:categorical_traits].each do |trait| %>
               <th><%= trait[:name] %></th>
               <% col_count += 1 -%>
@@ -67,8 +71,10 @@
           <% source_ids = [] %>
           <% @results[:rows].each do |otu_id, row_hash| %>
           <tr>
-            <td><%= row_hash[:name] %>
-            </td>
+            <td><%= row_hash[:name] %></td>
+            <% if current_user %>
+              <td><%= row_hash[:uploader_email] %></td>
+            <% end %>
               <% @results[:columns][:categorical_traits].each do |trait|
                 categorical_trait_values = row_hash[:categorical][trait[:id]] if row_hash[:categorical] %>
               <td>

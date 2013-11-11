@@ -186,10 +186,13 @@ class SearchController < ApplicationController
     # and another hash of otu names to otu ids
     # Get the name for each OTU in the rows hash and stuff it back into the hash
     #
-    Otu.where(:id => rows.keys).includes(:otu_metadata_values => [:otu_metadata_field]).each do |otu|
+    Otu.where(:id => rows.keys).
+      includes(:otu_metadata_values => [:otu_metadata_field]).
+      includes(:import_job => {:csv_dataset  => :user}).each do |otu|
       rows[otu.id][:sort_name] = otu.sort_name
       rows[otu.id][:name] = otu.name
       rows[otu.id][:metadata] = otu.metadata_hash
+      rows[otu.id][:uploader_email] = otu.import_job.csv_dataset.user.email
       otu.metadata_hash.keys.each{|field_name| otu_metadata_field_names << field_name unless field_name.in? otu_metadata_field_names}
     end
     # When sorting a hash, it is converted to an array where element 0 is the key and element 1 is the value

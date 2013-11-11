@@ -1,5 +1,8 @@
 <%-
   headers = %w{OTU}
+  if current_user
+    headers << "Uploader"
+  end
   @results[:columns][:categorical_traits].each do |trait|
     headers << trait[:name]
     if @results[:columns][:categorical_trait_notes_ids].include? trait[:id]
@@ -26,6 +29,9 @@
 <%-
     @results[:rows].each do |otu_id, row_hash|
       row = [row_hash[:name]]
+      if current_user
+        row << row_hash[:uploader_email]
+      end
       @results[:columns][:categorical_traits].each do |trait|
         values = []
         sources = []

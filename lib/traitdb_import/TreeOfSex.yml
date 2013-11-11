@@ -51,6 +51,8 @@ traitdb_spreadsheet_template:
         - polygamodioecy
         - polygamomonoecy
         - apomictic
+        - parthenogenetic
+        - gonochorous
         - other
       groups: [Plants, Animals]
     -
@@ -86,6 +88,7 @@ traitdb_spreadsheet_template:
         - homomorphic
         - complex XY
         - complex ZW
+        - complex XO
       groups: [Plants, Animals]
     -
       name: Molecular basis

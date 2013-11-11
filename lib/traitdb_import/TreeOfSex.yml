@@ -138,11 +138,11 @@ traitdb_spreadsheet_template:
       format: integer
       groups: [Plants]
     -
-      name: Chromosome number (female)
+      name: Chromosome number (female) 2N
       format: integer
       groups: [Animals]
     -
-      name: Chromosome number (male)
+      name: Chromosome number (male) 2N
       format: integer
       groups: [Animals]
     -

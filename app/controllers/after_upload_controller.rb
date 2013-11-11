@@ -31,6 +31,18 @@ class AfterUploadController < Wicked::WizardController
     render_wizard
   end
 
+  def delete
+    import_job = ImportJob.find(params[:import_job_id])
+    dataset = CsvDataset.find(params[:id])
+    filename = dataset.csv_file_file_name
+
+    dataset.csv_file = nil
+    dataset.destroy
+    import_job.destroy
+    flash[:notice] = "#{filename} has been deleted."
+    redirect_to(:controller => 'upload', :action => 'index')
+  end
+
   # Download the rows from this dataset that cannot be imported as a csv
   def download_problematic_rows
     import_job = ImportJob.find(params[:import_job_id])

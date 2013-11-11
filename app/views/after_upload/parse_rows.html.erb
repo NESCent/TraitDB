@@ -26,7 +26,7 @@
       <%= link_to('Download Issues as CSV', {:action => 'download_issues', :id => @import_job.csv_dataset.id, :format => 'csv'}, :class => 'btn btn-warning') %>
       <%= link_to(download_message, {:action => 'download_problematic_rows', :id => @import_job.csv_dataset.id, :format => 'csv'}, :class => 'btn btn-warning') %>
       <%= link_to(button_message, next_wizard_path, :class => 'btn btn-primary') %>
-      <%= link_to("Discard Dataset", {:controller => 'upload', :action => 'delete', :id => @import_job.csv_dataset.id}, :class => 'btn btn-danger', :method => :delete) %>
+      <%= link_to("Discard Dataset", {:action => 'delete', :id => @import_job.csv_dataset.id}, :class => 'btn btn-danger', :method => :delete) %>
     </div>
     <% elsif @import_job.parsed_rows? %>
       <% button_message = "Import #{pluralize(@import_job.csv_row_count, 'record')}" %>
@@ -35,7 +35,7 @@
         </div>
         <div class="row-fluid">
           <%= link_to(button_message, next_wizard_path, :class => 'btn btn-primary') %>
-          <%= link_to("Discard Dataset", {:controller => 'upload', :action => 'delete', :id => @import_job.csv_dataset.id}, :class => 'btn btn-danger', :method => :delete) %>
+          <%= link_to("Discard Dataset", {:action => 'delete', :id => @import_job.csv_dataset.id}, :class => 'btn btn-danger', :method => :delete) %>
         </div>
     <% end %>
   <% end %>

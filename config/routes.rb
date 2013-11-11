@@ -26,6 +26,7 @@ TraitDB::Application.routes.draw do
       member do
         get 'download_problematic_rows'
         get 'download_issues'
+        delete 'delete'
       end
     end
   end

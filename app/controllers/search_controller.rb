@@ -172,7 +172,7 @@ class SearchController < ApplicationController
         category_ids = @categorical_trait_category_map[trait_id]
         # Record a match if no predicate or if the predicate was matched
         # Note that the database will not be queried again unless there is a predicate
-        if category_ids.length == 0 || CategoricalTraitValue.where(:id => value_id, :categorical_trait_category_id => category_ids)
+        if category_ids.length == 0 || CategoricalTraitValue.where(:id => value_id, :categorical_trait_category_id => category_ids).count > 0
           # No category id specified or value matched input criteria
           result_arrays[:value_matches][value_id] = true
         else

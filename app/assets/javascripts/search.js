@@ -36,10 +36,22 @@ function addTraitFilterRow(animation) {
     var traitValuesId = "trait_values_" + uniqueRowId;
     var traitEntriesId = "trait_entries_" + uniqueRowId; // should only exist for continuous traits
 
-    el.find('select.trait_type').attr('id',traitTypeId).attr('name','trait_type[' + uniqueRowId + ']');
-    el.find('select.trait_name').attr('id',traitNameId).attr('name','trait_name[' + uniqueRowId + ']');
-    el.find('select.trait_values').attr('id',traitValuesId).attr('name','trait_values[' + uniqueRowId + ']');
-    el.find('input.trait_entries').attr('id',traitEntriesId).attr('name','trait_entries[' + uniqueRowId + ']');
+    el.find('select.trait_type')
+        .attr('id',traitTypeId)
+        .attr('name','trait_type[' + uniqueRowId + ']')
+        .attr('data-trait-filter-row', uniqueRowId);
+    el.find('select.trait_name')
+        .attr('id',traitNameId)
+        .attr('name','trait_name[' + uniqueRowId + ']')
+        .attr('data-trait-filter-row', uniqueRowId);
+    el.find('select.trait_values')
+        .attr('id',traitValuesId)
+        .attr('name','trait_values[' + uniqueRowId + ']')
+        .attr('data-trait-filter-row', uniqueRowId);
+    el.find('input.trait_entries')
+        .attr('id',traitEntriesId)
+        .attr('name','trait_entries[' + uniqueRowId + ']')
+        .attr('data-trait-filter-row', uniqueRowId);
     el.hide();
     lastTraitFilterRow.after(el);
     el.show(animation, function() {

@@ -122,6 +122,7 @@ class SearchController < ApplicationController
         # Notes are optional and only stored once per OTUxTrait
         # When a note is found, we record the trait_id so that the view can display a notes column for the trait
         # Notes are expected to be rare, so we only display the column if we have data
+        # TODO: Optimize
         note = continuous_trait_value.otu.continuous_trait_notes.find{|n| n.continuous_trait.id == trait_id }
         if note
           continuous_trait_notes_ids << trait_id
@@ -163,7 +164,8 @@ class SearchController < ApplicationController
         # Notes are optional and only stored once per OTUxTrait
         # When a note is found, we record the trait_id so that the view can display a notes column for the trait
         # Notes are expected to be rare, so we only display the column if we have data
-        note = categorical_trait_value.otu.categorical_trait_notes.find{|n| n.continuous_trait.id == trait_id }
+        # TODO: Optimize
+        note = categorical_trait_value.otu.categorical_trait_notes.find{|n| n.categorical_trait.id == trait_id }
         if note
           categorical_trait_notes_ids << trait_id
           result_arrays[:notes] ||= note.notes

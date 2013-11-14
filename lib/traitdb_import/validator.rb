@@ -317,9 +317,9 @@ module TraitDB
         # 6. Trait Notes
         # Warn if notes but no data
         row.to_hash.select{|k,v| @trait_notes_headers.include?(k)}.each do |k,v|
-          next if v.nil?
+          next if v.nil? || v.empty? # Notes are optional, may be
           # find the existing hash {:name => xx, :value => yy} to inject the source
-          expected_name = k.sub(@config.trait_options['source_prefix'],'')
+          expected_name = k.sub(@config.trait_options['notes_prefix'],'')
           trait_data_hash = (continuous_trait_data + categorical_trait_data).find{|q| q[:name] == expected_name }
           if trait_data_hash.nil? # have notes but no data.
             problematic_row = true

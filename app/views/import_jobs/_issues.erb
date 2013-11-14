@@ -11,7 +11,7 @@
   <% issues.each do |issue| %>
   <tr>
     <% if issue_type == :parse %>
-      <td><%= issue.row_name[:genus] %> <%= issue.row_name[:species] %></td>
+      <td><%= issue.row_name['genus'] %> <%= issue.row_name['species'] %></td>
     <% end %>
     <td><%= issue.location %> </td>
     <td><%= issue.issue_description %></td>

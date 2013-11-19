@@ -132,28 +132,38 @@ function traitSetChanged(traitSetSelectElement) {
 }
 
 function addButtonHandlers() {
-    $('.add_taxon').bind('click', function() {
+    $('.add_taxon').bind('click', function(event) {
         addTaxonFilterRow();
+        // The element is an a href='#', so the click event would cause the page to scroll to top
+        event.preventDefault();
     });
-    $('.remove_taxon').bind('click', function() {
+    $('.remove_taxon').bind('click', function(event) {
         removeTaxonFilterRow(this);
+        // The element is an a href='#', so the click event would cause the page to scroll to top
+        event.preventDefault();
     });
-    $('.add_trait').bind('click',function() {
+    $('.add_trait').bind('click',function(event) {
         // only add traits if select all is not checked
         if(! $('#select_all_traits').is(':checked')) {
             addTraitFilterRow();
         }
+        // The element is an a href='#', so the click event would cause the page to scroll to top
+        event.preventDefault();
     });
-    $('.remove_trait').bind('click', function() {
+    $('.remove_trait').bind('click', function(event) {
         // only remove traits if select all is not checked
         if(! $('#select_all_traits').is(':checked')) {
             removeTraitFilterRow(this);
         }
+        // The element is an a href='#', so the click event would cause the page to scroll to top
+        event.preventDefault();
     });
-    $('#reset_search').bind('click', function() {
+    $('#reset_search').bind('click', function(event) {
         resetSearchForm();
+        // The element is an a href='#', so the click event would cause the page to scroll to top
+        event.preventDefault();
     });
-    $('#select_all_traits').bind('change', function() {
+    $('#select_all_traits').bind('change', function(event) {
         selectAllTraitsChanged(this);
     });
 }
@@ -353,7 +363,6 @@ function resetTaxonomy() {
     for(var i=0; i < taxon_row_count; i++) {
         $('.taxon-filter-row').first().remove();
     }
-    return false;
 }
 
 function resetTraits() {
@@ -363,13 +372,11 @@ function resetTraits() {
         $('.trait-filter-row').first().remove();
     }
     updateTraitFilterOperatorVisibility();
-    return false;
 }
 
 function resetSearchForm() {
     resetTaxonomy();
     resetTraits();
-    return false;
 }
 
 function updateTraitFilterOperatorVisibility() {
@@ -390,5 +397,4 @@ function updateTraitFilterOperatorVisibility() {
         });
         $('.trait-filter-row').last().find(".operator_placeholder").first().append(operatorElement);
     }
-    return false;
 }

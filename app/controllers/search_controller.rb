@@ -193,6 +193,7 @@ class SearchController < ApplicationController
       rows[otu.id][:name] = otu.name
       rows[otu.id][:metadata] = otu.metadata_hash
       rows[otu.id][:uploader_email] = otu.import_job.csv_dataset.user.email
+      rows[otu.id][:upload_date] = otu.import_job.created_at
       otu.metadata_hash.keys.each{|field_name| otu_metadata_field_names << field_name unless field_name.in? otu_metadata_field_names}
     end
     # When sorting a hash, it is converted to an array where element 0 is the key and element 1 is the value

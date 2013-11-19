@@ -21,6 +21,8 @@
             <% if current_user %>
               <th>Uploader</th>
               <% col_count += 1 -%>
+              <th>Upload Date</th>
+              <% col_count += 1 -%>
             <% end %>
             <% @results[:columns][:categorical_traits].each do |trait| %>
               <th><%= trait[:name] %></th>
@@ -74,6 +76,7 @@
             <td><%= row_hash[:name] %></td>
             <% if current_user %>
               <td><%= row_hash[:uploader_email] %></td>
+              <td><%= row_hash[:upload_date].to_formatted_s(:db) %></td>
             <% end %>
               <% @results[:columns][:categorical_traits].each do |trait|
                 categorical_trait_values = row_hash[:categorical][trait[:id]] if row_hash[:categorical] %>

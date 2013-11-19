@@ -2,6 +2,7 @@
   headers = %w{OTU}
   if current_user
     headers << "Uploader"
+    headers << "Upload Date"
   end
   @results[:columns][:categorical_traits].each do |trait|
     headers << trait[:name]
@@ -31,6 +32,7 @@
       row = [row_hash[:name]]
       if current_user
         row << row_hash[:uploader_email]
+        row << row_hash[:upload_date].to_formatted_s(:db)
       end
       @results[:columns][:categorical_traits].each do |trait|
         values = []

@@ -1,8 +1,12 @@
 <div class="row-fluid">
   <div class="span12">
     <div class="row-fluid">
-      <h2>Search</h2>
-      <!--<p class="lead">Number of records available: <span id="available"><%= 5  -%></span> out of <span id="total"><%= 423 %></span></p>-->
+          <%= form_tag '/search/results.csv', { :class => 'form' } do -%>
+            <h2>Search
+              <button type="submit" class="pull-right btn btn-success">Download All<i class="icon-download icon-white"></i></button>
+              <%= hidden_field_tag 'download_all' %>
+        </h2>
+    <% end %>
     </div>
     <div class="row-fluid">
       <div id="searchform" class="well">

@@ -30,7 +30,7 @@ gem 'wicked'
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
-gem 'mysql2'
+gem 'pg'
 
 # Formerly in the assets group
 gem 'sass-rails',   '~> 4.0.0'

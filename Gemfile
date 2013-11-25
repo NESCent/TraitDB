@@ -32,6 +32,8 @@ gem 'wicked'
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 gem 'mysql2'
+gem 'pg'
+gem 'sqlite3'
 
 # Formerly in the assets group
 gem 'sass-rails',   '~> 4.0.0'

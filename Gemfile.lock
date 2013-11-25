@@ -1,3 +1,11 @@
+GIT
+  remote: git://github.com/metaskills/less-rails-bootstrap.git
+  revision: cbe20d4593e21297f7bc3bc6bc6471a7ad18e890
+  ref: cbe20d4593e21297f7bc3bc6bc6471a7ad18e890
+  specs:
+    less-rails-bootstrap (2.3.3)
+      less-rails (~> 2.3.1)
+
 GEM
   remote: http://mirror1.prod.rhcloud.com/mirror/ruby/
   remote: http://rubygems.org/
@@ -41,7 +49,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.6.2)
-    commonjs (0.2.6)
+    commonjs (0.2.7)
     daemons (1.1.9)
     delayed_job (4.0.0)
       activesupport (>= 3.0, < 4.1)
@@ -65,13 +73,11 @@ GEM
       thor (>= 0.14, < 2.0)
     jquery-tablesorter (1.7.0)
       railties (>= 3.1, < 5)
-    less (2.2.2)
+    less (2.3.3)
       commonjs (~> 0.2.6)
-    less-rails (2.2.6)
+    less-rails (2.3.3)
       actionpack (>= 3.1)
-      less (~> 2.2.0)
-    less-rails-bootstrap (2.3.0)
-      less-rails (~> 2.2.0)
+      less (~> 2.3.1)
     libv8 (3.11.8.13)
     mail (2.5.4)
       mime-types (~> 1.16)
@@ -165,7 +171,7 @@ DEPENDENCIES
   devise (= 3.1.1)
   jquery-rails
   jquery-tablesorter (~> 1.7.0)
-  less-rails-bootstrap
+  less-rails-bootstrap!
   mysql2
   omniauth
   omniauth-openid

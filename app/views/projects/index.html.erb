@@ -1,0 +1,33 @@
+<% @page_title = "Projects" %>
+<div class="row-fluid">
+  <div class="row-fluid"><p class="lead">Projects</p></div>
+  <div class="row-fluid">
+    <table class="table table-bordered table-condensed table-striped" summary="Project List">
+      <tr class="header">
+        <th>Name</th>
+        <th>Description (Summary)</th>
+        <th>Description (Detail)</th>
+        <th>URL</th>
+        <th>Actions</th>
+      </tr>
+      <% @projects.each do |project| %>
+        <tr>
+          <td><%= project.name %></td>
+          <td><%= truncate(project.summary_description) %></td>
+          <td><%= truncate(project.detail_description) %></td>
+          <td><%= link_to_if(project.url, project.url_text, project.url) %></td>
+          <td>
+            <div class="btn-group">
+              <%= link_to("Show", project_path(project), :class => 'btn btn-small' ) %>
+              <%= link_to("Edit", edit_project_path(project), :class => 'btn  btn-small') %>
+              <%= link_to("Delete", delete_project_path(project), :class => 'btn btn-small btn-danger') %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+  <div class="row-fluid">
+    <%= link_to('New Project', new_project_path, :class => 'btn btn-primary') %>
+  </div>
+</div>

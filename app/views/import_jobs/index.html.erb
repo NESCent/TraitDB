@@ -1,0 +1,33 @@
+<% @page_title = "Import Jobs" %>
+<div class="row-fluid">
+  <div class="row-fluid"><p class="lead">Import Jobs</p></div>
+  <div class="row-fluid">
+    <table class="table table-condensed table-striped table-bordered" summary="Import Job List">
+    <tr class="header">
+      <th>Dataset</th>
+      <th>Status</th>
+      <th>Data</th>
+      <th>Actions</th>
+    </tr>
+    <% @import_jobs.each do |import_job| %>
+    <tr>
+      <td><%= import_job.csv_dataset.csv_file_file_name %></td>
+      <td><%= import_job.state %></td>
+      <td>
+        <div class="btn-group row-fluid">
+          <%= link_to("Taxa (#{import_job.taxa.count})", taxa_path(:import_job => import_job.id), :class => 'btn btn-small span3') %>
+          <%= link_to("OTUs (#{import_job.otus.count})", otus_path(:import_job => import_job.id), :class => 'btn btn-small span3') %>
+        </div>
+      </td>
+      <td>
+        <div class="btn-group row-fluid">
+          <%= link_to("Show", csv_dataset_import_job_path(import_job.csv_dataset, import_job), :class => 'btn btn-small span4') %>
+          <%= link_to("Destroy", csv_dataset_import_job_path(import_job.csv_dataset, import_job), :class => 'btn btn-small btn-danger span4', :method => :delete) %>
+        </div>
+      </td>
+    </tr>
+    <% end %>
+    </table>
+  </div>
+  <div class="row-fluid"><%= link_to("<< Back", csv_datasets_path, :class => 'btn') %></div>
+</div>

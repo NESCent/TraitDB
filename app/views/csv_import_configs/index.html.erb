@@ -1,0 +1,33 @@
+<% @page_title = "CSV Import Configs" %>
+<div class="row-fluid">
+  <div class="row-fluid"><p class="lead">Configs</p></div>
+  <div class="row-fluid">
+    <table class="table table-bordered table-condensed table-striped" summary="Config List">
+    <tr class="header">
+      <th>Filename</th>
+      <th>Config name</th>
+      <th>Project</th>
+      <th>Uploader</th>
+      <th>Uploaded</th>
+      <th>Actions</th>
+    </tr>
+    <% @configs.each do |config| %>
+    <tr>
+      <td><%= config.config_file_file_name %></td>
+      <td><%= config.name %></td>
+      <td><% if config.project %><%= config.project.name %><% end %></td>
+      <td><%= config.user.email %></td>
+      <td><%= config.created_at %></td>
+      <td>
+        <div class="btn-group">
+          <%= link_to("Show", csv_import_config_path(config), :class => 'btn btn-small' ) %>
+          <%= link_to("Edit", edit_csv_import_config_path(config), :class => 'btn  btn-small') %>
+          <%= link_to("Destroy", csv_import_config_path(config), :class => 'btn btn-small btn-danger', :method => :delete) %>
+        </div>
+      </td>
+    </tr>
+    <% end %>
+    </table>
+	</div>
+	<div class="row-fluid"><%= link_to("Upload New CSV Import Config", { :action => 'new' }, :class => 'btn btn-primary action new pull-right') %></div>
+</div>

@@ -1,0 +1,43 @@
+<% @page_title = "Continuous Traits" %>
+<div class="row-fluid">
+  <div class="row-fluid"><p class="lead">Continuous Traits</p></div>
+  <div class="row-fluid">
+    <table class="table table-bordered table-condensed table-striped" summary="Continuous Trait List">
+    <tr class="header">
+      <th>Trait Name</th>
+      <th>Source Dataset</th>
+      <th>Values</th>
+      <th>OTUs</th>
+      <th>Format</th>
+      <th>Actions</th>
+    </tr>
+    <% @continuous_traits.each do |trait| %>
+    <tr>
+      <td><%= trait.name %></td>
+      <td><% if trait.csv_dataset %><%= link_to(trait.dataset_name, csv_dataset_path(trait.csv_dataset)) %><% end %></td>
+      <td><%= link_to("#{trait.continuous_trait_values.count}", continuous_trait_values_path(:continuous_trait => trait.id)) %></td>
+      <td><%=  link_to("#{trait.otus.count}", otus_path(:continuous_trait => trait.id)) %></td>
+      <td><%= trait.display_format_name %></td>
+      <td>
+        <div class="btn-group">
+          <%= link_to("Show", continuous_trait_path(trait), :class => 'btn btn-small' ) %>
+          <%= link_to("Edit", edit_continuous_trait_path(trait), :class => 'btn btn-primary btn-small' ) %>
+        </div>
+      </td>
+    </tr>
+    <% end %>
+    </table>
+	</div>
+	<div class="row-fluid">
+    <div class="pagination">
+      <ul>
+        <% 
+          pages = (@total / @count) + 1
+          pages.times.each do |p|
+        %>
+          <li><%= link_to((p+1).to_s, continuous_traits_path({:start => "#{p * @count}" , :count => @count})) %></li>
+        <% end %>
+      </ul>
+    </div>
+	</div>
+</div>

@@ -14,3 +14,9 @@
 /log/*.log
 /tmp
 .project
+config/database.yml
+
+.ruby-version
+
+# ignore uploaded CSV and config files
+public/system/*

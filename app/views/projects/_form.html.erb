@@ -1,0 +1,35 @@
+<%= error_messages_for(@project) %>
+<div class="control-group">
+  <%= f.label(:name, 'Project Name', :class => 'control-label') %>
+  <div class="controls">
+    <%= f.text_field(:name) %>
+  </div>
+</div>
+
+<div class="control-group">
+  <%= f.label(:summary_description, 'Description (Summary)', :class=> 'control-label') %>
+  <div class="controls">
+    <%= f.text_field(:summary_description, :class => 'input-xxlarge') %>
+  </div>
+</div>
+
+<div class="control-group">
+  <%= f.label(:detail_description, 'Description (Detail)', :class=> 'control-label') %>
+  <div class="controls">
+    <%= f.text_area(:detail_description, :rows => 5, :class => 'input-xxlarge') %>
+  </div>
+</div>
+
+<div class="control-group">
+  <%= f.label(:url, 'Project URL', :class=> 'control-label') %>
+  <div class="controls">
+    <%= f.url_field(:url, :class => 'input-xxlarge') %>
+  </div>
+</div>
+
+<div class="control-group">
+  <%= f.label(:url_text, 'Project URL Text', :class=> 'control-label') %>
+  <div class="controls">
+    <%= f.text_field(:url_text, :class => 'input-xxlarge') %>
+  </div>
+</div>

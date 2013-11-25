@@ -1,0 +1,7 @@
+<% @page_name = "About" %>
+<div class="row-fluid">
+  <h3><%= @project.name %></h3>
+  <p class="lead"><%= @project.summary_description %></p>
+  <p><%= @project.detail_description %></p>
+  <p><%= link_to_if(@project.url, @project.url_text, @project.url) %></p>
+</div>

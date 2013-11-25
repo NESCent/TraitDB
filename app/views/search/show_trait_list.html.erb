@@ -1,0 +1,67 @@
+<div class="row-fluid">
+  <!-- Categorical -->
+  <div class="span6">
+    <p class="lead">Categorical Traits</p>
+    <div class="well">
+      <% if @categorical_traits.empty? %>
+        <span>None</span>
+      <% else %>
+        <% @categorical_traits.each do |trait| %>
+          <dl class="dl-horizontal">
+            <dt>Name</dt>
+            <dd><%= trait.full_name %></dd>
+            <dt>
+              Categories (<%= trait.category_names.count %>)
+            </dt>
+            <dd>
+              <ul class="unstyled">
+                <% trait.category_names.each do |name| %>
+                  <li class="trait-category-name"><%= name %></li>
+                <% end %>
+              </ul>
+            </dd>
+            <dt>
+              Groups (<%= trait.trait_groups.count %>)
+            </dt>
+            <dd>
+              <ul class="unstyled">
+                <% trait.trait_groups.each do |group| %>
+                  <li class="trait-group"><%= group.name %></li>
+                <% end %>
+              </ul>
+            </dd>
+          </dl>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Continuous -->
+  <div class="span6">
+    <p class="lead">Continuous Traits</p>
+    <div class="well">
+      <% if @continuous_traits.empty? %>
+        <span>None</span>
+      <% else %>
+        <% @continuous_traits.each do |trait| %>
+          <dl class="dl-horizontal">
+            <dt>Name</dt>
+            <dd><%= trait.full_name %></dd>
+            <dt>Type</dt>
+            <dd><%= trait.display_format.nil? ? "Default" : trait.display_format.name %></dd>
+            <dt>
+              Groups (<%= trait.trait_groups.count %>)
+            </dt>
+            <dd>
+              <ul class="unstyled">
+                <% trait.trait_groups.each do |group| %>
+                  <li class="trait-group"><%= group.name %></li>
+                <% end %>
+              </ul>
+            </dd>
+          </dl>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,38 @@
+<% @page_title = "Categorical Trait Categories" %>
+<div class="row-fluid">
+  <div class="row-fluid"><p class="lead">Categorical Trait Categories</p></div>
+  <div class="row-fluid">
+    <table class="table table-bordered table-condensed table-striped" summary="Categorical Trait Categories">
+    <tr class="header">
+      <th>Trait Name</th>
+      <th>Category Name</th>
+      <th>Coded OTUs</th>
+      <th>Actions</th>
+    </tr>
+    <% @categorical_trait_categories.each do |category| %>
+    <tr>
+      <td><%= category.categorical_trait.name %></td>
+      <td><%= category.name %></td>
+      <td><%=  link_to("#{category.otus.count}", otus_path(:categorical_trait_category => category.id)) %></td>
+      <td>
+        <div class="btn-group">
+          <%= link_to("Show", categorical_trait_category_path(category), :class => 'btn btn-small' ) %>
+        </div>
+      </td>
+    </tr>
+    <% end %>
+    </table>
+	</div>
+	<div class="row-fluid">
+    <div class="pagination">
+      <ul>
+        <% 
+          pages = (@total / @count) + 1
+          pages.times.each do |p|
+        %>
+          <li><%= link_to((p+1).to_s, categorical_trait_categories_path({:start => "#{p * @count}" , :count => @count})) %></li>
+        <% end %>
+      </ul>
+    </div>
+	</div>
+</div>

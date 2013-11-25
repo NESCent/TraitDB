@@ -1,0 +1,82 @@
+<%-
+  headers = %w{OTU}
+  if current_user
+    headers << "Uploader"
+    headers << "Upload Date"
+  end
+  @results[:columns][:categorical_traits].each do |trait|
+    headers << trait[:name]
+    if @results[:columns][:categorical_trait_notes_ids].include? trait[:id]
+      headers << "Notes: #{trait[:name]}"
+    end
+    if @results[:include_references]
+      headers << "Source: #{trait[:name]}"
+    end
+  end
+  @results[:columns][:continuous_traits].each do |trait|
+    headers << trait[:name]
+    if @results[:columns][:continuous_trait_notes_ids].include? trait[:id]
+      headers << "Notes: #{trait[:name]}"
+    end
+    if @results[:include_references]
+      headers << "Source: #{trait[:name]}"
+    end
+  end
+  @results[:columns][:otu_metadata_field_names].each do |metadata_field|
+    headers << metadata_field
+  end
+-%>
+<%= CSV.generate_line headers -%>
+<%-
+    @results[:rows].each do |otu_id, row_hash|
+      row = [row_hash[:name]]
+      if current_user
+        row << row_hash[:uploader_email]
+        row << row_hash[:upload_date].to_formatted_s(:db)
+      end
+      @results[:columns][:categorical_traits].each do |trait|
+        values = []
+        sources = []
+        notes = nil
+        categorical_trait_values = row_hash[:categorical][trait[:id]] if row_hash[:categorical]
+        if categorical_trait_values
+          categorical_trait_values[:values].each do |value_hash|
+            value_hash.each do |value_id, formatted_value|
+              values << formatted_value
+              source = @results[:sources].find{|x| x[:id] == categorical_trait_values[:sources][value_id]}
+              source_name = source[:name] if source
+              sources << source_name unless source_name.in? sources
+            end
+          end
+          notes = categorical_trait_values[:notes] if @results[:columns][:categorical_trait_notes_ids].include? trait[:id]
+        end
+        row << values.join('|')
+        row << notes if notes
+        row << sources.join(' ') if @results[:include_references]
+      end
+      @results[:columns][:continuous_traits].each do |trait|
+        values = []
+        sources = []
+        notes = nil
+        continuous_trait_values = row_hash[:continuous][trait[:id]] if row_hash[:continuous]
+        if continuous_trait_values
+          continuous_trait_values[:values].each do |value_hash|
+            value_hash.each do |value_id, formatted_value|
+              values << formatted_value
+              source = @results[:sources].find{|x| x[:id] == continuous_trait_values[:sources][value_id]}
+              source_name = source[:name] if source
+              sources << source_name unless source_name.in? sources
+            end
+          end
+          notes = continuous_trait_values[:notes] if @results[:columns][:continuous_trait_notes_ids].include? trait[:id]
+        end
+        row << values.join('|')
+        row << notes if notes
+        row << sources.join(' ') if @results[:include_references]
+      end
+      @results[:columns][:otu_metadata_field_names].each do |metadata_field_name|
+        row << row_hash[:metadata][metadata_field_name]
+      end
+-%>
+<%= CSV.generate_line(row).html_safe -%>
+<%- end -%>

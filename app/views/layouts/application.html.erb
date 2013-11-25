@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TraitDB</title>
+  <%= stylesheet_link_tag    "application", :media => "all" %>
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tags %>
+</head>
+<body style="padding-top: 40px;">
+<div class="container-fluid">
+  <div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container-fluid">
+        <%= link_to("TraitDB", root_path, :class => :brand) %>
+        <ul class="nav pull-left">
+          <li class="dropdown">
+            <a class="dropdown-toggle" href="#" data-toggle="dropdown"> Project: <%= @project.name if @project %><b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <% @selectable_projects.each do |p| %>
+                <li><%= link_to(p.name, {:controller => '/projects', :action => 'selected_project', :id => p.id}) %></li>
+              <% end %>
+            </ul>
+           </li>
+        </ul>
+        <ul class="nav pull-right">
+          <li class="<%= 'active' if params[:controller] == 'about' -%>"><%= link_to("About", :controller => '/about') %></li>
+          <li class="<%= 'active' if params[:controller] == 'search' -%>"><%= link_to("Search", :controller => '/search') %></li>
+          <% if user_signed_in? %>
+            <li class="<%= 'active' if params[:controller] == 'upload' -%>"><%= link_to("Upload", :controller => '/upload') %></li>
+          <% end %>
+          <% if current_user && current_user.admin? %>
+            <li class="dropdown">
+              <a class="dropdown-toggle" href="#" data-toggle="dropdown">Admin<b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><%= link_to('Projects', projects_path) %></li>
+                <li><%= link_to("Import Configs", csv_import_configs_path) %></li>
+                <li><%= link_to("Datasets", csv_datasets_path) %></li>
+              </ul>
+            </li>
+          <% end %>
+          <% if user_signed_in? %>
+            <li class="dropdown">
+                <a class="dropdown-toggle" href="#" data-toggle="dropdown">Data<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><%=  link_to("Taxa", :controller => '/taxa') %></li>
+                  <li><%=  link_to("OTUs", :controller => '/otus') %></li>
+                  <li class="divider"></li>
+                  <li><%=  link_to("Categorical Traits", :controller => '/categorical_traits') %></li>
+                  <li><%=  link_to("Continuous Traits", :controller => '/continuous_traits') %></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" href="#" data-toggle="dropdown"><%= current_user.email %> <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><%= link_to("Logout", destroy_user_session_path, :method => :delete ) %></li>
+              </ul>
+            </li>
+          <% else %>
+          <%# Not signed in %>
+            <li><%= link_to("Sign in", new_user_session_path) %>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="row-fluid">
+    <% if notice %><p class="alert alert-info"><%= notice %></p><% end %>
+    <% if alert %><p class="alert alert-error"><%= alert %></p><% end %>
+  </div>
+  <%= yield %>
+</div>
+</body>
+</html>

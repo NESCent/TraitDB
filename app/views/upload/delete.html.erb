@@ -1,0 +1,12 @@
+<% @page_title = 'Delete CSV File' %>
+<div class="row-fluid">&nbsp;</div>
+<div class="alert alert-warning">
+  <div class="row-fluid">
+    <p>Are you sure you want to delete <%= @dataset.csv_file_file_name %>?</p>
+  </div>
+  <div class="row-fluid">
+    <%= link_to("Delete", {:action => 'destroy', :id => @dataset.id}, :class => 'btn btn-danger', :method => :delete) %>
+    <%= link_to("Cancel", {:action => 'index'}, :class => 'btn') %>
+  </div>
+</div>
+

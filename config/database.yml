@@ -27,7 +27,14 @@ defaults: &defaults
   <<: *<%= ENV['RAILS_DB'] || "mysql" %>
 
 development:
-  <<: *defaults
+  adapter: postgresql
+  database: traitdb_dev
+  username: <%=ENV['TRAITDB_PG_DEV_USER']%>
+  password: <%=ENV['TRAITDB_PG_DEV_PASS']%>
+  host:     <%=ENV['TRAITDB_PG_DEV_PASS']%>
+  port:     <%=ENV['TRAITDB_PG_DEV_PORT']%>
+  min_messages: ERROR
+  reconnect: false
 
 test: &test
   <<: *defaults

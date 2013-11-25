@@ -12,3 +12,6 @@
 # prevent your application from stopping cleanly or starting at all.
 # Application start and stop is subject to different timeouts
 # throughout the system.
+
+cd $OPENSHIFT_REPO_DIR
+RAILS_ENV=production script/delayed_job stop &

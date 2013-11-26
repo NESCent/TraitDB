@@ -29,9 +29,10 @@ defaults: &defaults
 development:
   adapter: postgresql
   database: traitdb_dev
+  pool: 5
   username: <%=ENV['TRAITDB_PG_DEV_USER']%>
   password: <%=ENV['TRAITDB_PG_DEV_PASS']%>
-  host:     <%=ENV['TRAITDB_PG_DEV_PASS']%>
+  host:     <%=ENV['TRAITDB_PG_DEV_HOST']%>
   port:     <%=ENV['TRAITDB_PG_DEV_PORT']%>
   min_messages: ERROR
   reconnect: false

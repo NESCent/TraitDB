@@ -13,11 +13,14 @@
 
 ActiveRecord::Schema.define(version: 20131010153245) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "categorical_trait_categories", force: true do |t|
     t.string   "name"
     t.integer  "categorical_trait_id"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "categorical_trait_categories", ["categorical_trait_id"], name: "index_categorical_trait_categories_on_categorical_trait_id", using: :btree
@@ -26,8 +29,8 @@ ActiveRecord::Schema.define(version: 20131010153245) do
     t.text     "notes"
     t.integer  "otu_id"
     t.integer  "categorical_trait_id"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "categorical_trait_notes", ["categorical_trait_id"], name: "index_categorical_trait_notes_on_categorical_trait_id", using: :btree
@@ -38,8 +41,8 @@ ActiveRecord::Schema.define(version: 20131010153245) do
     t.integer  "otu_id"
     t.integer  "categorical_trait_id"
     t.integer  "categorical_trait_category_id"
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "source_reference_id"
   end
 
@@ -51,8 +54,8 @@ ActiveRecord::Schema.define(version: 20131010153245) do
   create_table "categorical_traits", force: true do |t|
     t.string   "name"
     t.integer  "import_job_id"
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "display_format_id"
     t.integer  "trait_set_id"
     t.integer  "project_id",        default: 1, null: false
@@ -77,8 +80,8 @@ ActiveRecord::Schema.define(version: 20131010153245) do
     t.text     "notes"
     t.integer  "otu_id"
     t.integer  "continuous_trait_id"
-    t.datetime "created_at",          null: false
-    t.datetime "updated_at",          null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "continuous_trait_notes", ["continuous_trait_id"], name: "index_continuous_trait_notes_on_continuous_trait_id", using: :btree
@@ -87,8 +90,8 @@ ActiveRecord::Schema.define(version: 20131010153245) do
   create_table "continuous_trait_values", force: true do |t|
     t.integer  "otu_id"
     t.integer  "continuous_trait_id"
-    t.datetime "created_at",                                   null: false
-    t.datetime "updated_at",                                   null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.decimal  "value",               precision: 10, scale: 2
     t.integer  "source_reference_id"
   end
@@ -100,8 +103,8 @@ ActiveRecord::Schema.define(version: 20131010153245) do
   create_table "continuous_traits", force: true do |t|
     t.string   "name"
     t.integer  "import_job_id"
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "display_format_id"
     t.integer  "trait_set_id"
     t.integer  "project_id",        default: 1, null: false
@@ -129,8 +132,8 @@ ActiveRecord::Schema.define(version: 20131010153245) do
     t.datetime "csv_file_updated_at"
     t.integer  "project_id"
     t.integer  "user_id"
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "encoding"
   end
 
@@ -143,8 +146,8 @@ ActiveRecord::Schema.define(version: 20131010153245) do
     t.datetime "config_file_updated_at"
     t.integer  "project_id"
     t.integer  "user_id"
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "name"
   end
 
@@ -158,23 +161,23 @@ ActiveRecord::Schema.define(version: 20131010153245) do
     t.datetime "failed_at"
     t.string   "locked_by"
     t.string   "queue"
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
 
   create_table "display_formats", force: true do |t|
     t.string   "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "headers", force: true do |t|
     t.string   "column_name"
     t.integer  "import_job_id"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "headers", ["column_name"], name: "index_headers_on_column_name", using: :btree
@@ -182,8 +185,8 @@ ActiveRecord::Schema.define(version: 20131010153245) do
 
   create_table "iczn_groups", force: true do |t|
     t.string   "name",       null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "level"
   end
 
@@ -201,8 +204,8 @@ ActiveRecord::Schema.define(version: 20131010153245) do
   create_table "import_jobs", force: true do |t|
     t.integer  "csv_dataset_id"
     t.string   "state",                limit: 25, default: "new", null: false
-    t.datetime "created_at",                                      null: false
-    t.datetime "updated_at",                                      null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "csv_row_count"
     t.integer  "csv_import_config_id"
   end
@@ -211,8 +214,8 @@ ActiveRecord::Schema.define(version: 20131010153245) do
 
   create_table "otu_metadata_fields", force: true do |t|
     t.string   "name"
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "project_id", default: 1, null: false
   end
 
@@ -223,8 +226,8 @@ ActiveRecord::Schema.define(version: 20131010153245) do
     t.text     "value"
     t.integer  "otu_metadata_field_id"
     t.integer  "otu_id"
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "otu_metadata_values", ["otu_id"], name: "index_otu_metadata_values_on_otu_id", using: :btree
@@ -233,8 +236,8 @@ ActiveRecord::Schema.define(version: 20131010153245) do
   create_table "otus", force: true do |t|
     t.string   "author"
     t.integer  "import_job_id"
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.text     "notes"
     t.integer  "project_id",    default: 1, null: false
     t.string   "name"
@@ -258,19 +261,19 @@ ActiveRecord::Schema.define(version: 20131010153245) do
     t.string   "column_name"
     t.string   "issue_description",  null: false
     t.string   "suggested_solution", null: false
-    t.datetime "created_at",         null: false
-    t.datetime "updated_at",         null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "row_name"
   end
 
-  add_index "parse_issues", ["column_location"], name: "index_import_issues_on_column_location", using: :btree
+  add_index "parse_issues", ["column_location"], name: "index_parse_issues_on_column_location", using: :btree
   add_index "parse_issues", ["import_job_id"], name: "index_parse_issues_on_import_job_id", using: :btree
-  add_index "parse_issues", ["row_location"], name: "index_import_issues_on_row_location", using: :btree
+  add_index "parse_issues", ["row_location"], name: "index_parse_issues_on_row_location", using: :btree
 
   create_table "projects", force: true do |t|
     t.string   "name"
-    t.datetime "created_at",          null: false
-    t.datetime "updated_at",          null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.text     "summary_description"
     t.text     "detail_description"
     t.text     "url"
@@ -288,21 +291,21 @@ ActiveRecord::Schema.define(version: 20131010153245) do
 
   create_table "source_references", force: true do |t|
     t.text     "source"
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "project_id", default: 1, null: false
   end
 
   add_index "source_references", ["project_id"], name: "index_source_references_on_project_id", using: :btree
-  add_index "source_references", ["source"], name: "index_source_references_on_source", length: {"source"=>25}, using: :btree
+  add_index "source_references", ["source"], name: "index_source_references_on_source", using: :btree
 
   create_table "taxa", force: true do |t|
     t.string   "name"
     t.string   "uri"
     t.integer  "iczn_group_id"
     t.integer  "import_job_id"
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "project_id",    default: 1, null: false
   end
 
@@ -323,16 +326,16 @@ ActiveRecord::Schema.define(version: 20131010153245) do
   create_table "taxon_ancestors", force: true do |t|
     t.integer  "parent_id",  null: false
     t.integer  "child_id",   null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "taxon_ancestors", ["parent_id", "child_id"], name: "index_taxon_ancestors_on_parent_id_and_child_id", using: :btree
 
   create_table "trait_groups", force: true do |t|
     t.string   "name"
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "project_id", default: 1, null: false
   end
 
@@ -342,8 +345,8 @@ ActiveRecord::Schema.define(version: 20131010153245) do
     t.string   "name"
     t.integer  "level",               default: 0
     t.integer  "parent_trait_set_id"
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "project_id",          default: 1, null: false
   end
 
@@ -361,8 +364,8 @@ ActiveRecord::Schema.define(version: 20131010153245) do
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
-    t.datetime "created_at",                             null: false
-    t.datetime "updated_at",                             null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.boolean  "admin",                  default: false
   end
 
@@ -371,12 +374,12 @@ ActiveRecord::Schema.define(version: 20131010153245) do
 
   create_table "validation_issues", force: true do |t|
     t.integer  "import_job_id"
+    t.integer  "column_location"
     t.string   "column_name"
     t.string   "issue_description",  null: false
     t.string   "suggested_solution", null: false
-    t.datetime "created_at",         null: false
-    t.datetime "updated_at",         null: false
-    t.integer  "column_location"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "validation_issues", ["column_location"], name: "index_validation_issues_on_column_location", using: :btree

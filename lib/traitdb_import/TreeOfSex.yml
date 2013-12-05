@@ -4,7 +4,7 @@ traitdb_spreadsheet_template:
   template_name: Tree of Sex
   # All taxonomy columns specified here are required
   taxonomy_columns: # keys are the local to the app.  Values are literals in the CSV
-    kingdom: kingdom # For plants or animals
+    kingdom: Kingdom # For plants or animals
     htg: Higher taxonomic group
     order: Order
     family: Family

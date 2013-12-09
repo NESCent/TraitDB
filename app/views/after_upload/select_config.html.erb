@@ -8,7 +8,6 @@
     <%= form_for(@import_job, :url => next_wizard_path, :html => {:class =>'form form-horizontal'}) do |f| %>
       <%= error_messages_for(@import_job) %>
       <div class="span9 offset1 well">
-
         <div class="control-group">
           <%= f.label(:csv_import_config_id, "Config", :class => 'control-label') %>
           <div class="controls">

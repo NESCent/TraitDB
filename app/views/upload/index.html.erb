@@ -62,9 +62,11 @@
             <td><%= dataset.user.email %></td>
             <td><%= link_to_current_status(dataset) %></td>
             <td>
-              <% if current_user.admin? || current_user == dataset.user %>
-                <%= link_to(raw("<i class=\"icon-remove icon-white\"></i>"), {:controller => 'upload', :action => 'delete', :id => dataset.id}, :class => 'btn btn-danger') %>
-              <% end %>
+              <% unless dataset.imported? %>
+                <% if current_user.admin? || current_user == dataset.user %>
+                  <%= link_to(raw("<i class=\"icon-remove icon-white\"></i>"), {:controller => 'upload', :action => 'delete', :id => dataset.id}, :class => 'btn btn-danger') %>
+                  <% end %>
+                <% end %>
             </td>
           </tr>
       <% end %>

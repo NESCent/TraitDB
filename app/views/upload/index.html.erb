@@ -38,6 +38,7 @@
         <th>Upload Date</th>
         <th>Uploader</th>
         <th>Status</th>
+        <th>Delete</th>
       </tr>
       <% @datasets.each do |dataset| %>
         <%
@@ -55,6 +56,11 @@
             <td><%= dataset.created_at %></td>
             <td><%= dataset.user.email %></td>
             <td><%= link_to_current_status(dataset) %></td>
+            <td>
+              <% if current_user.admin? || current_user == dataset.user %>
+                <%= link_to(raw("<i class=\"icon-remove icon-white\"></i>"), {:controller => 'upload', :action => 'delete', :id => dataset.id}, :class => 'btn btn-danger', :method => :delete) %>
+              <% end %>
+            </td>
           </tr>
       <% end %>
     </table>

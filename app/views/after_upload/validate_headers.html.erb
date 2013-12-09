@@ -2,6 +2,7 @@
 <% if @import_job.failed? %>
 <div class="row-fluid">
   <%= render(:partial => "import_jobs/issues", :locals => { :issues => @import_job.validation_issues, :issue_type => :headers}) %>
+  <%= link_to("Discard Dataset", {:action => 'delete', :id => @import_job.csv_dataset.id}, :class => 'btn btn-danger', :method => :delete) %>
 </div>
 <% elsif @import_job.validated_headers? %>
 <div class="row-fluid">

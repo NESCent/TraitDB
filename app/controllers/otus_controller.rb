@@ -21,8 +21,9 @@ class OtusController < ApplicationController
     else
       @count = 20
     end
-    @total = @project.otus.joins(:taxa).where(where_options).count
-    @otus = @project.otus.joins(:taxa).where(where_options).limit(@count).offset(@start)
+    
+    @total = @project.otus.includes(:csv_dataset).includes(:taxa).where(where_options).count
+    @otus = @project.otus.includes(:csv_dataset).includes(:taxa).where(where_options).limit(@count).offset(@start)
 
   end
 

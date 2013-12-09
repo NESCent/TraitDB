@@ -17,11 +17,9 @@ module UploadHelper
     'import_failed' => ['Import Failed', 'show']
   }
   def link_to_current_status(dataset)
-    if dataset.import_job.nil?
-      link_text, action = ACTIONS_FOR_STATES['new']
-    else
+    if dataset.import_job
       link_text, action = ACTIONS_FOR_STATES[dataset.import_job.state]
+      return link_to(link_text, :controller => 'after_upload', :import_job_id => dataset.import_job.id)
     end
-    link_to(link_text, :controller => 'after_upload', :import_job_id => dataset.import_job.id)
   end
 end

@@ -2,7 +2,7 @@
 <% if @import_job.failed? %>
   <div class="row-fluid">
     <p class="alert alert-error">Unable to import rows in <%= @import_job.file_name %></p>
-  </div>
+    <%= link_to("Discard Dataset", {:action => 'delete', :id => @import_job.csv_dataset.id}, :class => 'btn btn-danger', :method => :delete) %>  </div>
 <% elsif @import_job.imported? %>
   <div class="row-fluid">
     <p class="alert alert-success">Imported <%= @import_job.file_name %></p>

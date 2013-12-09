@@ -8,7 +8,7 @@
         <li><%= issue.issue_description %>: <%=  issue.suggested_solution %></li>
       <% end %>
     </ul>
-  </div>
+    <%= link_to("Discard Dataset", {:action => 'delete', :id => @import_job.csv_dataset.id}, :class => 'btn btn-danger', :method => :delete) %>  </div>
 </div>
 <% elsif @import_job.counted_rows? %>
 <div class="row-fluid">

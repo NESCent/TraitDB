@@ -36,7 +36,7 @@ traitdb_spreadsheet_template:
   categorical_trait_columns:
     -
       name: Hybrid # Denoted as hybrid based on species name; add reference to notes column if known from other data
-      values: [0,1]
+      values: ["0","1"]
       groups: [Plants]
     -
       name: Sexual System

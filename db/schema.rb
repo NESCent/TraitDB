@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131010153245) do
+ActiveRecord::Schema.define(version: 20131212195901) do
 
   create_table "categorical_trait_categories", force: true do |t|
     t.string   "name"
@@ -89,7 +89,7 @@ ActiveRecord::Schema.define(version: 20131010153245) do
     t.integer  "continuous_trait_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.decimal  "value",               precision: 10, scale: 2
+    t.decimal  "value",               precision: 20, scale: 3
     t.integer  "source_reference_id"
   end
 

@@ -23,11 +23,13 @@ class Taxon < ActiveRecord::Base
   scope :by_project, lambda{|p| where(:project_id => p) unless p.nil?}
 
   def grouped_categorical_traits
-    trait_groups.map{|g| g.categorical_traits.sorted }.flatten
+    return project.categorical_traits if project.trait_groups.empty?
+    return trait_groups.map{|g| g.categorical_traits.sorted }.flatten
   end
 
   def grouped_continuous_traits
-    trait_groups.map{|g| g.continuous_traits.sorted }.flatten
+    return project.continuous_traits if project.trait_groups.empty?
+    return trait_groups.map{|g| g.continuous_traits.sorted }.flatten
   end
 
   def descendants_with_level(dest_iczn_group)

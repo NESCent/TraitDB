@@ -271,10 +271,12 @@ class ImportJob < ActiveRecord::Base
       else
         continuous_trait = ContinuousTrait.by_project(project).where(:name => import_trait[:name]).first_or_create &setup_trait
       end
-      import_trait[:groups].each do |import_group_name|
-        group = TraitGroup.by_project(project).where(:name => import_group_name).first_or_create
-        group.continuous_traits << continuous_trait unless continuous_trait.in? group.continuous_traits
-        group.save
+      if import_trait[:groups]
+        import_trait[:groups].each do |import_group_name|
+          group = TraitGroup.by_project(project).where(:name => import_group_name).first_or_create
+          group.continuous_traits << continuous_trait unless continuous_trait.in? group.continuous_traits
+          group.save
+        end
       end
       continuous_trait.save
     end
@@ -300,10 +302,12 @@ class ImportJob < ActiveRecord::Base
         categorical_trait = CategoricalTrait.by_project(project).where(:name => import_trait[:name]).first_or_create &setup_trait
       end
 
-      import_trait[:groups].each do |import_group_name|
-        group = TraitGroup.by_project(project).where(:name => import_group_name).first_or_create
-        group.categorical_traits << categorical_trait unless categorical_trait.in? group.categorical_traits
-        group.save
+      if import_trait[:groups]
+        import_trait[:groups].each do |import_group_name|
+          group = TraitGroup.by_project(project).where(:name => import_group_name).first_or_create
+          group.categorical_traits << categorical_trait unless categorical_trait.in? group.categorical_traits
+          group.save
+        end
       end
 
       import_trait[:values].each do |value|

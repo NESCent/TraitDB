@@ -32,7 +32,6 @@
       row = []
       @results[:columns][:iczn_groups].each do |iczn_group_name|
         row << row_hash[:taxonomy][iczn_group_name]
-        # THIS ISMAKING TOO MANY COLS
       end
       if current_user
         row << row_hash[:uploader_email]

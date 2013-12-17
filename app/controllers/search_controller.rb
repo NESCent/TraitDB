@@ -63,7 +63,7 @@ class SearchController < ApplicationController
     @results = {}
     @results[:columns] = {} # start with an empty hash for output display columns
 
-    analyze_lowest_requested_taxa # populates @lowest_requested_taxa, @selected_taxon_ids, and @results[:columns][:iczn_groups]
+    analyze_lowest_requested_taxa # populates @lowest_requested_taxa and @selected_taxon_ids
     # analyze_lowest_requested_taxa must come before assemble_trait_filters
     assemble_trait_filters # populates @categorical_trait_category_map and @continuous_trait_predicate_map
 
@@ -186,11 +186,15 @@ class SearchController < ApplicationController
     # and another hash of otu names to otu ids
     # Get the name for each OTU in the rows hash and stuff it back into the hash
     #
+
     Otu.where(:id => rows.keys).
       includes(:otu_metadata_values => [:otu_metadata_field]).
-      includes(:import_job => {:csv_dataset  => :user}).each do |otu|
+      includes(:import_job => {:csv_dataset  => :user}).
+      includes(:taxa => [:iczn_group]).
+      each do |otu|
       rows[otu.id][:sort_name] = otu.sort_name
       rows[otu.id][:name] = otu.name
+      rows[otu.id][:taxonomy] = Hash[*otu.taxa.map{|t| [t.iczn_group.name, t.name]}.flatten]
       rows[otu.id][:metadata] = otu.metadata_hash
       rows[otu.id][:uploader_email] = otu.import_job.csv_dataset.user.email
       rows[otu.id][:upload_date] = otu.import_job.created_at
@@ -199,7 +203,7 @@ class SearchController < ApplicationController
     # When sorting a hash, it is converted to an array where element 0 is the key and element 1 is the value
     # sort based on the :sort_name in the value and convert back to a hash
     rows = Hash[rows.sort{|a,b| a[1][:sort_name] <=> b[1][:sort_name]}]
-
+    @results[:columns][:iczn_groups] = @project.iczn_groups.sorted.pluck(:name)
     @results[:columns][:categorical_trait_notes_ids] = categorical_trait_notes_ids
     @results[:columns][:continuous_trait_notes_ids] = continuous_trait_notes_ids
     @results[:columns][:otu_metadata_field_names] = otu_metadata_field_names
@@ -279,7 +283,6 @@ class SearchController < ApplicationController
     # The values are the Taxon IDs
     sorted_groups_requested = @project.iczn_groups.sorted.where(:name => params.keys)
     valid_group_names = @project.iczn_groups.sorted.pluck(:name)
-    @results[:columns][:iczn_groups]= sorted_groups_requested.map{|group| {:name => group.name, :id => group.id}}
 
     # An example params hash looks like this
     # "{"htg"=>{"0"=>"2601", "2"=>"2601"}, "order"=>{"0"=>"2602", "2"=>"2602"}, "family"=>{"0"=>"2603", "2"=>"2607"}, "genus"=>{"0"=>"2625", "2"=>"2612"}, "species"=>{"0"=>"2623", "2"=>"2613"}, "trait_types"=>{"0"=>""}, "categorical_trait_name"=>{"0"=>""}, "categorical_trait_values"=>{"0"=>""}, "continuous_trait_name"=>{"0"=>""}, "continuous_trait_value_predicates"=>{"0"=>""}, "continuous_trait_entries"=>{"0"=>""}, "include_references"=>"on", "controller"=>"search", "action"=>"results"}"

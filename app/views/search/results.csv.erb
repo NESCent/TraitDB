@@ -1,5 +1,5 @@
 <%-
-  headers = %w{OTU}
+  headers = Array.new(@results[:columns][:iczn_groups]) # start with iczn groups
   if current_user
     headers << "Uploader"
     headers << "Upload Date"
@@ -29,7 +29,10 @@
 <%= CSV.generate_line headers -%>
 <%-
     @results[:rows].each do |otu_id, row_hash|
-      row = [row_hash[:name]]
+      row = []
+      @results[:columns][:iczn_groups].each do |iczn_group_name|
+        row << row_hash[:taxonomy][iczn_group_name]
+      end
       if current_user
         row << row_hash[:uploader_email]
         row << row_hash[:upload_date].to_formatted_s(:db)

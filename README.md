@@ -4,7 +4,7 @@ TraitDB is a Ruby on Rails web application for storing and searching trait data.
 
 ## Installation
 
-TraitDB is a Rails 4 application.  It requires [ruby](http://ruby-lang.org) and [rubygems](http://rubygems.org) to run.  Other dependencies are specified in the Gemfile.  To get up and running with the development environment, you will need MySQL installed.  TraitDB supports any database compatible with Rails 4, but MySQL is configured by default
+TraitDB is a Rails 4 application.  It requires [ruby](http://ruby-lang.org) and [rubygems](http://rubygems.org) to run.  Other dependencies are specified in the Gemfile.  To get up and running with the development environment, you will need Postgres installed.  TraitDB can also be configured to work with MySQL if you wish, but Postgres is preferred.
 
 1. Clone the repository
 

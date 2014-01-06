@@ -108,7 +108,6 @@ module TraitDB
       end
       # Require at least one taxon header
       found_taxon_headers = (@config.taxonomy_columns.values) & headers
-      puts "found_taxon_headers: #{found_taxon_headers}"
       if found_taxon_headers.empty?
         # No taxon headers found
         @validation_results[:issues] << {

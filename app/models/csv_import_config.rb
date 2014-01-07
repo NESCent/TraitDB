@@ -52,30 +52,35 @@ class CsvImportConfig < ActiveRecord::Base
     info
   end
 
-  def generate_csv_template(group_name)
-    t = get_import_template
+  def all_column_headers
+    trait_group_names.map{|g| column_headers(g)}.flatten.uniq
+  end
 
-    output_csv_string = CSV.generate do |csv|
-      headers = []
-      headers += t.taxonomy_columns.values
+  def column_headers(group_name)
+    template = get_import_template
+    headers = []
+    headers += template.taxonomy_columns.values
 
-      # get the source prefix
-      source_prefix = t.trait_options['source_prefix']
-      require_source = t.trait_options['require_source']
+    source_prefix = template.trait_options['source_prefix']
+    require_source = template.trait_options['require_source']
 
-      t.categorical_trait_names_in_group(group_name).each do |cat|
-        headers << cat
-        headers << "#{source_prefix}#{cat}" if require_source
-      end
-      t.continuous_trait_names_in_group(group_name).each do |con|
-        headers << con
-        headers << "#{source_prefix}#{con}" if require_source
-      end
-      headers += t.metadata_columns.values
-      csv << headers
-      csv << []
+    template.categorical_trait_names_in_group(group_name).each do |categorical_trait_name|
+      headers << categorical_trait_name
+      headers << "#{source_prefix}#{categorical_trait_name}" if require_source
     end
-    output_csv_string
+    template.continuous_trait_names_in_group(group_name).each do |continuous_trait_name|
+      headers << continuous_trait_name
+      headers << "#{source_prefix}#{continuous_trait_name}" if require_source
+    end
+    headers += template.metadata_columns.values
+    headers
+  end
+
+  def generate_csv_template(group_name)
+    CSV.generate do |csv|
+      csv << column_headers(group_name)
+      csv << [] # empty row
+    end
   end
 
 end

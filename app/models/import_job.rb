@@ -193,6 +193,16 @@ class ImportJob < ActiveRecord::Base
     save
   end
 
+
+  def extra_headers
+    possible_headers = csv_import_config.all_column_headers
+    actual_headers = headers.pluck(:column_name)
+    actual_headers - possible_headers
+  end
+
+  def has_extra_headers?
+    !extra_headers.empty?
+  end
   private
 
   # The validator is a non-rails ruby class.  It is not persisted and its state isn't

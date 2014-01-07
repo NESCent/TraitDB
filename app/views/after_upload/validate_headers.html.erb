@@ -6,10 +6,25 @@
 </div>
 <% elsif @import_job.validated_headers? %>
 <div class="row-fluid">
-  <p class="alert alert-success">Headers are valid in <%= @import_job.file_name %>, continue to parse rows</p>
-</div>
-<div class="row-fluid">
-  <%= link_to("Next", next_wizard_path, :class => 'btn') %>
+  <% if @import_job.has_extra_headers? %>
+  <p class="alert alert-warning">Warning: Additional headers found in CSV file</p>
+    <p>The following columns in your CSV file were not found in the selected import config:</p>
+    <ul>
+    <% @import_job.extra_headers.each do |extra_header| %>
+      <li><%= extra_header %></li>
+    <% end %>
+    </ul>
+    <p>Data in these columns will be ignored.  If you believe this is an error, please check for typographical and case errors in both your CSV file and import config.</p>
+    <div class="row-fluid">
+      <%= link_to("Continue", next_wizard_path, :class => 'btn') %>
+      <%= link_to("Discard Dataset", {:action => 'delete', :id => @import_job.csv_dataset.id}, :class => 'btn btn-danger', :method => :delete) %>
+    </div>
+  <% else %>
+    <p class="alert alert-success">Headers are valid in <%= @import_job.file_name %>, continue to parse rows</p>
+    <div class="row-fluid">
+      <%= link_to("Next", next_wizard_path, :class => 'btn') %>
+    </div>
+<% end %>
 </div>
 <% elsif @import_job.running? || @import_job.counted_rows? %>
 <div class="row-fluid">

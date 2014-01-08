@@ -9,6 +9,7 @@ traitdb_spreadsheet_template:
   metadata_columns: # keys again are the internal TraitDB identifiers.
     year: Year
     authors: Authors
+    study_type: Study type
   trait_options:
     require_source: false
   continuous_trait_columns:

@@ -1,0 +1,18 @@
+traitdb_spreadsheet_template:
+  template_name: Baker's Law - Sample Data
+  # All taxonomy columns specified here are required
+  taxonomy_columns: # keys refer to internal TraitDB identifiers.  Values are the column names in CSV
+    family: Family
+    genus: Genus
+    species: Species
+    population: Population-level information
+  metadata_columns: # keys again are the internal TraitDB identifiers.
+    year: Year
+    authors: Authors
+  trait_options:
+    require_source: false
+  continuous_trait_columns:
+    -
+      name: tm
+      format: float
+      

@@ -99,7 +99,37 @@ module TraitDB
         @config['continuous_trait_columns'].map{|x| x['name'] }
       end
     end
-    
+
+    def continuous_trait_names_ungrouped
+      if trait_sets?
+        names = []
+        trait_set_qualified_continuous_trait_names.each do |qname|
+          trait = continuous(qname.join(delimiter))
+          if trait
+            names << qname.join(delimiter)
+          end
+        end
+        names
+      else
+        @config['continuous_trait_columns'].map{|x| x['name']}
+      end
+    end
+
+    def categorical_trait_names_ungrouped
+      if trait_sets?
+        names = []
+        trait_set_qualified_categorical_trait_names.each do |qname|
+          trait = categorical(qname.join(delimiter))
+          if trait
+            names << qname.join(delimiter)
+          end
+        end
+        names
+      else
+        @config['categorical_trait_columns'].map{|x| x['name']}
+      end
+    end
+
     def categorical_trait_names_in_group(group_name)
       if trait_sets?
         names = []

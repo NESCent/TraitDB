@@ -197,7 +197,8 @@ class ImportJob < ActiveRecord::Base
   def extra_headers
     possible_headers = csv_import_config.all_column_headers
     actual_headers = headers.pluck(:column_name)
-    actual_headers - possible_headers
+    extra_headers = actual_headers - possible_headers
+    extra_headers.uniq!.reject! &:blank?
   end
 
   def has_extra_headers?

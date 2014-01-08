@@ -16,6 +16,7 @@ IcznGroup.create([
                    {name: 'family',         level: 400},
                    {name: 'genus',          level: 500},
                    {name: 'species',        level: 600},
+                   {name: 'population',     level: 650},
                    {name: 'species_author', level: 700},
                    {name: 'infraspecific',  level: 800}
                  ])

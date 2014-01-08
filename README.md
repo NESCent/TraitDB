@@ -36,6 +36,8 @@ The upgrade_admin task only works for existing user accounts, so you will need t
 
 TraitDB accepts data uploads in CSV format, with a specific focus on data validation and organization.  In order to upload data into a project, you must write at least one import configuration file in YAML format. This configuration file will contain the project-specific data for your spreadsheets, as well as allowable values and rules for data relationships and which columns to import, ignore, or convert.
 
+For detailed information on writing import configs, see the documentation on the [wiki](wiki).
+
 Examples for the configuration files are in the [lib/traitdb_import](lib/traitdb_import) directory.
 
 Generally, the CSV files are required to have the following general characteristics

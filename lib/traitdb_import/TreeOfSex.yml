@@ -127,7 +127,14 @@ traitdb_spreadsheet_template:
       name: Polyfactorial
       values: [yes, no]
       groups: [Animals]
-      
+    -
+      name: Woodiness
+      values: [W, H, variable]
+      groups: [Plants]
+    -
+      name: Heterostyly
+      values: [tristyly, distyly, homostyly, other]
+      groups: [Plants]
   continuous_trait_columns:
     -
       name: Gametophytic chromosome number

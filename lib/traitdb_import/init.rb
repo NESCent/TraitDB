@@ -20,11 +20,11 @@ end
 
 
 import_template = TraitDB::ImportTemplate.new(ARGV[0])
-
-puts "Import Config Continuous Trait Names".center(80,'=')
-PP.pp(import_template.continuous_trait_column_names)
-puts "Import Config Categorical Trait Names".center(80,'=')
-PP.pp(import_template.categorical_trait_column_names)
+#
+#puts "Import Config Continuous Trait Names".center(80,'=')
+#PP.pp(import_template.continuous_trait_column_names)
+#puts "Import Config Categorical Trait Names".center(80,'=')
+#PP.pp(import_template.categorical_trait_column_names)
 
 exit -1 if ARGV.length < 2
 
@@ -42,6 +42,11 @@ rescue Exception => e
     exit -1
   end
 end
+
+extra_columns = validator.extra_columns
+puts "Extra columns: #{extra_columns.count}".center(80,'=')
+PP.pp(extra_columns)
+
 puts "Validation Results".center(80,'=')
 PP.pp(validation_results)
 
@@ -57,4 +62,4 @@ end
 puts "Datasets".center(80,'=')
 puts ""
 datasets = validator.datasets
-PP.pp(datasets)
+# PP.pp(datasets)

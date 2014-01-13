@@ -25,12 +25,12 @@ module TraitDB
 
     # metadata
     def metadata_columns # a hash that maps constants to the CSV column names, reverse it to get a map the other way
-      @config['metadata_columns']
+      @config['metadata_columns'] || {}
     end
 
     # options
     def trait_options # a hash that includes things like source_prefix, require_source, and notes_prefix
-      @config['trait_options']
+      @config['trait_options'] || {}
     end
 
     def trait_sets?

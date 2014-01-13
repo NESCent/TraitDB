@@ -26,11 +26,22 @@ PP.pp(import_template.continuous_trait_column_names)
 puts "Import Config Categorical Trait Names".center(80,'=')
 PP.pp(import_template.categorical_trait_column_names)
 
-exit if ARGV.length < 2
+exit -1 if ARGV.length < 2
 
 # Validator takes a template and a path to a CSV file
-validator = TraitDB::Validator.new(import_template, ARGV[1])
-validation_results = validator.validate
+  validator = TraitDB::Validator.new(import_template, ARGV[1])
+begin
+  validation_results = validator.validate
+rescue Exception => e
+  if e.message == 'invalid byte sequence in UTF-8' && validator.encoding.nil?
+    validator.encoding = 'ISO-8859-1'
+    validation_results = validator.validate
+  else
+    puts "ERROR: #{ARGV[1]} is not valid a CSV file".center(80, '=')
+    puts e.message
+    exit -1
+  end
+end
 puts "Validation Results".center(80,'=')
 PP.pp(validation_results)
 

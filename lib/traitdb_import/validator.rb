@@ -70,8 +70,7 @@ module TraitDB
     end
 
     def extra_columns
-      # Duplicated in csv_import_config.  Refactor into import_template
-      possible_headers = all_column_headers
+      possible_headers = @config.all_column_headers
       actual_headers = @csvfile.headers
       extra_headers = actual_headers - possible_headers
       extra_headers.reject! &:nil?
@@ -94,27 +93,6 @@ module TraitDB
     def validate_simple_properties
       # Check for sizes of rows?
     end
-
-    def all_column_headers
-      headers = []
-      headers += @config.taxonomy_columns.values
-
-      source_prefix = @config.trait_options['source_prefix']
-      require_source = @config.trait_options['require_source']
-
-      @config.categorical_trait_names_ungrouped.each do |categorical_trait_name|
-        headers << categorical_trait_name
-        headers << "#{source_prefix}#{categorical_trait_name}" if require_source
-      end
-      @config.continuous_trait_names_ungrouped.each do |continuous_trait_name|
-        headers << continuous_trait_name
-        headers << "#{source_prefix}#{continuous_trait_name}" if require_source
-      end
-      headers += @config.metadata_columns.values
-      headers
-    end
-
-
 
     def read_column_headers
       # check for Taxon headers (Htg, Order, Family, Genus, Species)

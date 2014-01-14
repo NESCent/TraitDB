@@ -117,6 +117,7 @@ traitdb_spreadsheet_template:
       values:
         - TSD
         - TSD Ia
+        - TSD Ib
         - TSD II
         - size
         - density

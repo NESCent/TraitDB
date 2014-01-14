@@ -195,10 +195,10 @@ class ImportJob < ActiveRecord::Base
 
 
   def extra_headers
-    possible_headers = csv_import_config.all_column_headers
+    possible_headers = csv_import_config.get_import_template.all_column_headers
     actual_headers = headers.pluck(:column_name)
     extra_headers = actual_headers - possible_headers
-    extra_headers.uniq!.reject! &:blank?
+    return extra_headers.uniq.reject &:blank?
   end
 
   def has_extra_headers?
@@ -445,13 +445,18 @@ class ImportJob < ActiveRecord::Base
             end
           end
 
-          value = ContinuousTraitValue.create(:continuous_trait_id => trait.id,
-                                              :value => import_trait[:value])
-          if import_trait[:source]
-            value.source_reference = source_reference
-            source_reference.continuous_trait_values << value
+          if import_trait[:values]
+            import_trait[:values].each do |import_trait_value|
+              value = ContinuousTraitValue.create(:continuous_trait_id => trait.id,
+                                                  :value => import_trait_value)
+              if import_trait[:source]
+                value.source_reference = source_reference
+                source_reference.continuous_trait_values << value
+              end
+              otu.continuous_trait_values << value
+            end
           end
-          otu.continuous_trait_values << value
+
           source_reference.save if import_trait[:source]
 
           # Record notes if present - only one field of notes

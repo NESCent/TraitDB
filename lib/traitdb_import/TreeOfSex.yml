@@ -135,6 +135,10 @@ traitdb_spreadsheet_template:
       name: Heterostyly
       values: [tristyly, distyly, homostyly, other]
       groups: [Plants]
+    -
+      name: Predicted ploidy
+      values: ["1","2","3","4"]
+      groups: [Animals]
   continuous_trait_columns:
     -
       name: Gametophytic chromosome number
@@ -171,10 +175,6 @@ traitdb_spreadsheet_template:
     -
       name: C-value
       format: float
-      groups: [Animals]
-    -
-      name: Predicted ploidy
-      format: integer
       groups: [Animals]
     -
       name: Woodiness count

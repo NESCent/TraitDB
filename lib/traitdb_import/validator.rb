@@ -19,6 +19,7 @@ end
 module TraitDB
   class Validator
     attr_reader :datasets, :trait_headers
+    attr_accessor :encoding
     # The template specifies what columns are valid
     # If we see a magic value in here it needs to be moved to the template
     def initialize(template=nil, path=nil, encoding=nil)

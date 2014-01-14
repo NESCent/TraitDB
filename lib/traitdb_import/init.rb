@@ -44,22 +44,20 @@ rescue Exception => e
 end
 
 extra_columns = validator.extra_columns
-puts "Extra columns: #{extra_columns.count}".center(80,'=')
+puts "Extra columns: #{extra_columns.count} ".ljust(100,'=')
 PP.pp(extra_columns)
 
-puts "Validation Results".center(80,'=')
+puts "Validation Results ".ljust(100,'=')
+puts ""
 PP.pp(validation_results)
 
-puts "Parse Results".center(80,'=')
 parse_results = validator.parse
-PP.pp(parse_results)
-
-puts "Parse Issues ".center(80,'=')
+puts "Parse Issues: #{parse_results[:issues].count} ".ljust(100,'=')
 parse_results[:issues].each do |issue|
   pp(issue)
 end
 
-puts "Datasets".center(80,'=')
-puts ""
 datasets = validator.datasets
+puts "Datasets: #{datasets.count} ".ljust(100,'=')
+puts ""
 # PP.pp(datasets)

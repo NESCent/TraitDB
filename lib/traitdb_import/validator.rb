@@ -222,23 +222,26 @@ module TraitDB
 
         # 2. Continuous Traits
         # Each item must be a number or nil
-        # build an array of hashes.  Hashes contain :name and :value.  :source will be added later if present
+        # build an array of hashes.  Hashes contain :name and :values.  :source will be added later if present
         continuous_trait_data = []
         row.to_hash.select{|k,v| @trait_headers[:continuous].map{|x| x[:name]}.include?(k)}.each do |k,v|
           next if v.nil?
-          # Fail if the data is non-numeric
-          if (v.is_number?)
-            continuous_trait_data << { :name => k, :value => Float(v) }
-          else
-            problematic_row = true
-            @parse_results[:issues] << {
-                :issue_description => 'Non-numeric value in continuous data field',
+          # split the data values
+          separator = @config.trait_options['value_separator'] || '|'
+          split_data_values = v.split(separator)
+          numeric_values = split_data_values.select &:is_number?
+          if numeric_values != split_data_values
+              problematic_row = true
+              @parse_results[:issues] << {
+                :issue_description => "Non-numeric values '#{v}' in continuous data field",
                 :row_location => lineno,
                 :column_name => k,
                 :row_name => dataset[:taxon],
                 :column_location => @csvfile.headers.index(k),
                 :suggested_solution => 'Provide a numeric value.'
-            }
+              }
+          else
+            continuous_trait_data << {:name => k, :values => numeric_values}
           end
         end
 
@@ -282,7 +285,7 @@ module TraitDB
         # Warn if source required but no source provided
         if @config.trait_options['require_source']
           (continuous_trait_data + categorical_trait_data).each do |trait_data|
-            # { :name => "chromosome number (female)", :value => 32.0 }
+            # { :name => "chromosome number (female)", :values => [32.0, 34.0] }
             expected_header_name = "#{@config.trait_options['source_prefix']}#{trait_data[:name]}"
             if row.to_hash[expected_header_name].nil? || row.to_hash[expected_header_name].empty?
               problematic_row = true
@@ -301,7 +304,7 @@ module TraitDB
         # Warn if source specified but no data
         row.to_hash.select{|k,v| @trait_source_headers.include?(k)}.each do |k,v|
           next if v.nil?
-          # find the existing hash {:name => xx, :value => yy} to inject the source
+          # find the existing hash {:name => xx, :values => [yy]} to inject the source
           expected_name = k.sub(@config.trait_options['source_prefix'],'')
           trait_data_hash = (continuous_trait_data + categorical_trait_data).find{|q| q[:name] == expected_name }
           if trait_data_hash.nil?
@@ -327,7 +330,7 @@ module TraitDB
         # Warn if notes but no data
         row.to_hash.select{|k,v| @trait_notes_headers.include?(k)}.each do |k,v|
           next if v.nil? || v.empty? # Notes are optional, may be
-          # find the existing hash {:name => xx, :value => yy} to inject the source
+          # find the existing hash {:name => xx, :values => [yy]} to inject the source
           expected_name = k.sub(@config.trait_options['notes_prefix'],'')
           trait_data_hash = (continuous_trait_data + categorical_trait_data).find{|q| q[:name] == expected_name }
           if trait_data_hash.nil? # have notes but no data.

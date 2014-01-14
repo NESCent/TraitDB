@@ -141,7 +141,23 @@ traitdb_spreadsheet_template:
       format: integer # formats are only for display
       groups: [Plants]
     -
+      name: Gametophytic chromosome number (minimum)
+      format: integer # formats are only for display
+      groups: [Plants]
+    -
+      name: Gametophytic chromosome number (mean)
+      format: integer # formats are only for display
+      groups: [Plants]
+    -
       name: Sporophytic chromosome number
+      format: integer
+      groups: [Plants]
+    -
+      name: Sporophytic chromosome number (minimum)
+      format: integer
+      groups: [Plants]
+    -
+      name: Sporophytic chromosome number (mean)
       format: integer
       groups: [Plants]
     -
@@ -160,4 +176,8 @@ traitdb_spreadsheet_template:
       name: Predicted ploidy
       format: integer
       groups: [Animals]
+    -
+      name: Woodiness count
+      format: integer
+      groups: [Plants]
       

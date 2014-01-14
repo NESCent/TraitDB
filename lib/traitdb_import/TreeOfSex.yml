@@ -125,7 +125,7 @@ traitdb_spreadsheet_template:
       groups: [Animals]
     -
       name: Polyfactorial
-      values: [yes, no]
+      values: ["yes", "no"]
       groups: [Animals]
     -
       name: Woodiness

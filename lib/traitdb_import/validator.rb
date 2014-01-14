@@ -233,7 +233,7 @@ module TraitDB
           if numeric_values != split_data_values
               problematic_row = true
               @parse_results[:issues] << {
-                :issue_description => "Non-numeric values '#{v}' in continuous data field",
+                :issue_description => "Non-numeric values '#{v.slice(0,200)}' in continuous data field",
                 :row_location => lineno,
                 :column_name => k,
                 :row_name => dataset[:taxon],

@@ -206,14 +206,17 @@ module TraitDB
 
       source_prefix = trait_options['source_prefix']
       require_source = trait_options['require_source']
+      notes_prefix = trait_options['notes_prefix']
 
       categorical_trait_names_in_group(group_name).each do |categorical_trait_name|
         headers << categorical_trait_name
         headers << "#{source_prefix}#{categorical_trait_name}" if require_source
+        headers << "#{notes_prefix}#{categorical_trait_name}" if notes_prefix
       end
       continuous_trait_names_in_group(group_name).each do |continuous_trait_name|
         headers << continuous_trait_name
         headers << "#{source_prefix}#{continuous_trait_name}" if require_source
+        headers << "#{notes_prefix}#{continuous_trait_name}" if notes_prefix
       end
       headers += metadata_columns.values
       headers
@@ -225,14 +228,17 @@ module TraitDB
 
       source_prefix = trait_options['source_prefix']
       require_source = trait_options['require_source']
+      notes_prefix = trait_options['notes_prefix']
 
       categorical_trait_names_ungrouped.each do |categorical_trait_name|
         headers << categorical_trait_name
         headers << "#{source_prefix}#{categorical_trait_name}" if require_source
+        headers << "#{notes_prefix}#{categorical_trait_name}" if notes_prefix
       end
       continuous_trait_names_ungrouped.each do |continuous_trait_name|
         headers << continuous_trait_name
         headers << "#{source_prefix}#{continuous_trait_name}" if require_source
+        headers << "#{notes_prefix}#{continuous_trait_name}" if notes_prefix
       end
       headers += metadata_columns.values
       headers

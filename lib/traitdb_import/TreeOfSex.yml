@@ -138,7 +138,7 @@ traitdb_spreadsheet_template:
       groups: [Plants]
     -
       name: Predicted ploidy
-      values: ["1","2","3","4"]
+      values: ["1","2","3","4","5","6"]
       groups: [Animals]
   continuous_trait_columns:
     -

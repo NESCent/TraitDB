@@ -342,26 +342,27 @@ class ImportJob < ActiveRecord::Base
     # need to make an otu out of each or detect if it exists
       datasets.each do |d|
         taxon = d[:taxon]
-        # Find or create an OTU for this row
+        # Find or create a Taxon for this row
         last_parent = nil
+        taxon_scope = Taxon.by_project(project)
         taxa_map = {}
         IcznGroup.sorted.each{|x| taxa_map[x.name] = nil}
         taxa_map.keys.each do |level|
           # level will be the name of the IcznGroup, e.g. 'htg' or 'family'
-          next if taxon[level].nil? || taxon[level].empty? # skip if this row doesn't have taxonomy information at the current level
-          model_taxon = Taxon.by_project(project).where(:name => taxon[level].strip).first_or_create do |t|
-            t.parent = last_parent
+          next if taxon[level].blank? # skip if this row doesn't have taxonomy information at the current level
+          iczn_group = IcznGroup.find_by_name(level)
+          model_taxon = taxon_scope.where(:name => taxon[level].strip, :iczn_group => iczn_group).first_or_create do |t|
             t.import_job = self
-            t.iczn_group = IcznGroup.find_by_name(level)
+            t.parent = last_parent
           end
           # add the named IcznGroup to the project
           project.iczn_groups << model_taxon.iczn_group unless model_taxon.iczn_group.in? project.iczn_groups
           project.save
           last_parent = taxa_map[level] = model_taxon
+          taxon_scope = last_parent.children
         end
 
         # Create an OTU
-        # Tested this in console but not yet web.  Should work just fine
         otu = Otu.by_project(project).create(:taxa => taxa_map.values.compact,:import_job => self)
         otu.generate_names
         otu.save

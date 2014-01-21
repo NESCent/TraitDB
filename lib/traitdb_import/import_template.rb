@@ -25,12 +25,12 @@ module TraitDB
 
     # metadata
     def metadata_columns # a hash that maps constants to the CSV column names, reverse it to get a map the other way
-      @config['metadata_columns']
+      @config['metadata_columns'] || {}
     end
 
     # options
     def trait_options # a hash that includes things like source_prefix, require_source, and notes_prefix
-      @config['trait_options']
+      @config['trait_options'] || {}
     end
 
     def trait_sets?
@@ -198,6 +198,50 @@ module TraitDB
     def categorical_trait_format(trait_name)
       t = categorical(trait_name)
       t.nil? ? [] : t['format']
+    end
+
+    def column_headers(group_name)
+      headers = []
+      headers += taxonomy_columns.values
+
+      source_prefix = trait_options['source_prefix']
+      require_source = trait_options['require_source']
+      notes_prefix = trait_options['notes_prefix']
+
+      categorical_trait_names_in_group(group_name).each do |categorical_trait_name|
+        headers << categorical_trait_name
+        headers << "#{source_prefix}#{categorical_trait_name}" if require_source
+        headers << "#{notes_prefix}#{categorical_trait_name}" if notes_prefix
+      end
+      continuous_trait_names_in_group(group_name).each do |continuous_trait_name|
+        headers << continuous_trait_name
+        headers << "#{source_prefix}#{continuous_trait_name}" if require_source
+        headers << "#{notes_prefix}#{continuous_trait_name}" if notes_prefix
+      end
+      headers += metadata_columns.values
+      headers
+    end
+
+    def all_column_headers
+      headers = []
+      headers += taxonomy_columns.values
+
+      source_prefix = trait_options['source_prefix']
+      require_source = trait_options['require_source']
+      notes_prefix = trait_options['notes_prefix']
+
+      categorical_trait_names_ungrouped.each do |categorical_trait_name|
+        headers << categorical_trait_name
+        headers << "#{source_prefix}#{categorical_trait_name}" if require_source
+        headers << "#{notes_prefix}#{categorical_trait_name}" if notes_prefix
+      end
+      continuous_trait_names_ungrouped.each do |continuous_trait_name|
+        headers << continuous_trait_name
+        headers << "#{source_prefix}#{continuous_trait_name}" if require_source
+        headers << "#{notes_prefix}#{continuous_trait_name}" if notes_prefix
+      end
+      headers += metadata_columns.values
+      headers
     end
 
     private

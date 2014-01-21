@@ -117,6 +117,7 @@ traitdb_spreadsheet_template:
       values:
         - TSD
         - TSD Ia
+        - TSD Ib
         - TSD II
         - size
         - density
@@ -125,16 +126,43 @@ traitdb_spreadsheet_template:
       groups: [Animals]
     -
       name: Polyfactorial
-      values: [yes, no]
+      values: ["yes", "no"]
       groups: [Animals]
-      
+    -
+      name: Woodiness
+      values: [W, H, variable]
+      groups: [Plants]
+    -
+      name: Heterostyly
+      values: [tristyly, distyly, homostyly, other]
+      groups: [Plants]
+    -
+      name: Predicted ploidy
+      values: ["1","2","3","4","5","6"]
+      groups: [Animals]
   continuous_trait_columns:
     -
       name: Gametophytic chromosome number
       format: integer # formats are only for display
       groups: [Plants]
     -
+      name: Gametophytic chromosome number (minimum)
+      format: integer # formats are only for display
+      groups: [Plants]
+    -
+      name: Gametophytic chromosome number (mean)
+      format: integer # formats are only for display
+      groups: [Plants]
+    -
       name: Sporophytic chromosome number
+      format: integer
+      groups: [Plants]
+    -
+      name: Sporophytic chromosome number (minimum)
+      format: integer
+      groups: [Plants]
+    -
+      name: Sporophytic chromosome number (mean)
       format: integer
       groups: [Plants]
     -
@@ -150,7 +178,7 @@ traitdb_spreadsheet_template:
       format: float
       groups: [Animals]
     -
-      name: Predicted ploidy
+      name: Woodiness count
       format: integer
-      groups: [Animals]
+      groups: [Plants]
       

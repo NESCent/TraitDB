@@ -20,30 +20,44 @@ end
 
 
 import_template = TraitDB::ImportTemplate.new(ARGV[0])
+#
+#puts "Import Config Continuous Trait Names".center(80,'=')
+#PP.pp(import_template.continuous_trait_column_names)
+#puts "Import Config Categorical Trait Names".center(80,'=')
+#PP.pp(import_template.categorical_trait_column_names)
 
-puts "Import Config Continuous Trait Names".center(80,'=')
-PP.pp(import_template.continuous_trait_column_names)
-puts "Import Config Categorical Trait Names".center(80,'=')
-PP.pp(import_template.categorical_trait_column_names)
-
-exit if ARGV.length < 2
+exit -1 if ARGV.length < 2
 
 # Validator takes a template and a path to a CSV file
-validator = TraitDB::Validator.new(import_template, ARGV[1])
-validation_results = validator.validate
-puts "Validation Results".center(80,'=')
+  validator = TraitDB::Validator.new(import_template, ARGV[1])
+begin
+  validation_results = validator.validate
+rescue Exception => e
+  if e.message == 'invalid byte sequence in UTF-8' && validator.encoding.nil?
+    validator.encoding = 'ISO-8859-1'
+    validation_results = validator.validate
+  else
+    puts "ERROR: #{ARGV[1]} is not valid a CSV file".center(80, '=')
+    puts e.message
+    exit -1
+  end
+end
+
+extra_columns = validator.extra_columns
+puts "Extra columns: #{extra_columns.count} ".ljust(100,'=')
+PP.pp(extra_columns)
+
+puts "Validation Results ".ljust(100,'=')
+puts ""
 PP.pp(validation_results)
 
-puts "Parse Results".center(80,'=')
 parse_results = validator.parse
-PP.pp(parse_results)
-
-puts "Parse Issues ".center(80,'=')
+puts "Parse Issues: #{parse_results[:issues].count} ".ljust(100,'=')
 parse_results[:issues].each do |issue|
   pp(issue)
 end
 
-puts "Datasets".center(80,'=')
-puts ""
 datasets = validator.datasets
-PP.pp(datasets)
+puts "Datasets: #{datasets.count} ".ljust(100,'=')
+puts ""
+# PP.pp(datasets)

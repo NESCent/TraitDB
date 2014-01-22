@@ -19,7 +19,7 @@ class Project < ActiveRecord::Base
 
   def add_iczn_groups(groups)
     groups.each do |iczn_group|
-      iczn_groups << group unless iczn_group.in? iczn_groups
+      iczn_groups << iczn_group unless iczn_group.in? iczn_groups
     end
     save
   end

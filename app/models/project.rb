@@ -16,4 +16,12 @@ class Project < ActiveRecord::Base
   has_many :trait_sets, :dependent => :destroy
 
   scope :sorted, -> { order('name ASC') }
+
+  def add_iczn_groups(groups)
+    groups.each do |iczn_group|
+      iczn_groups << group unless iczn_group.in? iczn_groups
+    end
+    save
+  end
+
 end

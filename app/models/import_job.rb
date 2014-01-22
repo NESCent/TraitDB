@@ -338,16 +338,16 @@ class ImportJob < ActiveRecord::Base
         # Create taxa
         taxonomy_hash = d[:taxon]
         ordered_taxonomy = get_ordered_taxa_iczngroups(taxonomy_hash)
-        row_taxa = find_or_create_taxa(ordered_taxonomy, self)
+        row_taxa = Taxon.find_or_create_with_ordered_taxonomy(ordered_taxonomy, self)
 
         # Add Iczn Groups to project
         iczn_groups = ordered_taxonomy.map{|taxon| taxon[:iczn_group]}
-        add_iczn_groups_to_project(iczn_groups)
+        project.add_iczn_groups(iczn_groups)
 
         # Create an OTU
-        otu = create_otu(row_taxa, self)
+        otu = Otu.by_project(project).create_with_taxa(row_taxa, self)
         metadata_hash = d[:metadata]
-        add_metadata_to_otu(otu, metadata_hash)
+        otu.add_metadata(metadata_hash)
 
         # Categorical Traits
         categorical_trait_hashes = d[:categorical_trait_data]
@@ -377,68 +377,6 @@ class ImportJob < ActiveRecord::Base
     return ordered_taxa_iczngroups
   end
 
-  # These should go into taxon.rb
-  def find_or_create_taxa(ordered_taxonomy, import_job)
-    # Makes taxa out of a taxonomy hash {'kingdom' => 'plantae', 'htg' => 'Angiosperms'}
-    # returns a list of the created taxa
-    # order of the hash matters
-    ordered_taxonomy.each do |ordered_taxon|
-      taxa << find_or_create_taxon(ordered_taxon[:taxon_name], taxa.first, ordered_taxon[:iczn_group], import_job)
-    end
-    return taxa
-  end
-
-  def find_or_create_taxon(taxon_name, parent, iczn_group, import_job)
-    # Finds or creates a taxon with the provided parentage
-    if parent
-      # scope should be children of the parent
-      taxon_scope = parent.children
-    else
-      # Scope should be project taxa with no parents.
-      taxon_scope = project.taxa.joins(:parent_taxon).where('taxon_ancestors.parent_id' => nil)
-    end
-
-    # taxon_scope specifies a where clause within the project and with the parent as ancestor
-    # If parent is nil, the scope is project taxa with no parent.
-
-    taxon_scope.where(:name => taxon_name, :iczn_group => iczn_group).first_or_create do |taxon|
-      taxon.import_job = import_job
-      taxon.parent = parent
-    end
-    return taxon
-  end
-
-  # Should go in project.rb
-  def add_iczn_groups_to_project(iczn_groups)
-    iczn_groups.each do |iczn_group|
-      project.iczn_groups << iczn_group unless iczn_group.in? project.iczn_groups
-    end
-    project.save
-  end
-
-  def create_otu(taxa, import_job)
-    return nil if taxa.empty?
-    return nil if import_job.nil?
-    otu = Otu.by_project(project).create(:taxa => taxa,:import_job => import_job)
-    otu.generate_names
-    otu.save
-  end
-
-  # should go in OTU
-  # Add metadata to the OTU, including notes, entry email, etc
-  def add_metadata_to_otu(otu, metadata_hash)
-    metadata_hash.each do |name, value|
-      next if name.nil? || value.nil?
-      model_field = OtuMetadataField.where(:name => name).first_or_create
-      model_value = OtuMetadataValue.create(:value => value,
-                                            :otu_metadata_field => model_field,
-                                            :otu => otu)
-      model_field.otu_metadata_values << model_value
-      otu.otu_metadata_values << model_value
-      model_field.save
-      model_value.save
-    end
-  end
 
   # Can go in source_reference.rb
   # Given a source name (e.g. 'Book of things 2009')

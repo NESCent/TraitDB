@@ -1,7 +1,15 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
 one:
-  name: MyString
+  name: "Test Project 1"
+  summary_description: "This is a summary of a project"
+  detail_description: "Lorem ipsum ..."
+  url: "http://www.example.com"
+  url_text: "Example.com, the most popular site on the internet"
 
 two:
-  name: MyString
+  name: "Test Project 2"
+  summary_description: "This is a summary of a project 2"
+  detail_description: "Lorem ipsum dolor..."
+  url: "http://www.demo.com"
+  url_text: "Demo.com, the SECOND most popular site on the internet"

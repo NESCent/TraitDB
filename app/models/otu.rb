@@ -59,4 +59,25 @@ class Otu < ActiveRecord::Base
     otu_metadata_values.map{|x| {x.otu_metadata_field.name => x.value}}.inject{|memo, x| memo.merge!(x)}
   end
 
+  # Test that this works scoped inside a project
+  def self.create_with_taxa(taxa, import_job)
+    return nil if taxa.empty?
+    return nil if import_job.nil?
+    otu = self.create(:taxa => taxa,:import_job => import_job)
+    otu.generate_names
+    otu.save
+    return otu
+  end
+
+  # Add metadata to the OTU, including notes, entry email, etc
+  # Test that values are saved after adding
+  def add_metadata(metadata_hash)
+    metadata_hash.each do |name, value|
+      next if name.nil? || value.nil?
+      model_field = OtuMetadataField.where(:name => name).first_or_create
+      model_value = otu_metadata_values.create(:value => value,
+                                               :otu_metadata_field => model_field)
+    end
+  end
+
 end

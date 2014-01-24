@@ -11,7 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131212195901) do
+ActiveRecord::Schema.define(version: 20140122163851) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
 
   create_table "categorical_trait_categories", force: true do |t|
     t.string   "name"
@@ -91,6 +94,7 @@ ActiveRecord::Schema.define(version: 20131212195901) do
     t.datetime "updated_at"
     t.decimal  "value",               precision: 20, scale: 3
     t.integer  "source_reference_id"
+    t.integer  "position"
   end
 
   add_index "continuous_trait_values", ["continuous_trait_id"], name: "index_continuous_trait_values_on_continuous_trait_id", using: :btree

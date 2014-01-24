@@ -13,8 +13,12 @@ TraitDB is a Rails 4 application.  It requires [ruby](http://ruby-lang.org) and 
     ```
     
 2. Install dependencies with `bundle install`
-3. Create a `config/database.yml` configuration file.  The `config/database.template` is provided as a template.  In this file, you should specify the database names you wish to use, as well as accounts, passwords, and any database host information.
-4. Run `rake db:setup`.  This Instructs Rails to connect to your database and create the required users and databases.  You will be prompted for your database root password.
+3. Set your database credentials as environment variables.  `config/database.yml` will read these values out of the environment.  If your database server is on a different host, set the host/port as well:
+    ```
+    export TRAITDB_PG_DEV_USER="traitdb_dev_user"
+    export TRAITDB_PG_DEV_PASS="your-password-here"
+    ```
+4. Run `rake db:setup`.  This Instructs Rails to connect to your database and create the required users and databases.  If your database requires you to authenticate before creating users/databases, you will be prompted for credentials.
 5. If `rake db:setup` is successful, it will also run a `rake db:migrate` to create database tables.  If not successful, you can create the databases and users manually, then run `rake db:migrate` manually.
 6. Start the server with `rails server`.
 7. Visit [http://localhost:3000](http://localhost:3000) to access the application.  You will be shown the about page.  If you click _Upload_, you will be redirected to the sign-in screen.  From here, you can create an account or sign in with OpenID.

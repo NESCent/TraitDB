@@ -24,15 +24,21 @@ export TRAITDB_PG_DEV_PASS="your-password-here"</code></pre>
 
 ## Usage
 
-### Access
+### Getting Started - Projects and Users
 
-Data in TraitDB is publicly searchable.  Authenticating with OpenID is a prerequisite for uploading data.  User accounts are created in the database on first login with OpenID.
+Data in TraitDB is publicly searchable and organized into projects.  Initially there are no projects, and only administrators can create projects.  Authentication is handled by OpenID, so in order to get started, you must:
 
-Administrator users can create projects and manage upload configurations.  By default, new user accounts are not administrators.  After installing TraitDB initially, you'll need to upgrade your user account to an admin in order to create a project.:
+1. Sign in with an OpenID by clicking __Sign In__ in the top menu bar.  After signing in, there will be an entry in the users table with your email address.
+2. Upgrade this user to an Administrator with the following rake command:
 
-    rake traitdb:upgrade_admin[email@domain.com]
+    $ rake traitdb:upgrade_admin[email@domain.com]
+    Upgrading email@domain.com
 
-The upgrade_admin task only works for existing user accounts, so you will need to authenticate with OpenID first to create that account.
+3. Reload your web browser, you will have an __Admin__ menu option.
+4. Click __Admin->Projects__, and the __New Project__ button.
+5. Fill out the project details and save the new project
+
+Any authenticated user can upload data to any project, but only administrators can create projects and upload Import Configs.
 
 ### Upload
 

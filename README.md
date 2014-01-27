@@ -30,10 +30,8 @@ Data in TraitDB is publicly searchable and organized into projects.  Initially t
 
 1. Sign in with an OpenID by clicking __Sign In__ in the top menu bar.  After signing in, there will be an entry in the users table with your email address.
 2. Upgrade this user to an Administrator with the following rake command:
-
-    $ rake traitdb:upgrade_admin[email@domain.com]
-    Upgrading email@domain.com
-
+<pre><code>$ rake traitdb:upgrade_admin[email@domain.com]
+Upgrading email@domain.com</code></pre>
 3. Reload your web browser, you will have an __Admin__ menu option.
 4. Click __Admin->Projects__, and the __New Project__ button.
 5. Fill out the project details and save the new project

@@ -92,11 +92,11 @@ class ImportJob < ActiveRecord::Base
 
   def download_issues_csv_string
     CSV.generate do |csv|
-      csv << ['Species Name', 'CSV Row Number', 'CSV Column Number', 'CSV Column Name', 'Problem', 'Possible Solution']
+      csv << ['Genus', 'Species', 'CSV Row Number', 'CSV Column Number', 'CSV Column Name', 'Problem', 'Possible Solution']
       # loop over the issues
       # print them to the report
       parse_issues.each do |issue|
-        csv << ["#{issue.row_name[:genus]} #{issue.row_name[:species]}", issue.row_location, issue.column_location, issue.column_name, issue.issue_description, issue.suggested_solution]
+        csv << [issue.row_name['genus'], issue.row_name['species'], issue.row_location, issue.column_location, issue.column_name, issue.issue_description, issue.suggested_solution]
       end
     end
   end

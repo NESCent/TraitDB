@@ -81,7 +81,7 @@ class Taxon < ActiveRecord::Base
       taxon_scope = parent.children
     else
       # Scope should be project taxa with no parents.
-      taxon_scope = self.by_project(@project).joins(:parent_taxon).where('taxon_ancestors.parent_id' => nil)
+      taxon_scope = self.by_project(import_job.project).joins(:parent_taxon).where('taxon_ancestors.parent_id' => nil)
     end
     model_taxon = taxon_scope.where(:name => taxon_name, :iczn_group => iczn_group).first_or_create do |taxon|
       taxon.import_job = import_job

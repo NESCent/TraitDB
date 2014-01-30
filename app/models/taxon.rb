@@ -67,7 +67,7 @@ class Taxon < ActiveRecord::Base
   def self.find_or_create_with_ordered_taxonomy(ordered_taxonomy, import_job)
     taxa = []
     ordered_taxonomy.each do |ordered_taxon|
-      taxa << self.find_or_create_with_parent(ordered_taxon[:taxon_name], taxa.first, ordered_taxon[:iczn_group], import_job)
+      taxa << self.find_or_create_with_parent(ordered_taxon[:taxon_name], taxa.last, ordered_taxon[:iczn_group], import_job)
     end
     return taxa
   end
@@ -75,13 +75,13 @@ class Taxon < ActiveRecord::Base
   # Finds or creates a taxon with the provided parentage
   def self.find_or_create_with_parent(taxon_name, parent, iczn_group, import_job)
     # taxon_scope specifies a where clause within the project and with the parent as ancestor
-    # If parent is nil, the scope is project taxa with no parent.
     if parent
       # scope should be children of the parent
       taxon_scope = parent.children
     else
-      # Scope should be project taxa with no parents.
-      taxon_scope = self.by_project(import_job.project).joins(:parent_taxon).where('taxon_ancestors.parent_id' => nil)
+      # Scope should be project taxa.  Not obvious how to search for taxa with no parents,
+      # because TaxonAncestor doesn't allow NULLs
+      taxon_scope = self.by_project(import_job.project)
     end
     model_taxon = taxon_scope.where(:name => taxon_name, :iczn_group => iczn_group).first_or_create do |taxon|
       taxon.import_job = import_job

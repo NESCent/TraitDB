@@ -22,7 +22,7 @@ traitdb_spreadsheet_template:
     -
       name: Plants
       taxonomic_rank: kingdom
-      taxon_name: Plants
+      taxon_name: Plantae
     - 
       name: Animals
       taxonomic_rank: kingdom

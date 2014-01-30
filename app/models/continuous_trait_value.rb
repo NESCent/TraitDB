@@ -1,5 +1,5 @@
 class ContinuousTraitValue < ActiveRecord::Base
-  attr_accessible :position, :continuous_trait_id, :value, :source_reference_id
+  attr_accessible :position, :continuous_trait_id, :value, :source_reference_id, :otu_id
   belongs_to :otu
   belongs_to :continuous_trait
   belongs_to :source_reference

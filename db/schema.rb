@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140122163851) do
+ActiveRecord::Schema.define(version: 20140130193724) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -310,6 +310,7 @@ ActiveRecord::Schema.define(version: 20140122163851) do
     t.integer  "project_id",    default: 1, null: false
   end
 
+  add_index "taxa", ["iczn_group_id", "project_id"], name: "taxa_by_ig_and_project", using: :btree
   add_index "taxa", ["iczn_group_id"], name: "index_taxa_on_iczn_group_id", using: :btree
   add_index "taxa", ["import_job_id"], name: "index_taxa_on_import_job_id", using: :btree
   add_index "taxa", ["name"], name: "index_taxa_on_name", using: :btree

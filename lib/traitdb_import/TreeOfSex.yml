@@ -26,7 +26,7 @@ traitdb_spreadsheet_template:
     - 
       name: Animals
       taxonomic_rank: kingdom
-      taxon_name: Animals
+      taxon_name: Animal
   trait_options:
     source_prefix: "source: " # include the space after the colon
     require_source: true # source rules for formatting?

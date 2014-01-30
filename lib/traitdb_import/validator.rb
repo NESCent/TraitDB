@@ -238,7 +238,7 @@ module TraitDB
                 :row_location => lineno,
                 :column_name => k,
                 :row_name => dataset[:taxon],
-                :column_location => @csvfile.headers.index(k),
+                :column_location => @csvfile.headers.index(k) + 1,
                 :suggested_solution => 'Provide a numeric value.'
               }
           else
@@ -269,7 +269,7 @@ module TraitDB
                 :row_location => lineno,
                 :column_name => name,
                 :row_name => dataset[:taxon],
-                :column_location => @csvfile.headers.index(name),
+                :column_location => @csvfile.headers.index(name) + 1,
                 :suggested_solution => "Acceptable values are #{allowed_data_values}"
               }
             end
@@ -295,7 +295,7 @@ module TraitDB
                 :row_location => lineno,
                 :column_name => expected_header_name,
                 :row_name => dataset[:taxon],
-                :column_location => @csvfile.headers.index(expected_header_name),
+                :column_location => @csvfile.headers.index(expected_header_name) + 1,
                 :suggested_solution => 'Provide source information for this value'
               }
             end
@@ -315,7 +315,7 @@ module TraitDB
                 :row_location => lineno,
                 :column_name => k,
                 :row_name => dataset[:taxon],
-                :column_location => @csvfile.headers.index(k),
+                :column_location => @csvfile.headers.index(k) + 1,
                 :suggested_solution => "Make sure data is valid for '#{expected_name}' or remove source info from '#{k}'"
             }
           else
@@ -341,7 +341,7 @@ module TraitDB
               :row_location => lineno,
               :column_name => k,
               :row_name => dataset[:taxon],
-              :column_location => @csvfile.headers.index(k),
+              :column_location => @csvfile.headers.index(k) + 1,
               :suggested_solution => "Make sure data is valid for '#{expected_name}' or remove notes from '#{k}'"
             }
           else

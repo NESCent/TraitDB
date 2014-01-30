@@ -81,7 +81,7 @@ class ImportJob < ActiveRecord::Base
       i = 0
       CSV.foreach(csv_dataset.csv_file.path, :encoding => csv_dataset.encoding) do |row|
         # rows are not escaped properly
-        if i == 0 || row_indices.include?(i)
+        if i == 0 || row_indices.include?(i + 1)
           csv << row
         end
         i += 1

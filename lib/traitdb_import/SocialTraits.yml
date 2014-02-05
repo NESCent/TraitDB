@@ -4,6 +4,7 @@ traitdb_spreadsheet_template:
   template_name: "Social Traits"
   # All taxonomy columns specified here are required
   taxonomy_columns: # keys are the local to the app.  Values are literals in the CSV
+    kingdom: Kingdom
     htg: Taxonomic Group
     family: Family
     subfamily: Subfamily

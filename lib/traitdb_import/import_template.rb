@@ -50,7 +50,7 @@ module TraitDB
       else
         # slice off the first element in the path and return the subtree
         sliced_path = path[1..-1]
-        subtree = tree['trait_sets'].find{|x| x && x['name'] == path[0]}
+        subtree = (tree['trait_sets'] || []).find{|x| x && x['name'] == path[0]}
         trait_set(sliced_path,subtree)
       end
     end

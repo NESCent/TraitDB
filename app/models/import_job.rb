@@ -477,7 +477,7 @@ class ImportJob < ActiveRecord::Base
     if template.trait_sets?
       # This is messy because I can't remember why the path 0..-2 is significant or how the paths are constructed
       path = template.trait_path_from_column(continuous_trait_hash[:name])
-      model_trait = TraitSet.find_or_create_with_path(project, path[0..-2]).continuous_trait_hash.where(:name => path[-1]).first
+      model_trait = TraitSet.find_or_create_with_path(project, path[0..-2]).continuous_traits.where(:name => path[-1]).first
     else
       model_trait = ContinuousTrait.by_project(project).where(:name => continuous_trait_hash[:name]).first
     end

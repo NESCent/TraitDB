@@ -4,144 +4,170 @@ traitdb_spreadsheet_template:
   template_name: "Social Traits"
   # All taxonomy columns specified here are required
   taxonomy_columns: # keys are the local to the app.  Values are literals in the CSV
-    htg: Taxonomic.Group
+    kingdom: Kingdom
+    htg: Taxonomic Group
     family: Family
     subfamily: Subfamily
     genus: Genus
     species: Species
   # Metadata columns are optional, could refactor into two groups
   metadata_columns:
-    common_name: Common.Name
-    former_name: Former.Name
-    data_miner: Data.Miner
-    data_checker: Data.Checker
-    study_locality: Study.Locality
+    common_name: Common Name
+    former_name: Former Name
+    data_miner: Data Miner
+    data_checker: Data Checker
+    study_locality: Study Locality
     latitude: Latitude
     longitude: Longitude
-    study_start_date: Study.Start
-    study_end_date: Study.End
+    study_start_date: Start of Study
+    study_end_date: End of Study
     notes_comments: Notes
-    reference_1: Primary.Sources
-    reference_2: Secondary.Source
-    reference_3: Tertiary.Source
+    reference_1: Primary Source
+    reference_2: Secondary Source
+    reference_3: Tertiary Source
   trait_options:
     require_source: false
-  continuous_trait_columns:
+    set_delimiter: '.'
+  trait_sets:
     -
-      name: "Group.Size"
-      format: float
+      name: "Demographic Structure"
+      depth: 1
+      continuous_trait_columns:
+      -
+        name: "Group Size"
+        format: float
+      -
+        name: "Number of Females"
+        format: float
+      -
+        name: "Number of Males"
+        format: float
+      -
+        name: "Sex Ratio (proportion of males)"
+        format: float
+      -
+        name: "Number of Reproductive Females"
+        format: float
+      -
+        name: "Number of Reproductive Males"
+        format: float
+      -
+        name: "Number of Nonreproductive Females"
+        format: float
+      -
+        name: "Number of Nonreproductive Males"
+        format: float
+      -
+        name: "Number of Alloparents"
+        format: float
+      -
+        name: "Number of Defenders"
+        format: float
     -
-      name: "#Females"
-      format: float
+      name: "Genetic Relatedness"
+      depth: 1
+      continuous_trait_columns:
+      -
+        name: "Colony/Group Relatedness"
+        format: float
+      -
+        name: "Male Reproductive-Worker Relatedness"
+        format: float
+      -
+        name: "Male Reproductive-Male Reproductive Relatedness"
+        format: float
+      -
+        name: "Female Reproductive-Worker Relatedness"
+        format: float
+      -
+        name: "Female Reproductive-Female Reproductive Relatedness"
+        format: float
+      -
+        name: "Worker-Worker Relatedness"
+        format: float
+      -
+        name: "Male Reproductive-Female Reproductive Relatedness"
+        format: float
     -
-      name: "#Males"
-      format: float
+      name: "Fecundity (Production of Sexuals)"
+      depth: 1
+      continuous_trait_columns:
+      -
+        name: "Reproductive Reproduction (per bout)"
+        format: float
+      -
+        name: "Reproductive Reproduction (per season/year)"
+        format: float
+      -
+        name: "Reproductive Reproduction (lifetime)"
+        format: float
+      -
+        name: "Worker Reproduction (per bout)"
+        format: float
+      -
+        name: "Worker Reproduction (per season/year)"
+        format: float
+      -
+        name: "Worker Reproduction (lifetime)"
+        format: float
     -
-      name: "Sex.Ratio/Frac.Males"
-      format: float
+      name: "Longevity/Lifespan"
+      depth: 1
+      continuous_trait_columns:
+      -
+        name: "Female Reproductive Longevity"
+        format: float
+      -
+        name: "Female Reproductive Longevity (max)"
+        format: float
+      -
+        name: "Male Reproductive Longevity"
+        format: float
+      -
+        name: "Male Reproductive Longevity (max)"
+        format: float
+      -
+        name: "Unknown Sex Reproductive Longevity"
+        format: float
+      -
+        name: "Unknown Sex Reproductive Longevity (max)"
+        format: float
+      -
+        name: "Female Nonreproductive Longevity"
+        format: float
+      -
+        name: "Female Nonreproductive Longevity"
+        format: float
+      -
+        name: "Male Nonreproductive Longevity"
+        format: float
+      -
+        name: "Male Nonreproductive Longevity (max)"
+        format: float
+      -
+        name: "Unknown Sex Nonreproductive Longevity"
+        format: float
+      -
+        name: "Unknown Sex Nonreproductive Longevity (max)"
+        format: float
     -
-      name: "#Female.Repro"
-      format: float
-    -
-      name: "#Male.Repro"
-      format: float
-    -
-      name: "#Female.NonRepro"
-      format: float
-    -
-      name: "#Male.NonRepro"
-      format: float
-    -
-      name: "#Alloparents"
-      format: float
-    -
-      name: "#Defenders"
-      format: float
-    -
-      name: "Rel.Colony/Group"
-      format: float
-    -
-      name: "Rel.M.Repro-Worker"
-      format: float
-    -
-      name: "Rel.M.Repro-M.Repro"
-      format: float
-    -
-      name: "Rel.F.Repro-Worker"
-      format: float
-    -
-      name: "Rel.F.Repro-F.Repro"
-      format: float
-    -
-      name: "Rel.Worker-Worker"
-      format: float
-    -
-      name: "Rel.M.Repro-F.Repro"
-      format: float
-    -
-      name: "Repro.Repro.Sexual(bout)"
-      format: float
-    -
-      name: "Repro.Repro.Sexual(season/yr)"
-      format: float
-    -
-      name: "Repro.Repro.Sexual(lifetime)"
-      format: float
-    -
-      name: "Worker.Repro.Sexual(bout)"
-      format: float
-    -
-      name: "Worker.Repro.Sexual(season/yr)"
-      format: float
-    -
-      name: "Worker.Repro.Sexual(lifetime)"
-      format: float
-    -
-      name: "Repro.Longevity.Female"
-      format: float
-    -
-      name: "Repro.Longevity.Female.MAX"
-      format: float
-    -
-      name: "Repro.Longevity.Male"
-      format: float
-    -
-      name: "Repro.Longevity.Male.MAX"
-      format: float
-    -
-      name: "Repro.Longevity.Unknown"
-      format: float
-    -
-      name: "NonRepro.Longevity.Female"
-      format: float
-    -
-      name: "NonRepro.Longevity.FemaleMAX"
-      format: float
-    -
-      name: "NonRepro.Longevity.Male"
-      format: float
-    -
-      name: "NonRepro.Longevity.MaleMAX"
-      format: float
-    -
-      name: "NonRepro.Longevity.Unknown"
-      format: float
-    -
-      name: "Age.First.Repro.Male(yrs)"
-      format: float
-    -
-      name: "Age.First.Repro.Female(yrs)"
-      format: float
-    -
-      name: "Age.First.Repro.Unknown(yrs)"
-      format: float
-    -
-      name: "Body.Mass.Repro.Female(gms)"
-      format: float
-    -
-      name: "Body.Mass.Repro.Male(gms)"
-      format: float
-    -
-      name: "Body.Mass.Worker(gms)"
-      format: float
-
+      name: "Life History Traits"
+      depth: 1
+      continuous_trait_columns:
+      -
+        name: "Male Age at First Reproduction (years)"
+        format: float
+      -
+        name: "Female Age at First Reproduction (years)"
+        format: float
+      -
+        name: "Unknown Sex Age at First Reproduction (years)"
+        format: float
+      -
+        name: "Females Body Mass (gms)"
+        format: float
+      -
+        name: "Male Body Mass (gms)"
+        format: float
+      -
+        name: "Worker Body Mass (gms)"

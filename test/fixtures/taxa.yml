@@ -3,7 +3,9 @@
 one:
   name: MyString
   uri: MyString
+  project_id: 1
 
 two:
   name: MyString
   uri: MyString
+  project_id: 2

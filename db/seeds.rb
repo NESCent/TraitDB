@@ -14,6 +14,7 @@ IcznGroup.create([
                    {name: 'htg',            level: 200},
                    {name: 'order',          level: 300},
                    {name: 'family',         level: 400},
+                   {name: 'subfamily',      level: 450},
                    {name: 'genus',          level: 500},
                    {name: 'species',        level: 600},
                    {name: 'population',     level: 650},

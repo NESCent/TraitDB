@@ -81,9 +81,9 @@ class Taxon < ActiveRecord::Base
     else
       # Scope should be project taxa.  Not obvious how to search for taxa with no parents,
       # because TaxonAncestor doesn't allow NULLs
-      taxon_scope = self.by_project(import_job.project)
+      taxon_scope = self
     end
-    model_taxon = taxon_scope.where(:name => taxon_name, :iczn_group => iczn_group).first_or_create do |taxon|
+    model_taxon = taxon_scope.by_project(import_job.project).where(:name => taxon_name, :iczn_group => iczn_group).first_or_create do |taxon|
       taxon.import_job = import_job
       taxon.parent = parent
     end

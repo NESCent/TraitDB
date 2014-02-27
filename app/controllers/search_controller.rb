@@ -403,13 +403,6 @@ class SearchController < ApplicationController
     return @project.taxa.with_parent(parent_taxon_id).in_iczn_group(iczn_group_id).sorted
   end
 
-
-  def taxa_in_iczn_group_with_parents(iczn_group_id, parent_taxon_ids)
-    iczn_group = @project.iczn_groups.find(iczn_group_id)
-    taxon_ids = @project.taxa.where(:id => parent_taxon_ids).map{|t| t.descendants_with_level(iczn_group).map{|x| x.id}}.inject{|memo,id| memo & id}
-    return @project.taxa.where(:id => taxon_ids).sorted
-  end
-
   def traits
     return @project.categorical_traits.sorted
   end

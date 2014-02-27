@@ -22,6 +22,9 @@ class Taxon < ActiveRecord::Base
 
   scope :by_project, lambda{|p| where(:project_id => p) unless p.nil?}
 
+  scope :with_parent, lambda{|parent_id| joins(:parent_taxon).where('parent_id = ?', parent_id)}
+  scope :with_child, lambda{|child_id| joins(:child_taxa).where('child_id = ?', child_id)}
+
   def grouped_categorical_traits
     return project.categorical_traits if project.trait_groups.empty?
     return trait_groups.map{|g| g.categorical_traits.sorted }.flatten

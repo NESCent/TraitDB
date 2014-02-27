@@ -232,23 +232,21 @@ function updateCategoricalTraitValues(traitElement, valueList) {
 }
 
 function groupChanged(groupElement, groupId) {
-    // when a group changes, reload the possible values for everything that is more specific
+    // when a group changes, reload the possible values the next group
+    var parentId = $(groupElement).val();
     var level = parseInt(groupElement.attributes['data-grouplevel'].value, 10);
-    var groupLevelsToSend = icznGroups.map(function(g) { return g.level; }).filter(function(l) { return l <= level; });
-    var parentIds = new Array();
-    groupLevelsToSend.forEach(function(groupLevel) {
-        parentIds.push($(groupElement).closest(".taxon-filter-row").find('select[data-grouplevel=' + groupLevel + ']').val());
-    });
-    console.log('parentIds' + parentIds);
     // Send an ajax request for each of the group levels to clear
     var groupsToClear = icznGroups.filter(function(g) { return g.level > level; });
     groupsToClear.forEach(function(group) {
         $(groupElement).closest(".taxon-filter-row").find('select[data-grouplevel=' + group.level + ']').find('option').remove();
+    });
+    if(groupsToClear.length > 0) {
+        var group = groupsToClear[0];
         $.ajax({
             url: "/search/list_taxa.json",
             data: {
                 iczn_group_id: group.id,
-                parent_ids: parentIds
+                parent_id: parentId
             }
         }).done(function(data) {
                 var specificGroupElement = $(groupElement).closest(".taxon-filter-row").find('select[data-grouplevel=' + group.level + ']').first();
@@ -256,7 +254,7 @@ function groupChanged(groupElement, groupId) {
                 console.log('received response from list taxa for group id : ' + group.id + ' data: ' + data);
             }
         );
-    });
+    }
 }
 
 function updateGroupList(destinationSelectElement, taxa) {

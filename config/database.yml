@@ -49,4 +49,12 @@ test: &test
   reconnect: false
 
 production:
-  <<: *defaults
+  adapter: postgresql
+  database: traitdb_prod
+  pool: 5
+  username: <%=ENV['TRAITDB_PG_PROD_USER']%>
+  password: <%=ENV['TRAITDB_PG_PROD_PASS']%>
+  host:     <%=ENV['TRAITDB_PG_PROD_HOST']%>
+  port:     <%=ENV['TRAITDB_PG_PROD_PORT']%>
+  min_messages: ERROR
+  reconnect: false

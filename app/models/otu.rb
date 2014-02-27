@@ -17,6 +17,7 @@ class Otu < ActiveRecord::Base
 
   scope :by_iczn_group, lambda{|iczn_group| iczn_group.taxa.otus}
   scope :by_project, lambda{|p| where(:project_id => p) unless p.nil?}
+  scope :sorted, -> { order('sort_name ASC') }
 
   def taxon_name_for_iczn_group(iczn_group)
     taxon = taxa.where(:iczn_group => iczn_group).first

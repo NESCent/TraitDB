@@ -191,8 +191,8 @@ class SearchController < ApplicationController
       includes(:otu_metadata_values => [:otu_metadata_field]).
       includes(:import_job => {:csv_dataset  => :user}).
       includes(:taxa => [:iczn_group]).
+      sorted().
       each do |otu|
-      rows[otu.id][:sort_name] = otu.sort_name
       rows[otu.id][:name] = otu.name
       rows[otu.id][:taxonomy] = Hash[*otu.taxa.map{|t| [t.iczn_group.name, t.name]}.flatten]
       rows[otu.id][:metadata] = otu.metadata_hash
@@ -200,9 +200,6 @@ class SearchController < ApplicationController
       rows[otu.id][:upload_date] = otu.import_job.created_at
       otu.metadata_hash.keys.each{|field_name| otu_metadata_field_names << field_name unless field_name.in? otu_metadata_field_names}
     end
-    # When sorting a hash, it is converted to an array where element 0 is the key and element 1 is the value
-    # sort based on the :sort_name in the value and convert back to a hash
-    rows = Hash[rows.sort{|a,b| a[1][:sort_name] <=> b[1][:sort_name]}]
     @results[:columns][:iczn_groups] = @project.iczn_groups.sorted.pluck(:name)
     @results[:columns][:categorical_trait_notes_ids] = categorical_trait_notes_ids
     @results[:columns][:continuous_trait_notes_ids] = continuous_trait_notes_ids

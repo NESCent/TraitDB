@@ -19,7 +19,7 @@ class Taxon < ActiveRecord::Base
 
   scope :sorted_by_iczn, -> { joins(:iczn_group).order('iczn_groups.level ASC') }
   scope :under_iczn_group, lambda{|iczn_group| joins(:iczn_group).where('iczn_groups.level > ?', iczn_group.level)}
-
+  scope :in_iczn_group, lambda{|iczn_group_id| where(:iczn_group_id => iczn_group_id)}
   scope :by_project, lambda{|p| where(:project_id => p) unless p.nil?}
 
   scope :with_parent, lambda{|parent_id| joins(:parent_taxon).where('parent_id = ?', parent_id)}

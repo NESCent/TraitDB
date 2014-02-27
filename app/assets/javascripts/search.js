@@ -233,12 +233,8 @@ function updateCategoricalTraitValues(traitElement, valueList) {
 
 function groupChanged(groupElement, groupId) {
     // when a group changes, reload the possible values the next group
+    var parentId = $(groupElement).val();
     var level = parseInt(groupElement.attributes['data-grouplevel'].value, 10);
-    var groupLevelsToSend = icznGroups.map(function(g) { return g.level; }).filter(function(l) { return l <= level; });
-    var parentIds = new Array();
-    groupLevelsToSend.forEach(function(groupLevel) {
-        parentIds.push($(groupElement).closest(".taxon-filter-row").find('select[data-grouplevel=' + groupLevel + ']').val());
-    });
     // Send an ajax request for each of the group levels to clear
     var groupsToClear = icznGroups.filter(function(g) { return g.level > level; });
     groupsToClear.forEach(function(group) {
@@ -250,7 +246,7 @@ function groupChanged(groupElement, groupId) {
             url: "/search/list_taxa.json",
             data: {
                 iczn_group_id: group.id,
-                parent_ids: parentIds
+                parent_id: parentId
             }
         }).done(function(data) {
                 var specificGroupElement = $(groupElement).closest(".taxon-filter-row").find('select[data-grouplevel=' + group.level + ']').first();

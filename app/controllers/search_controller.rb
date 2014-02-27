@@ -13,10 +13,10 @@ class SearchController < ApplicationController
     @trait_set_levels = @project.trait_sets.levels
   end
 
-  def list_taxa # needs iczn_group_id and parent_ids
+  def list_taxa # needs iczn_group_id and parent_id
     iczn_group_id = params[:iczn_group_id]
-    parent_ids = params[:parent_ids]
-    @taxa_list = taxa_in_iczn_group_with_parents(iczn_group_id, parent_ids)
+    parent_id = params[:parent_id]
+    @taxa_list = taxa_in_iczn_group_with_parent(iczn_group_id, parent_id)
     render :json => @taxa_list
   end
 
@@ -398,6 +398,11 @@ class SearchController < ApplicationController
       end
     end
   end
+
+  def taxa_in_iczn_group_with_parent(iczn_group_id, parent_taxon_id)
+    return @project.taxa.with_parent(parent_taxon_id).in_iczn_group(iczn_group_id).sorted
+  end
+
 
   def taxa_in_iczn_group_with_parents(iczn_group_id, parent_taxon_ids)
     iczn_group = @project.iczn_groups.find(iczn_group_id)

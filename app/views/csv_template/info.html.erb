@@ -12,15 +12,15 @@
     <div class="row-fluid">Categorical Trait Columns</div>
         <% @info[:categorical_traits].each do |cat| %>
           <div class="row-fluid offset1">
-            <span class="span3">
+            <span class="span6">
               <strong><%= cat[:name] %></strong>
             </span>
-            <span class="span7">
-              <ul>
+            <span class="span5">
+              <ol>
               <% cat[:values].each do |v| %>
                 <li><%= v %></li>
               <% end %>
-              </ul>
+              </ol>
             </span>
           </div>
         <% end %>
@@ -29,8 +29,8 @@
     <div class="row-fluid">Continuous Trait Columns</div>
     <% @info[:continuous_traits].each do |con| %>
       <div class="row-fluid offset1">
-        <span class="span3"><strong><%= con[:name] %></strong></span>
-        <span class="span7">(<%= con[:format]%>)</span>
+        <span class="span6"><strong><%= con[:name] %></strong></span>
+        <span class="span5">(<%= con[:format]%>)</span>
       </div>
     <% end %>
   </div>
@@ -39,12 +39,12 @@
       <div class="row-fluid">Source Columns</div>
       <% @info[:categorical_traits].each do |cat| %>
         <div class="row-fluid offset1">
-          <span class="span3"><strong><%= cat[:source_name] %></strong></span>
+          <span class="span6"><strong><%= cat[:source_name] %></strong></span>
         </div>
       <% end %>
       <% @info[:continuous_traits].each do |con| %>
         <div class="row-fluid offset1">
-          <span class="span3"><strong><%= con[:source_name] %></strong></span>
+          <span class="span6"><strong><%= con[:source_name] %></strong></span>
         </div>
       <% end %>
     </div>
@@ -60,12 +60,12 @@
     <div class="row-fluid">Notes Columns (optional)</div>
     <% @info[:categorical_traits].each do |cat| %>
       <div class="row-fluid offset1">
-        <span class="span3"><strong><%= cat[:notes_name] %></strong></span>
+        <span class="span6"><strong><%= cat[:notes_name] %></strong></span>
       </div>
     <% end %>
     <% @info[:continuous_traits].each do |con| %>
       <div class="row-fluid offset1">
-        <span class="span3"><strong><%= con[:notes_name] %></strong></span>
+        <span class="span6"><strong><%= con[:notes_name] %></strong></span>
       </div>
     <% end %>
   </div>

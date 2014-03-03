@@ -34,19 +34,21 @@
       </div>
     <% end %>
   </div>
-  <div class="well well-large">
-    <div class="row-fluid">Source Columns</div>
-    <% @info[:categorical_traits].each do |cat| %>
-      <div class="row-fluid offset1">
-        <span class="span3"><strong><%= cat[:source_name] %></strong></span>
-      </div>
-    <% end %>
-    <% @info[:continuous_traits].each do |con| %>
-      <div class="row-fluid offset1">
-        <span class="span3"><strong><%= con[:source_name] %></strong></span>
-      </div>
-    <% end %>
-  </div>
+  <% if @info[:require_source] %>
+    <div class="well well-large">
+      <div class="row-fluid">Source Columns</div>
+      <% @info[:categorical_traits].each do |cat| %>
+        <div class="row-fluid offset1">
+          <span class="span3"><strong><%= cat[:source_name] %></strong></span>
+        </div>
+      <% end %>
+      <% @info[:continuous_traits].each do |con| %>
+        <div class="row-fluid offset1">
+          <span class="span3"><strong><%= con[:source_name] %></strong></span>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
   <div class="well well-large">
     <div class="row-fluid">Metadata Columns</div>
     <% @info[:metadata_columns].each do |col| %>

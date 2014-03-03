@@ -55,8 +55,8 @@ class CsvImportConfig < ActiveRecord::Base
         :name => con,
         :format => t.continuous_trait_format(con),
       }
-      trait[:source_name] = "#{source_prefix}#{cat}" if source_prefix
-      trait[:notes_name] = "#{notes_prefix}#{cat}" if notes_prefix
+      trait[:source_name] = "#{source_prefix}#{con}" if source_prefix
+      trait[:notes_name] = "#{notes_prefix}#{con}" if notes_prefix
       info[:continuous_traits] << trait
     end
     info

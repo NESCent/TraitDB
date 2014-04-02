@@ -44,7 +44,7 @@ gem 'jquery-tablesorter', '~> 1.7.0'
 
 # CSS and JS from twitter bootstrap.
 # Could easily be made static
-gem 'less-rails-bootstrap'
+gem 'less-rails-bootstrap', '~> 2.3.3'
 gem 'therubyracer', :platforms => :ruby
 
 gem 'uglifier', '>= 1.0.3'

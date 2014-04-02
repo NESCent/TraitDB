@@ -71,13 +71,13 @@ GEM
     jquery-tablesorter (1.7.0)
       railties (>= 3.1, < 5)
     json (1.8.1)
-    less (2.4.0)
-      commonjs (~> 0.2.7)
-    less-rails (2.4.2)
+    less (2.3.3)
+      commonjs (~> 0.2.6)
+    less-rails (2.3.3)
       actionpack (>= 3.1)
-      less (~> 2.4.0)
-    less-rails-bootstrap (3.1.1.0)
-      less-rails (~> 2.4.2)
+      less (~> 2.3.1)
+    less-rails-bootstrap (2.3.3)
+      less-rails (~> 2.3.1)
     libv8 (3.16.14.3)
     mail (2.5.4)
       mime-types (~> 1.16)
@@ -169,7 +169,7 @@ DEPENDENCIES
   devise (= 3.1.1)
   jquery-rails
   jquery-tablesorter (~> 1.7.0)
-  less-rails-bootstrap
+  less-rails-bootstrap (~> 2.3.3)
   omniauth
   omniauth-openid
   paperclip (~> 3.4.1)

@@ -87,6 +87,8 @@ class SearchController < ApplicationController
     rows = {}
     include_references = !params['include_references'].nil?
     only_with_data = !params['only_rows_with_data'].nil?
+    should_summarize_results = !params['summarize_results'].nil?
+    summarize_iczn_group_id = Integer(params['summarize_iczn_group_id'])
 
     # At this point, we'll have a list of the most specific taxa requested at each level
     @lowest_requested_taxa.each do |taxon|
@@ -195,6 +197,11 @@ class SearchController < ApplicationController
       each do |otu|
       rows[otu.id][:name] = otu.name
       rows[otu.id][:taxonomy] = Hash[*otu.taxa.map{|t| [t.iczn_group.name, t.name]}.flatten]
+      rows[otu.id][:summary_taxon_id] = otu.taxa.map do |t|
+        {:taxon_id =>t.id, :iczn_group_id => t.iczn_group_id}
+      end.select do |t|
+        t[:iczn_group_id] == summarize_iczn_group_id
+      end.map{|t| t[:taxon_id]}.first
       rows[otu.id][:metadata] = otu.metadata_hash
       rows[otu.id][:uploader_email] = otu.import_job.csv_dataset.user.email
       rows[otu.id][:upload_date] = otu.import_job.created_at
@@ -207,9 +214,15 @@ class SearchController < ApplicationController
 
     # extract sources
     @results[:sources] = sources_from_rows(rows)
+
+    # Handle summarization if selected
+    if should_summarize_results
+      rows = summarize_results(rows)
+    end
     # data to return to view
     # @results[:columns] is a hash with keys :categorical_traits and :continuous_traits
-    @results[:rows] = rows # rows is an array of hashes.  Each hash has :otu, :categorical_trait_values, and :continuous_trait_values
+    @results[:rows] = rows # rows is a hash where the keys are otu_ids.
+    # Values are hashes with :name, :taxonomy, :metadata, :uploader_email, :upload_date
     @results[:include_references] = include_references
 
     respond_to do |format|
@@ -394,6 +407,21 @@ class SearchController < ApplicationController
         end
       end
     end
+  end
+
+  def summarize_results(rows)
+    # Chunk rows on summary_taxon_id
+    # Chunk operates on arrays.  Providing it a hash puts key in 0 and val in 1
+    # We want to chunk on value[:summary_taxon_id]
+    summarized_rows = rows.chunk{|row| row[1][:summary_taxon_id]}.map do |c|
+      # For now let's just take the first one
+      # Each chunk is an array.  First element is the chunk summary_taxon_id and the second element is
+      # another array with all the members of the chunk
+      c[1].first
+      # TODO: Actually summarize
+    end
+    return Hash[summarized_rows]
+
   end
 
   def taxa_in_iczn_group_with_parent(iczn_group_id, parent_taxon_id)

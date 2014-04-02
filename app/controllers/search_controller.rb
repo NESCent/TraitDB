@@ -88,7 +88,7 @@ class SearchController < ApplicationController
     include_references = !params['include_references'].nil?
     only_with_data = !params['only_rows_with_data'].nil?
     should_summarize_results = !params['summarize_results'].nil?
-    summarize_iczn_group_id = Integer(params['summarize_iczn_group_id'])
+    summarize_iczn_group_id = Integer(params['summarize_iczn_group_id'] || 0)
 
     # At this point, we'll have a list of the most specific taxa requested at each level
     @lowest_requested_taxa.each do |taxon|
@@ -197,11 +197,11 @@ class SearchController < ApplicationController
       each do |otu|
       rows[otu.id][:name] = otu.name
       rows[otu.id][:taxonomy] = Hash[*otu.taxa.map{|t| [t.iczn_group.name, t.name]}.flatten]
-      rows[otu.id][:summary_taxon_id] = otu.taxa.map do |t|
-        {:taxon_id =>t.id, :iczn_group_id => t.iczn_group_id}
+      rows[otu.id][:summary_taxon] = otu.taxa.map do |t|
+        {:taxon =>t, :iczn_group_id => t.iczn_group_id}
       end.select do |t|
         t[:iczn_group_id] == summarize_iczn_group_id
-      end.map{|t| t[:taxon_id]}.first
+      end.map{|t| t[:taxon]}.first
       rows[otu.id][:metadata] = otu.metadata_hash
       rows[otu.id][:uploader_email] = otu.import_job.csv_dataset.user.email
       rows[otu.id][:upload_date] = otu.import_job.created_at
@@ -410,15 +410,29 @@ class SearchController < ApplicationController
   end
 
   def summarize_results(rows)
-    # Chunk rows on summary_taxon_id
-    # Chunk operates on arrays.  Providing it a hash puts key in 0 and val in 1
-    # We want to chunk on value[:summary_taxon_id]
-    summarized_rows = rows.chunk{|row| row[1][:summary_taxon_id]}.map do |c|
+    # Chunk rows on summary_taxon.  rows is a hash of otu_ids to hashes of result data
+    # summary_taxon is in the hash of result data
+    summarized_rows = rows.chunk{|otu_id,row_hash| row_hash[:summary_taxon]}.map do |summary_taxon,chunk|
       # For now let's just take the first one
       # Each chunk is an array.  First element is the chunk summary_taxon_id and the second element is
       # another array with all the members of the chunk
-      c[1].first
-      # TODO: Actually summarize
+      summarized = {}
+      row_hash_chunk = Hash[chunk]
+      # row_hash_chunk is a hash where keys are otu_ids and values are row_hashes
+      summarized[:name] = summary_taxon.name
+      summarized[:uploader_email] = row_hash_chunk.map{|k,v| v[:uploader_email]}.uniq.join(',')
+      summarized[:upload_date] = row_hash_chunk.map{|k,v| v[:upload_date]}.max
+      summarized[:categorical] = row_hash_chunk.map{|k,v| v[:categorical]}.compact.inject do |memo, categorical|
+        memo.deep_merge(categorical)
+      end
+      summarized[:continuous] = row_hash_chunk.map{|k,v| v[:continuous]}.compact.inject do |memo, continuous|
+        memo.deep_merge(continuous)
+      end
+      # Taxonomy can be reconstituted by chopping off things after the summary taxon
+      summarized[:metadata] = row_hash_chunk.map{|k,v| v[:metadata]}.compact.inject do |memo, metadata|
+        memo.deep_merge(metadata)
+      end
+      [summary_taxon.id, summarized]
     end
     return Hash[summarized_rows]
 

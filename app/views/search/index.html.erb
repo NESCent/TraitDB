@@ -3,17 +3,19 @@
     <div class="row-fluid">
           <%= form_tag '/search/results.csv', { :class => 'form' } do -%>
             <h2>Search
-              <button type="submit" class="pull-right btn btn-success">Download All<i class="icon-download icon-white"></i></button>
-              <%= hidden_field_tag 'download_all' %>
-              <%= hidden_field_tag 'select_all_traits' %>
-              <%= hidden_field_tag 'include_references' %>
-              <% group = @iczn_groups.first
-                 taxa = group.taxa.by_project(@project.id).sorted
-                 taxa.each_with_index do |taxon, i|
-                 field_name = "#{group.name}[#{i}]"
-                 field_value = taxon.id
-              %>
-                <%= hidden_field_tag field_name, field_value %>
+              <% if @iczn_groups.first %>
+                <button type="submit" class="pull-right btn btn-success">Download All<i class="icon-download icon-white"></i></button>
+                <%= hidden_field_tag 'download_all' %>
+                <%= hidden_field_tag 'select_all_traits' %>
+                <%= hidden_field_tag 'include_references' %>
+                <% group = @iczn_groups.first
+                   taxa = group.taxa.by_project(@project.id).sorted
+                   taxa.each_with_index do |taxon, i|
+                   field_name = "#{group.name}[#{i}]"
+                   field_value = taxon.id
+                %>
+                  <%= hidden_field_tag field_name, field_value %>
+                <% end %>
               <% end %>
         </h2>
     <% end %>

@@ -9,7 +9,7 @@ gem 'paperclip', '~> 4.1.1'
 # Per https://github.com/collectiveidea/delayed_job/blob/master/README.md
 # If you are using the protected_attributes gem, it must appear before delayed_job in your gemfile.
 
-gem 'protected_attributes'
+gem 'protected_attributes', '~> 1.0.7'
 
 # delayed_job allows background asynchronous jobs
 # it used to import uploaded files

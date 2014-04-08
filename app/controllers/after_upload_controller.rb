@@ -1,14 +1,9 @@
 # Controller for stepping through import process after upload
-class AfterUploadController < Wicked::WizardController
+class AfterUploadController < ApplicationController
+  include Wicked::Wizard
   before_filter :authenticate_user!
   before_filter :set_project
-
   steps :read_headers, :count_rows, :select_config, :validate_headers, :parse_rows, :import_rows, :imported
-
-  def index
-    show
-  end
-
   # Works off an import job?
   def show
     @import_job = ImportJob.find(params[:import_job_id])

@@ -51,10 +51,10 @@
               sources << source_name unless source_name.in? sources
             end
           end
-          notes = categorical_trait_values[:notes] if @results[:columns][:categorical_trait_notes_ids].include? trait[:id]
+          notes = categorical_trait_values[:notes]
         end
         row << values.join('|')
-        row << notes if notes
+        row << notes  if @results[:columns][:categorical_trait_notes_ids].include? trait[:id]
         row << sources.join(' ') if @results[:include_references]
       end
       @results[:columns][:continuous_traits].each do |trait|
@@ -71,10 +71,10 @@
               sources << source_name unless source_name.in? sources
             end
           end
-          notes = continuous_trait_values[:notes] if @results[:columns][:continuous_trait_notes_ids].include? trait[:id]
+          notes = continuous_trait_values[:notes]
         end
         row << values.join('|')
-        row << notes if notes
+        row << notes if @results[:columns][:continuous_trait_notes_ids].include? trait[:id]
         row << sources.join(' ') if @results[:include_references]
       end
       @results[:columns][:otu_metadata_field_names].each do |metadata_field_name|

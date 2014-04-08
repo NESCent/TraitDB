@@ -1,9 +1,9 @@
 source 'http://rubygems.org'
 
-gem 'rails', '4.0.0'
+gem 'rails', '4.0.4'
 
 # Paperclip adds file upload support to ActiveRecord models
-gem "paperclip", "~> 3.4.1"
+gem 'paperclip', '~> 4.1.1'
 
 # Rails 4 removed attr_accessible and attr_protected from your models.
 # Per https://github.com/collectiveidea/delayed_job/blob/master/README.md
@@ -13,7 +13,7 @@ gem 'protected_attributes'
 
 # delayed_job allows background asynchronous jobs
 # it used to import uploaded files
-gem "delayed_job", "~> 4.0.0"
+gem 'delayed_job', '~> 4.0.0'
 
 # delayed_job_active_record 4.0.0 has issues with postgres 8.4
 # This version has a workaround
@@ -21,7 +21,7 @@ gem 'delayed_job_active_record', :git => 'https://github.com/panter/delayed_job_
 gem "daemons"
 
 # devise for user accounts
-gem 'devise', '3.1.1'
+gem 'devise', '~> 3.2.4'
 
 # OmniAuth for open id in devise
 gem 'omniauth'
@@ -36,9 +36,9 @@ gem 'wicked'
 gem 'pg'
 
 # Formerly in the assets group
-gem 'sass-rails',   '~> 4.0.0'
-gem 'coffee-rails', '~> 4.0.0'
-gem 'jquery-tablesorter', '~> 1.7.0'
+gem 'sass-rails',   '~> 4.0.3'
+gem 'coffee-rails', '~> 4.0.1'
+gem 'jquery-tablesorter', '~> 1.10.9'
 
 # See https://github.com/sstephenson/execjs#readme for more supported runtimes
 

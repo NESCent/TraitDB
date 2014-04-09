@@ -46,10 +46,16 @@ class Otu < ActiveRecord::Base
   end
 
   def generate_names
+    # Sort name is the entire taxonomy
     names = taxa.sorted_by_iczn.pluck('taxa.name')
     self.sort_name = names.join(' ')
-    # name is constructed from the last two taxa names.
-    self.name = names.length >= 2 ? names[-2,2].join(' ') : names.join(' ')
+    # Use genus and species if they're available
+    genus_species = iczn_groups.by_name(['genus','species'])
+    if genus_species.count == 2
+        self.name = "#{taxa.in_iczn_group(genus_species.first).first.name} #{taxa.in_iczn_group(genus_species.last).first.name}"
+      else
+        self.name = names.length >= 2 ? names[-2,2].join(' ') : names.join(' ')
+      end
   end
 
   def update_names(taxon)

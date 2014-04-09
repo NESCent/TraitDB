@@ -11,3 +11,15 @@ one:
 two:
   name: 'htg'
   level: 200
+
+three:
+  name: 'genus'
+  level: 400
+
+four:
+  name: 'species'
+  level: 500
+
+five:
+  name: 'subspecies'
+  level: 600

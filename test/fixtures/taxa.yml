@@ -9,3 +9,15 @@ two:
   name: MyString
   uri: MyString
   project_id: 2
+
+genus_homo:
+  name: Homo
+  project_id: 3
+
+species:
+  name: sapiens
+  project_id: 3
+
+ss1:
+  name: ss1
+  project_id: 3

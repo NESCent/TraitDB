@@ -1,3 +1,7 @@
+TraitDB
+=============
+[![Build Status](https://travis-ci.org/NESCent/TraitDB.svg?branch=master)](https://travis-ci.org/NESCent/TraitDB)
+
 ## Synopsis
 
 TraitDB is a Ruby on Rails web application for storing and searching trait data.  It is in development at [NESCent](http://nescent.org) to support working groups.

@@ -5,6 +5,7 @@ traitdb_spreadsheet_template:
     family: Family
     genus: Genus
     species: Species
+    subspecies: Subspecies
     variety: Variety
     population: Population ID from reference
   metadata_columns: # keys again are the internal TraitDB identifiers.
@@ -25,11 +26,12 @@ traitdb_spreadsheet_template:
     island_name: Island name
     archipelago: Archipelago
     disturbed_habitat: Disturbed/Undisturbed habitat
-    species_year: Species Year
+    data_year: Data Year
     weediness: Weediness as reported by authors
     comparison_taxon: Comparison taxon
     where_t: Where-t
     where_f: Where-F
+    taxonomy_notes: Taxonomy notes
   trait_options:
     require_source: false
     notes_prefix: "notes: "
@@ -71,10 +73,10 @@ traitdb_spreadsheet_template:
         values: [local endemic,regional endemic,unknown]
       -
         name: Polyploidy level
-        values: [diploid,tetraploid,hexaploid,octaploid,unknown]
+        values: [diploid,tetraploid,hexaploid,octaploid,other,unknown]
       -
         name: Habitat specialist
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
   -
     name: Reproductive Traits
     depth: 1
@@ -169,28 +171,25 @@ traitdb_spreadsheet_template:
         values: [homosylous,distylous,tristylous,enantiostylous,other,unknown]
       -
         name: SI/SC
-        values: [gametophytic SI,sporophytic SI,SC,unknown]
+        values: [gametophytic SI,sporophytic SI,SC,unknown,NA]
       -
         name: Vegetative reproduction
-        values: [No,Yes,unknown]
+        values: [No,Yes,unknown,NA]
       -
         name: Apomictic/Automictic seed set
-        values: [No,apomictic,automictic,one but not sure which,unknown]
+        values: [No,apomictic,automictic,one but not sure which,unknown,NA]
       -
         name: Cleistogamous flowers produced
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Flower color
-        values: [white,pink,red,yellow,orange, blue,purple,bicolor,unknown]
+        values: [white,pink,red,yellow,orange, blue,purple,bicolor,unknown,NA]
       -
         name: Open Pollinated vs Manipulated
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Bagging data reported? (y/n)
-        values: ["no","yes","unknown"]
-      -
-        name: Cleistogamous flowers produced
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Metric underlying percentage hand outx estimates
         values: [seeds/flower,seeds/plant,fruits/flower,fruits/plant]
@@ -199,13 +198,13 @@ traitdb_spreadsheet_template:
         values: ["no","yes","unknown"]
       -
         name: Herkogamy
-        values: ["no","yes","unknown"]
+        values: ["no","yes","delayed selfing","unknown","NA"]
       -
         name: Floral Symmetry
-        values: ["no","yes","delayed selfing","unknown"]
+        values: [radial,bilateral,unknown]
       -
         name: Seed production via Autonous autogamy
-        values: [radial,bilateral,unknown]
+        values: ["no","yes","unknown"]
   -
     name: Pollination
     depth: 1
@@ -216,43 +215,43 @@ traitdb_spreadsheet_template:
     categorical_trait_columns:
       -
         name: "Generalist/Specialist pollinated?"
-        values: [generalist,specialist,unknown]
+        values: [generalist,specialist,unknown,NA]
       -
         name: Insect
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Bee
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Fly
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Moth
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Beetle
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Butterfly
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Wasp
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Bird
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Mammal
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Wind
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Water
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Nectar
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
   -
     name: Seed & Fruit Traits
     depth: 1
@@ -266,46 +265,46 @@ traitdb_spreadsheet_template:
     categorical_trait_columns:
       -
         name: Seed dormancy
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Seed bank
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Diaspore unit
-        values: [fruit,seed,unknown]
+        values: [fruit,seed,unknown,NA]
       -
         name: Wind dispersal
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Water dispersal
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Ant dispersal
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Vert. ingestion dispersal
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Vert. attachment dispersal
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Ballistic dispersal
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Unassisted dispersal
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Wings
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Eliasome
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Aril
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Fleshy fruit
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]
       -
         name: Pappus
-        values: ["no","yes","unknown"]
+        values: ["no","yes","unknown","NA"]

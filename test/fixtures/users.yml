@@ -8,4 +8,7 @@ one:
   email: "user1@nescent.org"
 two:
   email: "user2@nescent.org"
+admin:
+  email: "admin@nescent.org"
+  admin: true
 

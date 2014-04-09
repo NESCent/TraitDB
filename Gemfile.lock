@@ -171,6 +171,7 @@ DEPENDENCIES
   pg
   protected_attributes (~> 1.0.7)
   rails (= 4.0.4)
+  rake
   sass-rails (~> 4.0.3)
   therubyracer
   uglifier (>= 1.0.3)

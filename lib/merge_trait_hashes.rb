@@ -23,7 +23,9 @@ class Array
       when :max
         summarized = all_values.max
     end
-    merged[:values] = [{all_keys.first => summarized}]
+    if merged
+      merged[:values] = [{all_keys.first => summarized}]
+    end
     return {trait_id => merged}
   end
 end

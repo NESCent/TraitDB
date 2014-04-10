@@ -24,6 +24,14 @@ class SearchHelperTest < ActionView::TestCase
              :notes=>nil,
              :value_matches=>{11=>true} # value with id 10 matched search criteria
         }
+      },
+      {
+        3=> { #trait.id 3
+              :values=>[{30=>650}],
+              :sources=>{30=>50},
+              :notes=>nil,
+              :value_matches=>{30=>true}
+        }
       }
     ]
 

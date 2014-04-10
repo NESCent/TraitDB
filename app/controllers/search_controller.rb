@@ -1,4 +1,6 @@
 require 'doi_detector'
+require 'merge_trait_hashes'
+
 class SearchController < ApplicationController
   before_filter :set_project
   OPERATORS = { :or => 'or', :and => 'and' }
@@ -425,8 +427,12 @@ class SearchController < ApplicationController
       summarized[:categorical] = row_hash_chunk.map{|k,v| v[:categorical]}.compact.inject do |memo, categorical|
         memo.deep_merge(categorical)
       end
-      summarized[:continuous] = row_hash_chunk.map{|k,v| v[:continuous]}.compact.inject do |memo, continuous|
-        memo.deep_merge(continuous)
+      continuous_chunk = row_hash_chunk.map{|k,v| v[:continuous]}.compact
+      # Need to get the continuous trait ids
+      continuous_trait_ids = @results[:columns][:continuous_traits].map{|x| x[:id]}
+      summarized[:continuous] = {}
+      continuous_trait_ids.each do |trait_id|
+        summarized[:continuous].merge!(continuous_chunk.merge_trait_hashes(trait_id, :avg))
       end
       # Taxonomy can be reconstituted by chopping off things after the summary taxon
       summarized[:metadata] = row_hash_chunk.map{|k,v| v[:metadata]}.compact.inject do |memo, metadata|

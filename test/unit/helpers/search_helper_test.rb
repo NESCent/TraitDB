@@ -8,13 +8,13 @@ class SearchHelperTest < ActionView::TestCase
              :values=>[{10=>200}], # value_id, formatted_value
              :sources=>{10=>50}, # value_id is used to look up sources
              :notes=>nil,
-             :value_matches=>{10=>true} # value with id 10 matched search criteria
+             :value_matches=>{10=>true}
         },
         2=> { #trait.id 2
-              :values=>[{20=>650}], #trait_value.id 20, value 650
-              :sources=>{20=>50}, # source for value with id 20 is 50
+              :values=>[{20=>650}],
+              :sources=>{20=>50},
               :notes=>nil,
-              :value_matches=>{20=>true} # value with id 10 matched search criteria
+              :value_matches=>{20=>true}
         }
       },
       {
@@ -46,10 +46,10 @@ class SearchHelperTest < ActionView::TestCase
       }
     @expected_max_1 = {
       1=>{ # trait.id 1
-           :values=>[{10=>300}], #trait_value.id 10, value 200
-           :sources=>{10=>50}, # source for value with id 10 is 50
+           :values=>[{11=>300}],
+           :sources=>{10=>50},
            :notes=>nil,
-           :value_matches=>{10=>true} # value with id 10 matched search criteria
+           :value_matches=>{10=>true}
       }
     }
     @expected_min_1 = {

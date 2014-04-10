@@ -11,20 +11,35 @@ class Array
     all_values = traits_matching_id.map{|x| x[:values]}.flatten.map{|x| x.values}.flatten
     merged = select{|x| x[trait_id]}.map{|x| x[trait_id]}.first.deep_dup
     summarized = nil
-    case method
-      when :avg
-        summarized = all_values.reduce(:+).to_f / all_values.count
-      when :first
-        summarized = all_values.first
-      when :last
-        summarized = all_values.last
-      when :min
-        summarized = all_values.min
-      when :max
-        summarized = all_values.max
-    end
     if merged
-      merged[:values] = [{all_keys.first => summarized}]
+      case method
+        when :avg
+          merged[:values] = [{
+            all_keys.first => all_values.reduce(:+).to_f / all_values.count
+          }]
+        when :first
+          merged[:values] = [{
+            all_keys.first => all_values.first
+          }]
+        when :last
+          merged[:values] = [{
+            all_keys.last => all_values.last
+          }]
+        when :min
+          min_value = all_values.min
+          i = all_values.index(min_value)
+          merged[:values] = [{
+            all_keys[i] => min_value
+          }]
+        when :max
+          max_value = all_values.max
+          i = all_values.index(max_value)
+          merged[:values] = [{
+            all_keys[i] => max_value
+          }]
+        when :collect
+          merged[:values] = all_keys.each_with_index.map{|x,i|{ x => all_values[i]}}.uniq
+      end
     end
     return {trait_id => merged}
   end

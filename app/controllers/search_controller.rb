@@ -424,8 +424,11 @@ class SearchController < ApplicationController
       summarized[:name] = summary_taxon.name
       summarized[:uploader_email] = row_hash_chunk.map{|k,v| v[:uploader_email]}.uniq.join(',')
       summarized[:upload_date] = row_hash_chunk.map{|k,v| v[:upload_date]}.max
-      summarized[:categorical] = row_hash_chunk.map{|k,v| v[:categorical]}.compact.inject do |memo, categorical|
-        memo.deep_merge(categorical)
+      categorical_chunk = row_hash_chunk.map{|k,v| v[:categorical]}.compact
+      categorical_trait_ids = @results[:columns][:categorical_traits].map{|x| x[:id]}
+      summarized[:categorical] = {}
+      categorical_trait_ids.each do |trait_id|
+        summarized[:categorical].merge!(categorical_chunk.merge_trait_hashes(trait_id, :collect))
       end
       continuous_chunk = row_hash_chunk.map{|k,v| v[:continuous]}.compact
       # Need to get the continuous trait ids

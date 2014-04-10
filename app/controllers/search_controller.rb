@@ -143,6 +143,7 @@ class SearchController < ApplicationController
       end
       CategoricalTraitValue.where(:otu_id => otu_ids).where(:categorical_trait_id => @categorical_trait_category_map.keys).includes(:otu => [:categorical_trait_notes]).includes(:categorical_trait, :categorical_trait_category, :source_reference).each do |categorical_trait_value|
         trait_id = categorical_trait_value.categorical_trait_id
+        category_id = categorical_trait_value.categorical_trait_category_id
         value_id = categorical_trait_value.id
         # loops over the categorical_trait_value
 
@@ -159,10 +160,10 @@ class SearchController < ApplicationController
           :notes => nil, # Array of notes attached to a categorical trait value.
           :value_matches => {} # Hash of categorical_trait_value_id => true|false
         }
-        result_arrays[:values] << { value_id => categorical_trait_value.formatted_value }
+        result_arrays[:values] << { category_id => categorical_trait_value.formatted_value }
         if include_references && categorical_trait_value.source_reference
           source_id = categorical_trait_value.source_reference.id
-          result_arrays[:sources][value_id] = source_id
+          result_arrays[:sources][category_id] = source_id
         end
         # Notes are optional and only stored once per OTUxTrait
         # When a note is found, we record the trait_id so that the view can display a notes column for the trait

@@ -7,7 +7,7 @@ class CsvImportConfig < ActiveRecord::Base
   has_many :import_jobs
   validates_attachment_presence :config_file
   # As of paperclip 4, attachments must have content type, file name, or opt out
-  validates_attachment_content_type :config_file, :content_type => ['text/x-yaml','application/x-yaml']
+  validates_attachment_file_name :config_file, :matches => [/yml\Z/, /yaml\Z/]
   scope :by_project, lambda{|p| where(:project_id => p) unless p.nil?}
 
   def get_import_template

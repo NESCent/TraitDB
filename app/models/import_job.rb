@@ -30,6 +30,10 @@ class ImportJob < ActiveRecord::Base
     state.include?('failed')
   end
 
+  def importing?
+    state == 'importing'
+  end
+
   def imported?
     state == 'imported'
   end
@@ -185,6 +189,7 @@ class ImportJob < ActiveRecord::Base
     # fail if state is not parsed
     return false unless state.in? ['parsed', 'parse_warnings']
     self.state = 'importing'
+    save
     if import_dataset
       self.state = 'imported'
     else

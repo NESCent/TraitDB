@@ -1,6 +1,7 @@
 # Controller for stepping through import process after upload
 class AfterUploadController < ApplicationController
   include Wicked::Wizard
+  skip_before_filter :setup_wizard, only: [:download_problematic_rows, :download_issues, :delete]
   before_filter :authenticate_user!
   before_filter :set_project
   steps :read_headers, :count_rows, :select_config, :validate_headers, :parse_rows, :import_rows, :imported
@@ -110,7 +111,7 @@ class AfterUploadController < ApplicationController
           end
         end
       when :parse_rows
-        if @import_job.imported?
+        if @import_job.imported? || @import_job.importing?
           skip_step
         else
           unless @import_job.parsed_rows?

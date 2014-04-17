@@ -9,6 +9,19 @@ namespace :traitdb do
     TraitGroup.destroy_all
     OtuMetadataField.destroy_all
   end
+  desc "Clear data for a project"
+  task :clear_project, [:project_id] => :environment do |t, args|
+    if args.project_id.nil?
+      puts "Error: Please supply a project id:\n\n"
+      puts "rake #{t}[61]\n\n"
+    else
+      project = Project.find(args.project_id)
+      puts "Clearing data for project id #{args.project_id} (#{project.name}) in 3 seconds..."
+      sleep 3
+      puts "Clearing data. This may take a while."
+      project.clear_all_data!
+    end
+  end
   desc "Delete all projects (CLEARS ALL DATA)"
   task :delete_projects => :environment do
     Project.destroy_all

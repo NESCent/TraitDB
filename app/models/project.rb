@@ -14,6 +14,7 @@ class Project < ActiveRecord::Base
   has_many :taxa, :dependent => :destroy
   has_many :trait_groups, :dependent => :destroy
   has_many :trait_sets, :dependent => :destroy
+  has_many :source_references, :dependent => :destroy
 
   scope :sorted, -> { order('name ASC') }
 
@@ -22,6 +23,20 @@ class Project < ActiveRecord::Base
       iczn_groups << iczn_group unless iczn_group.in? iczn_groups
     end
     save
+  end
+
+  def clear_all_data!
+    categorical_traits.destroy_all
+    continuous_traits.destroy_all
+    csv_datasets.destroy_all
+    csv_import_configs.destroy_all
+    iczn_groups.destroy_all
+    otus.destroy_all
+    otu_metadata_fields.destroy_all
+    taxa.destroy_all
+    trait_groups.destroy_all
+    trait_sets.destroy_all
+    source_references.destroy_all
   end
 
 end

@@ -55,6 +55,7 @@ traitdb_spreadsheet_template:
         - apomictic
         - parthenogenetic
         - gonochorous
+        - gonochoristic
         - other
       groups: [Plants, Animals]
     -

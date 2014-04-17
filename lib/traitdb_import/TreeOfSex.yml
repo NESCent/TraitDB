@@ -18,6 +18,8 @@ traitdb_spreadsheet_template:
     notes: notes, comments
     entry_name: entry name
     entry_email: entry email
+    theplantlist_name: Name in ThePlantListV1.1
+    theplantlist_status: ThePlantListV1.1 (1=accepted at species level,-1=recognized synonym,0=other)
   trait_groups: # these define a relationship of a taxonomy to a set of traits.  They can only be applied after data is imported
     -
       name: Plants

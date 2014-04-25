@@ -1,30 +1,31 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
-animal:
-  name: Animal
-  iczn_group: :kingdom
+homo:
+  name: Homo
+  iczn_group: :genus
   project: :project1
 
-ant:
-  name: Ant
-  iczn_group: :htg
-  project: :project1
+sapiens:
+  name: sapiens
+  iczn_group: :species
+  project: :project2
+
+ss1:
+  name: ss1
+  project: :project3
 
 plant:
   name: Plantae
   iczn_group: :kingdom
   project: :project2
 
-homo:
-  name: Homo
-  iczn_group: :genus
+animal:
+  name: Animal
+  iczn_group: :kingdom
   project: :project3
 
-sapiens:
-  name: sapiens
-  iczn_group: :species
+ant:
+  name: Ant
+  iczn_group: :htg
   project: :project3
 
-ss1:
-  name: ss1
-  project: :project3

@@ -20,3 +20,4 @@ project3:
   detail_description: "Lorem ipsum dolor..."
   url: "http://www.demo3.com"
   url_text: "Demo3.com, it's still the internet"
+  iczn_groups: kingdom, htg, genus, species

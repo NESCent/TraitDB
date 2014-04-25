@@ -50,7 +50,7 @@ class Otu < ActiveRecord::Base
     names = taxa.sorted_by_iczn.pluck('taxa.name')
     self.sort_name = names.join(' ')
     # Use genus and species if they're available
-    genus_species = iczn_groups.by_name(['genus','species'])
+    genus_species = iczn_groups.by_name(['genus','species']).sorted
     if genus_species.count == 2
         self.name = "#{taxa.in_iczn_group(genus_species.first).first.name} #{taxa.in_iczn_group(genus_species.last).first.name}"
       else

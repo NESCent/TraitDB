@@ -1,17 +1,12 @@
 require 'test_helper'
 
 class OtuTest < ActiveSupport::TestCase
+  fixtures :otus, :taxa, :projects, :iczn_groups, :import_jobs
   test 'it creates names from genus and species' do
-    o = Otu.first
-    genus = Taxon.find_by_name('Homo')
-    species = Taxon.find_by_name('sapiens')
-    subspecies = Taxon.find_by_name('ss1')
-    genus.iczn_group = IcznGroup.find_by_name('genus')
-    genus.save
-    species.iczn_group = IcznGroup.find_by_name('species')
-    species.save
-    subspecies.iczn_group = IcznGroup.find_by_name('subspecies')
-    subspecies.save
+    o = otus(:otu1)
+    genus = taxa(:homo)
+    species = taxa(:sapiens)
+    subspecies = taxa(:ss1)
 
     o.taxa << species
     o.taxa << genus

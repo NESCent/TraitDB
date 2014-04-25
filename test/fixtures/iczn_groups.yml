@@ -4,22 +4,22 @@
 # model remove the '{}' from the fixture names and add the columns immediately
 # below each fixture, per the syntax in the comments below
 #
-one:
+kingdom:
    name: 'kingdom'
    level: 100
 
-two:
+htg:
   name: 'htg'
   level: 200
 
-three:
+genus:
   name: 'genus'
   level: 400
 
-four:
+species:
   name: 'species'
   level: 500
 
-five:
+subspecies:
   name: 'subspecies'
   level: 600

@@ -277,7 +277,7 @@ function traitTypeChanged(traitTypeElement, traitTypeId) {
     // When getting traits, need to supply the selected taxonomy
     var selectedTaxonIds = jQuery.map($('#taxa').find('select'), function(e, i) { return $(e).val(); }).filter( function(e, i) { return e.length > 0; });
     var traitFilterRow = $(traitTypeElement).attr('data-trait-filter-row');
-    var traitSetElement = $('select.trait_set_level[data-trait-filter-row=' + traitFilterRow + ']').last().[0];
+    var traitSetElement = $('select.trait_set_level[data-trait-filter-row=' + traitFilterRow + ']').last()[0];
     if(traitSetElement) {
         var traitSetId = traitSetElement.value;
     }

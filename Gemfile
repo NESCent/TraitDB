@@ -72,3 +72,4 @@ group :test do
   gem 'selenium-webdriver', :require => false
 end
 
+gem 'thin'

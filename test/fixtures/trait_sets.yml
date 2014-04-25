@@ -1,0 +1,21 @@
+trait_set_demographic:
+  name: Demographic
+  level: 0
+  project: :project3
+
+trait_set_demographic_group_size:
+  name: Group Size
+  level: 1
+  parent_trait_set: :trait_set_demographic
+  project: :project3
+
+trait_set_reproductive:
+  name: Reproductive
+  level: 0
+  project: :project3
+
+trait_set_reproductive_sub:
+  name: selfing
+  level: 1
+  parent_trait_set: trait_set_reproductive
+  project: :project3

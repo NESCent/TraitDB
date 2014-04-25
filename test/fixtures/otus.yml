@@ -1,9 +1,9 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
-one:
+otu1:
   name: MyString
   author: MyString
 
-two:
+otu2:
   name: MyString
   author: MyString

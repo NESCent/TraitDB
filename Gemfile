@@ -68,4 +68,8 @@ gem 'jquery-rails'
 
 group :test do
   gem 'rake'
+  gem 'capybara', '~> 2.2.1'
+  gem 'selenium-webdriver', :require => false
 end
+
+gem 'thin'

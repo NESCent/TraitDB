@@ -69,7 +69,7 @@ gem 'jquery-rails'
 group :test do
   gem 'rake'
   gem 'capybara', '~> 2.2.1'
-  gem 'poltergeist', :require => false
+  gem 'poltergeist', '~> 1.5.0'
 end
 
 gem 'thin'

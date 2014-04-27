@@ -251,7 +251,6 @@ function groupChanged(groupElement, groupId) {
         }).done(function(data) {
                 var specificGroupElement = $(groupElement).closest(".taxon-filter-row").find('select[data-grouplevel=' + group.level + ']').first();
                 updateGroupList(specificGroupElement, data);
-                console.log('received response from list taxa for group id : ' + group.id + ' data: ' + data);
             }
         );
     }

@@ -1,7 +1,8 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
-one:
-  name: MyString
+animal_group:
+  name: Animals
+  project: :project3
+  taxa: animal
+  categorical_traits: categorical_trait1, categorical_trait2  
 
-two:
-  name: MyString

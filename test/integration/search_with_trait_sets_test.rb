@@ -4,7 +4,6 @@ class SearchWithTraitSetsTest < ActionDispatch::IntegrationTest
   fixtures :projects, :taxa, :trait_sets, :categorical_traits
   setup do
     Capybara.current_driver = Capybara.javascript_driver
-    Capybara.default_wait_time = 5
   end
   test 'can select trait sets' do
     visit '/'

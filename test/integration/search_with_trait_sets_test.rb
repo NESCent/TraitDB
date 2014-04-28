@@ -8,6 +8,7 @@ class SearchWithTraitSetsTest < ActionDispatch::IntegrationTest
   test 'can select trait sets' do
     visit '/'
     # will be redirected to select project
+    find 'option', :text => projects(:project3).name
     select projects(:project3).name, :from => 'id'
     click_on 'Select Project'
     visit '/search'

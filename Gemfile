@@ -70,6 +70,7 @@ group :test do
   gem 'rake'
   gem 'capybara', '~> 2.2.1'
   gem 'poltergeist', '~> 1.5.0'
+  gem 'coveralls', require: false
 end
 
 gem 'thin'

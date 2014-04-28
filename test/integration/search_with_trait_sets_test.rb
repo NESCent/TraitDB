@@ -4,13 +4,16 @@ class SearchWithTraitSetsTest < ActionDispatch::IntegrationTest
   fixtures :projects, :taxa, :trait_sets, :categorical_traits
   setup do
     Capybara.current_driver = Capybara.javascript_driver
+    Capybara.default_wait_time = 5
   end
   test 'can select trait sets' do
     visit '/'
     # will be redirected to select project
+    find 'option', :text => projects(:project3).name
     select projects(:project3).name, :from => 'id'
     click_on 'Select Project'
     visit '/search'
+    find 'option', :text => taxa(:animal).name
     select taxa(:animal).name, :from => 'kingdom_0'
     select trait_sets(:trait_set_reproductive).name, :from => 'level0_0'
     select trait_sets(:trait_set_reproductive_sub).name, :from => 'level1_0'

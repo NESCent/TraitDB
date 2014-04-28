@@ -333,7 +333,7 @@ function traitTypeChanged(traitTypeElement, traitTypeId) {
 function categoricalTraitNameChanged(categoricalTraitNameElement, traitId) {
     $(categoricalTraitNameElement).closest(".trait-filter-row").find(".trait_values").find('option').remove();
     $.ajax({
-        url: "/search/list_categorical_trait_values.js",
+        url: "/search/list_categorical_trait_values.json",
         data: { trait_id: traitId }
     }).done(function(data, textstatus, jqXHR) { updateCategoricalTraitValues(categoricalTraitNameElement, data); });
 }

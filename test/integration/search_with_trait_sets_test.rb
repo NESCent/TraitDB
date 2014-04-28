@@ -12,6 +12,7 @@ class SearchWithTraitSetsTest < ActionDispatch::IntegrationTest
     select projects(:project3).name, :from => 'id'
     click_on 'Select Project'
     visit '/search'
+    find 'option', :text => taxa(:animal).name
     select taxa(:animal).name, :from => 'kingdom_0'
     select trait_sets(:trait_set_reproductive).name, :from => 'level0_0'
     select trait_sets(:trait_set_reproductive_sub).name, :from => 'level1_0'

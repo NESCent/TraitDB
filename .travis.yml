@@ -5,10 +5,11 @@ rvm:
   - 2.0.0
   - 2.1.0
 env:
-  - TRAITDB_PG_TEST_USER=postgres
+  - TRAITDB_PG_TEST_USER=postgres TEST_SUITE=units
+  - TRAITDB_PG_TEST_USER=postgres TEST_SUITE=functionals
 script:
   - RAILS_ENV=test bundle exec rake db:migrate --trace
   - bundle exec rake db:test:prepare
-  - bundle exec rake test
+  - "bundle exec rake test:$TEST_SUITE"
 before_script:
   - psql -c 'create database traitdb_test' -U postgres

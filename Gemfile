@@ -76,3 +76,4 @@ end
 
 gem 'thin'
 gem 'rails_12factor', group: :production
+gem 'aws-sdk'

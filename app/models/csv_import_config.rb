@@ -1,7 +1,13 @@
 require 'traitdb_import/import_template'
 class CsvImportConfig < ActiveRecord::Base
   attr_accessible :config_file
-  has_attached_file :config_file
+  if TraitDB::Application.config.use_s3
+    has_attached_file :config_file,
+                      :storage => :s3,
+                      :s3_credentials => Rails.root.join('config','s3_credentials.yml')
+  else
+    has_attached_file :config_file
+  end
   belongs_to :project
   belongs_to :user
   has_many :import_jobs

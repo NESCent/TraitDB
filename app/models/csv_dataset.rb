@@ -1,7 +1,13 @@
 class CsvDataset < ActiveRecord::Base
   attr_accessible :csv_file
   attr_accessible :encoding
-  has_attached_file :csv_file
+  if TraitDB::Application.config.use_s3
+    has_attached_file :csv_file,
+                      :storage => :s3,
+                      :s3_credentials => Rails.root.join('config','s3_credentials.yml')
+  else
+    has_attached_file :csv_file
+  end
   belongs_to :project
   belongs_to :user
   has_one :import_job, :dependent => :destroy

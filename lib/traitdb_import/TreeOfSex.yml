@@ -20,6 +20,9 @@ traitdb_spreadsheet_template:
     entry_email: entry email
     theplantlist_name: Name in ThePlantListV1.1
     theplantlist_status: ThePlantListV1.1 (1=accepted at species level,-1=recognized synonym,0=other)
+    gametophytic_chromosome_number: Gametophytic chromosome number
+    sporophytic_chromosome_number: Sporophytic chromosome number
+    woodiness_count: Woodiness count
   trait_groups: # these define a relationship of a taxonomy to a set of traits.  They can only be applied after data is imported
     -
       name: Plants
@@ -145,20 +148,12 @@ traitdb_spreadsheet_template:
       groups: [Animals]
   continuous_trait_columns:
     -
-      name: Gametophytic chromosome number
-      format: integer # formats are only for display
-      groups: [Plants]
-    -
       name: Gametophytic chromosome number (minimum)
       format: integer # formats are only for display
       groups: [Plants]
     -
       name: Gametophytic chromosome number (mean)
       format: integer # formats are only for display
-      groups: [Plants]
-    -
-      name: Sporophytic chromosome number
-      format: integer
       groups: [Plants]
     -
       name: Sporophytic chromosome number (minimum)
@@ -180,8 +175,4 @@ traitdb_spreadsheet_template:
       name: C-value
       format: float
       groups: [Animals]
-    -
-      name: Woodiness count
-      format: integer
-      groups: [Plants]
       

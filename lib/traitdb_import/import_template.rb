@@ -1,15 +1,19 @@
 require 'yaml'
+require 'traitdb_import/downloader'
+require 'tempfile'
 
 module TraitDB
   class ImportTemplate
     DEFAULT_SET_DELIMITER = '::'
-    def initialize(path=nil)
-      @template_file = path
-      if file_usable?
-        read_template
+    def initialize(file_path_or_url=nil)
+      @template_source = file_path_or_url
+      if source_is_readable_file?
+        read_template_from_file
+      elsif source_is_readable_url?
+        read_template_from_url
       else
-        @template_file = nil
-        raise "Unable to load template file at #{path}"
+        @template_source = nil
+        raise "Unable to load template file at #{file_path_or_url}"
       end
     end
     
@@ -292,15 +296,33 @@ module TraitDB
       end
     end
 
-    def file_usable?
-      return false unless @template_file
-      return false unless File.exists?(@template_file)
-      return false unless File.readable?(@template_file)
+    def source_is_readable_file?
+      return false unless @template_source
+      return false unless File.exists?(@template_source)
+      return false unless File.readable?(@template_source)
       return true
     end
 
-    def read_template
-      root_object = YAML.load_file(@template_file)
+    def source_is_readable_url?
+      return false unless @template_source
+      return false unless URI.parse(@template_source).is_a? URI::HTTP
+      return true
+    end
+
+    def read_template_from_url
+      tempfile = Tempfile.new('import-template')
+      d = Downloader.new(@template_source, tempfile.path)
+      root_object = YAML.load_file(d.downloaded_file)
+      tempfile.close!
+      read_config_from_yaml root_object
+    end
+
+    def read_template_from_file
+      root_object = YAML.load_file(@template_source)
+      read_config_from_yaml root_object
+    end
+
+    def read_config_from_yaml(root_object)
       @config = root_object['traitdb_spreadsheet_template']
       @config['continuous_trait_columns'] ||= []
       @config['categorical_trait_columns'] ||= []

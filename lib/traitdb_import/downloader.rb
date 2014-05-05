@@ -6,6 +6,9 @@ require 'net/http'
 module TraitDB
   class Downloader
     def initialize(source_address=nil,dest_path=nil)
+      if source_address.nil? || dest_path.nil?
+        raise ArgumentError, "Missing source_address or dest_path"
+      end
       @source = source_address
       @dest = dest_path
     end

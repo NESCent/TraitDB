@@ -71,6 +71,7 @@ group :test do
   gem 'capybara', '~> 2.2.1'
   gem 'poltergeist', '~> 1.5.0'
   gem 'coveralls', require: false
+  gem 'webmock', '~> 1.17.4'
 end
 
 gem 'thin'

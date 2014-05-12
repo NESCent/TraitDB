@@ -3,6 +3,10 @@ require 'traitdb_import/downloader'
 require 'tempfile'
 
 class DownloaderTest < ActiveSupport::TestCase
+  setup do
+    WebMock.enable!
+  end
+
   test "can download a file" do
     body = 'abc'
     url = 'http://www.example.com/file.yml'
@@ -48,6 +52,9 @@ class DownloaderTest < ActiveSupport::TestCase
     d = TraitDB::Downloader.new(url1,dest)
     downloaded_contents = File.read(d.downloaded_file)
     assert_equal body, downloaded_contents, 'Redirect failed'
+  end
 
+  teardown do
+    WebMock.disable!
   end
 end

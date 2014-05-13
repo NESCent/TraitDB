@@ -83,7 +83,7 @@ class ImportJob < ActiveRecord::Base
     row_indices = problem_rows
     output_csv_string = CSV.generate do |csv|
       i = 0
-      CSV.foreach(csv_dataset.local_filesystem_path, :encoding => csv_dataset.encoding) do |row|
+      CSV.foreach(csv_dataset.get_local_file, :encoding => csv_dataset.encoding) do |row|
         # rows are not escaped properly
         if i == 0 || row_indices.include?(i + 1)
           csv << row
@@ -114,7 +114,7 @@ class ImportJob < ActiveRecord::Base
     return false unless state == 'new'
     begin
       headers.clear
-      CSV.read(csv_dataset.local_filesystem_path, :headers => true, :encoding => csv_dataset.encoding).headers.each do |h|
+      CSV.read(csv_dataset.get_local_file, :headers => true, :encoding => csv_dataset.encoding).headers.each do |h|
         headers << Header.new(:column_name => h)
       end
       self.state = 'read_headers'
@@ -138,7 +138,7 @@ class ImportJob < ActiveRecord::Base
   def count_rows
     return false unless state == 'read_headers'
     begin
-      self.csv_row_count = CSV.read(csv_dataset.local_filesystem_path, :headers => true, :encoding => csv_dataset.encoding).length
+      self.csv_row_count = CSV.read(csv_dataset.get_local_file, :headers => true, :encoding => csv_dataset.encoding).length
       self.state = 'counted_rows'
     rescue Exception => e
      # file is not a CSV
@@ -218,7 +218,7 @@ class ImportJob < ActiveRecord::Base
   def get_validator
     # validator needs a template
     template = csv_import_config.get_import_template
-    validator = TraitDB::Validator.new(template, csv_dataset.local_filesystem_path, csv_dataset.encoding)
+    validator = TraitDB::Validator.new(template, csv_dataset.get_local_file, csv_dataset.encoding)
     validator # returns the validator
   end
 

@@ -30,4 +30,12 @@ class CsvDataset < ActiveRecord::Base
     true
   end
 
+  def local_filesystem_path
+    # If the file is local, just return the file system path
+    csv_file.path
+  end
+
+  def file_name
+    csv_file_file_name
+  end
 end

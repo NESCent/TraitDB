@@ -11,7 +11,7 @@
     </tr>
     <% @import_jobs.each do |import_job| %>
     <tr>
-      <td><%= import_job.csv_dataset.csv_file_file_name %></td>
+      <td><%= import_job.csv_dataset.file_name %></td>
       <td><%= import_job.state %></td>
       <td>
         <div class="btn-group row-fluid">

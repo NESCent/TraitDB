@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails', '4.0.4'
+gem 'rails', '4.0.5'
 
 # Paperclip adds file upload support to ActiveRecord models
 gem 'paperclip', '~> 4.1.1'

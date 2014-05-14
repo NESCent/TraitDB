@@ -17,7 +17,7 @@ class CsvImportConfig < ActiveRecord::Base
   scope :by_project, lambda{|p| where(:project_id => p) unless p.nil?}
 
   def get_import_template
-    TraitDB::ImportTemplate.new(config_file.path)
+    TraitDB::ImportTemplate.new(get_local_file)
   end
 
   def update_name
@@ -79,6 +79,32 @@ class CsvImportConfig < ActiveRecord::Base
         csv << template.all_column_headers
       end
       csv << [] # empty row
+    end
+  end
+
+  def get_local_file
+    # If the file is local, just return the file system path
+    if File.exists?(config_file.path)
+      return config_file_path
+    else
+      cache_file
+      return @cached_file.file
+    end
+  end
+
+  def file_name
+    config_file_file_name
+  end
+
+  def file_cached?
+    return false if @cached_file.nil?
+    true
+  end
+  private
+
+  def cache_file
+    unless file_cached?
+      @cached_file = CachedFile.new(config_file.url)
     end
   end
 

@@ -19,6 +19,7 @@ traitdb_spreadsheet_template:
         - ZO
         - ZW
         - XY
+    -
       name: Hybrid
       values:
         - yes

@@ -1,5 +1,9 @@
 <%-
-  headers = %w{OTU}
+  headers = Array.new(@results[:columns][:iczn_groups]) # start with iczn groups
+  if current_user
+    headers << "Uploader"
+    headers << "Upload Date"
+  end
   @results[:columns][:categorical_traits].each do |trait|
     headers << trait[:name]
     if @results[:columns][:categorical_trait_notes_ids].include? trait[:id]
@@ -25,7 +29,14 @@
 <%= CSV.generate_line headers -%>
 <%-
     @results[:rows].each do |otu_id, row_hash|
-      row = [row_hash[:name]]
+      row = []
+      @results[:columns][:iczn_groups].each do |iczn_group_name|
+        row << row_hash[:taxonomy][iczn_group_name]
+      end
+      if current_user
+        row << row_hash[:uploader_email]
+        row << row_hash[:upload_date].to_formatted_s(:db)
+      end
       @results[:columns][:categorical_traits].each do |trait|
         values = []
         sources = []
@@ -40,10 +51,10 @@
               sources << source_name unless source_name.in? sources
             end
           end
-          notes = categorical_trait_values[:notes] if @results[:columns][:categorical_trait_notes_ids].include? trait[:id]
+          notes = categorical_trait_values[:notes]
         end
         row << values.join('|')
-        row << notes if notes
+        row << notes  if @results[:columns][:categorical_trait_notes_ids].include? trait[:id]
         row << sources.join(' ') if @results[:include_references]
       end
       @results[:columns][:continuous_traits].each do |trait|
@@ -60,10 +71,10 @@
               sources << source_name unless source_name.in? sources
             end
           end
-          notes = continuous_trait_values[:notes] if @results[:columns][:continuous_trait_notes_ids].include? trait[:id]
+          notes = continuous_trait_values[:notes]
         end
         row << values.join('|')
-        row << notes if notes
+        row << notes if @results[:columns][:continuous_trait_notes_ids].include? trait[:id]
         row << sources.join(' ') if @results[:include_references]
       end
       @results[:columns][:otu_metadata_field_names].each do |metadata_field_name|

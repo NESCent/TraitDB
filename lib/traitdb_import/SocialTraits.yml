@@ -1,11 +1,13 @@
 # Definitions for importing CSV spreadsheets for the Social Traits WG
 
 traitdb_spreadsheet_template:
-  template_name: Social Traits
+  template_name: "Social Traits"
   # All taxonomy columns specified here are required
   taxonomy_columns: # keys are the local to the app.  Values are literals in the CSV
-    htg: Taxa Group
+    kingdom: Kingdom
+    htg: Taxonomic Group
     family: Family
+    subfamily: Subfamily
     genus: Genus
     species: Species
   # Metadata columns are optional, could refactor into two groups
@@ -17,83 +19,155 @@ traitdb_spreadsheet_template:
     study_locality: Study Locality
     latitude: Latitude
     longitude: Longitude
-    study_start_date: Start
-    study_end_date: End
+    study_start_date: Start of Study
+    study_end_date: End of Study
     notes_comments: Notes
-  trait_groups: # these define a relationship of a taxonomy to a set of traits.  They can only be applied after data is imported
-    -
-      name: Birds
-      taxonomic_rank: htg
-      taxon_name: Birds
+    reference_1: Primary Source
+    reference_2: Secondary Source
+    reference_3: Tertiary Source
   trait_options:
-    require_source: false # source rules for formatting?
-    set_delimiter: '-'
+    require_source: false
+    set_delimiter: '.'
   trait_sets:
     -
-      name: Demographic Data
-      depth: 2
-      trait_sets:
-        -
-          name: Group Size
-          depth: 1
-          continuous_trait_columns:
-            -
-              name: Mean
-              format: float
-              groups: [Birds]
-            -
-              name: SE
-              format: float
-              groups: [Birds]
-            -
-              name: SD
-              format: float
-              groups: [Birds]
-            -
-              name: Min
-              format: float
-              groups: [Birds]
-            -
-              name: Max
-              format: float
-              groups: [Birds]
-            -
-              name: Median
-              format: float
-              groups: [Birds]
-            -
-              name: N
-              format: float
-              groups: [Birds]
-        -
-          name: Male Reproductives
-          depth: 1
-          continuous_trait_columns:
-            -
-              name: Mean
-              format: float
-              groups: [Birds]
-            -
-              name: SE
-              format: float
-              groups: [Birds]
-            -
-              name: SD
-              format: float
-              groups: [Birds]
-            -
-              name: Min
-              format: float
-              groups: [Birds]
-            -
-              name: Max
-              format: float
-              groups: [Birds]
-            -
-              name: Median
-              format: float
-              groups: [Birds]
-            -
-              name: N
-              format: float
-              groups: [Birds]
+      name: "Demographic Structure"
+      depth: 1
+      continuous_trait_columns:
+      -
+        name: "Group Size"
+        format: float
+      -
+        name: "Number of Females"
+        format: float
+      -
+        name: "Number of Males"
+        format: float
+      -
+        name: "Sex Ratio (proportion of males)"
+        format: float
+      -
+        name: "Number of Reproductive Females"
+        format: float
+      -
+        name: "Number of Reproductive Males"
+        format: float
+      -
+        name: "Number of Nonreproductive Females"
+        format: float
+      -
+        name: "Number of Nonreproductive Males"
+        format: float
+      -
+        name: "Number of Alloparents"
+        format: float
+      -
+        name: "Number of Defenders"
+        format: float
+    -
+      name: "Genetic Relatedness"
+      depth: 1
+      continuous_trait_columns:
+      -
+        name: "Colony/Group Relatedness"
+        format: float
+      -
+        name: "Male Reproductive-Worker Relatedness"
+        format: float
+      -
+        name: "Male Reproductive-Male Reproductive Relatedness"
+        format: float
+      -
+        name: "Female Reproductive-Worker Relatedness"
+        format: float
+      -
+        name: "Female Reproductive-Female Reproductive Relatedness"
+        format: float
+      -
+        name: "Worker-Worker Relatedness"
+        format: float
+      -
+        name: "Male Reproductive-Female Reproductive Relatedness"
+        format: float
+    -
+      name: "Fecundity (Production of Sexuals)"
+      depth: 1
+      continuous_trait_columns:
+      -
+        name: "Reproductive Reproduction (per bout)"
+        format: float
+      -
+        name: "Reproductive Reproduction (per season/year)"
+        format: float
+      -
+        name: "Reproductive Reproduction (lifetime)"
+        format: float
+      -
+        name: "Worker Reproduction (per bout)"
+        format: float
+      -
+        name: "Worker Reproduction (per season/year)"
+        format: float
+      -
+        name: "Worker Reproduction (lifetime)"
+        format: float
+    -
+      name: "Longevity/Lifespan"
+      depth: 1
+      continuous_trait_columns:
+      -
+        name: "Female Reproductive Longevity"
+        format: float
+      -
+        name: "Female Reproductive Longevity (max)"
+        format: float
+      -
+        name: "Male Reproductive Longevity"
+        format: float
+      -
+        name: "Male Reproductive Longevity (max)"
+        format: float
+      -
+        name: "Unknown Sex Reproductive Longevity"
+        format: float
+      -
+        name: "Unknown Sex Reproductive Longevity (max)"
+        format: float
+      -
+        name: "Female Nonreproductive Longevity"
+        format: float
+      -
+        name: "Female Nonreproductive Longevity"
+        format: float
+      -
+        name: "Male Nonreproductive Longevity"
+        format: float
+      -
+        name: "Male Nonreproductive Longevity (max)"
+        format: float
+      -
+        name: "Unknown Sex Nonreproductive Longevity"
+        format: float
+      -
+        name: "Unknown Sex Nonreproductive Longevity (max)"
+        format: float
+    -
+      name: "Life History Traits"
+      depth: 1
+      continuous_trait_columns:
+      -
+        name: "Male Age at First Reproduction (years)"
+        format: float
+      -
+        name: "Female Age at First Reproduction (years)"
+        format: float
+      -
+        name: "Unknown Sex Age at First Reproduction (years)"
+        format: float
+      -
+        name: "Females Body Mass (gms)"
+        format: float
+      -
+        name: "Male Body Mass (gms)"
+        format: float
+      -
+        name: "Worker Body Mass (gms)"

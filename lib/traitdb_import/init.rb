@@ -8,48 +8,57 @@ $:.unshift APP_ROOT # puts the directory into the search path
 
 require 'import_template'
 require 'validator' # loads once the validator.rb file
+require 'downloader'
 require 'pp'
 
 # Instantiate a template validator with the first argument
 # which should be a YML file
 
+if ARGV.length == 0
+  puts "Usage: #{__FILE__} <config.yml> [<dataset.csv>]"
+  exit -1
+end
+
+
 import_template = TraitDB::ImportTemplate.new(ARGV[0])
-PP.pp(import_template.categorical_trait_column_names)
-
-groups = import_template.groups_for_continuous_trait('Demographic Data-Group Size-Mdin')
-
-PP.pp(groups)
-PP.pp(import_template.continuous_trait_column_names)
-PP.pp(import_template.continuous_trait_format('Demographic Data-Group Size-Max'))
-PP.pp(import_template.continuous_trait_format('Demographic Data-Group Size-Min'))
-
-
-
-
 #
-## Validator takes a template and a path to a CSV file
-#validator = TraitDB::Validator.new(import_template, ARGV[1])
-#results = validator.validate
-#PP.pp(results)
-#results = validator.parse
-#PP.pp(results)
-#datasets = validator.datasets
-#headers = validator.trait_headers
-#PP.pp(headers)
-#PP.pp(datasets)
-# 
-# validator = TreeOfSexImport::Validator.new(ARGV[0])
-# validator.quantitative_header_start = "Chromosome number (female)"
-# validator.quantitative_header_end = "c-value"
-# validator.qualitative_header_start = "Predicted ploidy (1,2,3,4)"
-# validator.qualitative_header_end = "Molecular basis (dosage,Y dominant,W dominant)"
-# 
-# results = validator.validate
-# puts results
-# results = validator.parse
-# 
-# results[:issues].each do |issue|
-#   puts issue
-# end
-# 
-# puts results[:issues].count
+#puts "Import Config Continuous Trait Names".center(80,'=')
+#PP.pp(import_template.continuous_trait_column_names)
+#puts "Import Config Categorical Trait Names".center(80,'=')
+#PP.pp(import_template.categorical_trait_column_names)
+
+exit -1 if ARGV.length < 2
+
+# Validator takes a template and a path to a CSV file
+  validator = TraitDB::Validator.new(import_template, ARGV[1])
+begin
+  validation_results = validator.validate
+rescue Exception => e
+  if e.message == 'invalid byte sequence in UTF-8' && validator.encoding.nil?
+    validator.encoding = 'ISO-8859-1'
+    validation_results = validator.validate
+  else
+    puts "ERROR: #{ARGV[1]} is not valid a CSV file".center(80, '=')
+    puts e.message
+    exit -1
+  end
+end
+
+extra_columns = validator.extra_columns
+puts "Extra columns: #{extra_columns.count} ".ljust(100,'=')
+PP.pp(extra_columns)
+
+puts "Validation Results ".ljust(100,'=')
+puts ""
+PP.pp(validation_results)
+
+parse_results = validator.parse
+puts "Parse Issues: #{parse_results[:issues].count} ".ljust(100,'=')
+parse_results[:issues].each do |issue|
+  pp(issue)
+end
+
+datasets = validator.datasets
+puts "Datasets: #{datasets.count} ".ljust(100,'=')
+puts ""
+# PP.pp(datasets)

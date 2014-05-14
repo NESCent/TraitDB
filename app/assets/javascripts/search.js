@@ -36,10 +36,22 @@ function addTraitFilterRow(animation) {
     var traitValuesId = "trait_values_" + uniqueRowId;
     var traitEntriesId = "trait_entries_" + uniqueRowId; // should only exist for continuous traits
 
-    el.find('select.trait_type').attr('id',traitTypeId).attr('name','trait_type[' + uniqueRowId + ']');
-    el.find('select.trait_name').attr('id',traitNameId).attr('name','trait_name[' + uniqueRowId + ']');
-    el.find('select.trait_values').attr('id',traitValuesId).attr('name','trait_values[' + uniqueRowId + ']');
-    el.find('input.trait_entries').attr('id',traitEntriesId).attr('name','trait_entries[' + uniqueRowId + ']');
+    el.find('select.trait_type')
+        .attr('id',traitTypeId)
+        .attr('name','trait_type[' + uniqueRowId + ']')
+        .attr('data-trait-filter-row', uniqueRowId);
+    el.find('select.trait_name')
+        .attr('id',traitNameId)
+        .attr('name','trait_name[' + uniqueRowId + ']')
+        .attr('data-trait-filter-row', uniqueRowId);
+    el.find('select.trait_values')
+        .attr('id',traitValuesId)
+        .attr('name','trait_values[' + uniqueRowId + ']')
+        .attr('data-trait-filter-row', uniqueRowId);
+    el.find('input.trait_entries')
+        .attr('id',traitEntriesId)
+        .attr('name','trait_entries[' + uniqueRowId + ']')
+        .attr('data-trait-filter-row', uniqueRowId);
     el.hide();
     lastTraitFilterRow.after(el);
     el.show(animation, function() {
@@ -120,28 +132,38 @@ function traitSetChanged(traitSetSelectElement) {
 }
 
 function addButtonHandlers() {
-    $('.add_taxon').bind('click', function() {
+    $('.add_taxon').bind('click', function(event) {
         addTaxonFilterRow();
+        // The element is an a href='#', so the click event would cause the page to scroll to top
+        event.preventDefault();
     });
-    $('.remove_taxon').bind('click', function() {
+    $('.remove_taxon').bind('click', function(event) {
         removeTaxonFilterRow(this);
+        // The element is an a href='#', so the click event would cause the page to scroll to top
+        event.preventDefault();
     });
-    $('.add_trait').bind('click',function() {
+    $('.add_trait').bind('click',function(event) {
         // only add traits if select all is not checked
         if(! $('#select_all_traits').is(':checked')) {
             addTraitFilterRow();
         }
+        // The element is an a href='#', so the click event would cause the page to scroll to top
+        event.preventDefault();
     });
-    $('.remove_trait').bind('click', function() {
+    $('.remove_trait').bind('click', function(event) {
         // only remove traits if select all is not checked
         if(! $('#select_all_traits').is(':checked')) {
             removeTraitFilterRow(this);
         }
+        // The element is an a href='#', so the click event would cause the page to scroll to top
+        event.preventDefault();
     });
-    $('#reset_search').bind('click', function() {
+    $('#reset_search').bind('click', function(event) {
         resetSearchForm();
+        // The element is an a href='#', so the click event would cause the page to scroll to top
+        event.preventDefault();
     });
-    $('#select_all_traits').bind('change', function() {
+    $('#select_all_traits').bind('change', function(event) {
         selectAllTraitsChanged(this);
     });
 }
@@ -210,31 +232,28 @@ function updateCategoricalTraitValues(traitElement, valueList) {
 }
 
 function groupChanged(groupElement, groupId) {
-    // when a group changes, reload the possible values for everything that is more specific
+    // when a group changes, reload the possible values the next group
+    var parentId = $(groupElement).val();
     var level = parseInt(groupElement.attributes['data-grouplevel'].value, 10);
-    var groupLevelsToSend = icznGroups.map(function(g) { return g.level; }).filter(function(l) { return l <= level; });
-    var parentIds = new Array();
-    groupLevelsToSend.forEach(function(groupLevel) {
-        parentIds.push($(groupElement).closest(".taxon-filter-row").find('select[data-grouplevel=' + groupLevel + ']').val());
-    });
-    console.log('parentIds' + parentIds);
     // Send an ajax request for each of the group levels to clear
     var groupsToClear = icznGroups.filter(function(g) { return g.level > level; });
     groupsToClear.forEach(function(group) {
         $(groupElement).closest(".taxon-filter-row").find('select[data-grouplevel=' + group.level + ']').find('option').remove();
+    });
+    if(groupsToClear.length > 0) {
+        var group = groupsToClear[0];
         $.ajax({
             url: "/search/list_taxa.json",
             data: {
                 iczn_group_id: group.id,
-                parent_ids: parentIds
+                parent_id: parentId
             }
         }).done(function(data) {
                 var specificGroupElement = $(groupElement).closest(".taxon-filter-row").find('select[data-grouplevel=' + group.level + ']').first();
                 updateGroupList(specificGroupElement, data);
-                console.log('received response from list taxa for group id : ' + group.id + ' data: ' + data);
             }
         );
-    });
+    }
 }
 
 function updateGroupList(destinationSelectElement, taxa) {
@@ -257,7 +276,7 @@ function traitTypeChanged(traitTypeElement, traitTypeId) {
     // When getting traits, need to supply the selected taxonomy
     var selectedTaxonIds = jQuery.map($('#taxa').find('select'), function(e, i) { return $(e).val(); }).filter( function(e, i) { return e.length > 0; });
     var traitFilterRow = $(traitTypeElement).attr('data-trait-filter-row');
-    var traitSetElement = $('select.trait_set_level[data-trait-filter-row=' + traitFilterRow + '] :last')[0];
+    var traitSetElement = $('select.trait_set_level[data-trait-filter-row=' + traitFilterRow + ']').last()[0];
     if(traitSetElement) {
         var traitSetId = traitSetElement.value;
     }
@@ -314,7 +333,7 @@ function traitTypeChanged(traitTypeElement, traitTypeId) {
 function categoricalTraitNameChanged(categoricalTraitNameElement, traitId) {
     $(categoricalTraitNameElement).closest(".trait-filter-row").find(".trait_values").find('option').remove();
     $.ajax({
-        url: "/search/list_categorical_trait_values.js",
+        url: "/search/list_categorical_trait_values.json",
         data: { trait_id: traitId }
     }).done(function(data, textstatus, jqXHR) { updateCategoricalTraitValues(categoricalTraitNameElement, data); });
 }
@@ -341,7 +360,6 @@ function resetTaxonomy() {
     for(var i=0; i < taxon_row_count; i++) {
         $('.taxon-filter-row').first().remove();
     }
-    return false;
 }
 
 function resetTraits() {
@@ -351,13 +369,11 @@ function resetTraits() {
         $('.trait-filter-row').first().remove();
     }
     updateTraitFilterOperatorVisibility();
-    return false;
 }
 
 function resetSearchForm() {
     resetTaxonomy();
     resetTraits();
-    return false;
 }
 
 function updateTraitFilterOperatorVisibility() {
@@ -378,5 +394,4 @@ function updateTraitFilterOperatorVisibility() {
         });
         $('.trait-filter-row').last().find(".operator_placeholder").first().append(operatorElement);
     }
-    return false;
 }

@@ -1,15 +1,18 @@
 require 'yaml'
+require 'tempfile'
 
 module TraitDB
   class ImportTemplate
     DEFAULT_SET_DELIMITER = '::'
-    def initialize(path=nil)
-      @template_file = path
-      if file_usable?
-        read_template
+    def initialize(file_path_or_url=nil)
+      @template_source = file_path_or_url
+      if source_is_readable_file?
+        read_template_from_file
+      elsif source_is_readable_url?
+        read_template_from_url
       else
-        @template_file = nil
-        raise "Unable to load template file at #{path}"
+        @template_source = nil
+        raise "Unable to load template file at #{file_path_or_url}"
       end
     end
     
@@ -25,12 +28,12 @@ module TraitDB
 
     # metadata
     def metadata_columns # a hash that maps constants to the CSV column names, reverse it to get a map the other way
-      @config['metadata_columns']
+      @config['metadata_columns'] || {}
     end
 
     # options
     def trait_options # a hash that includes things like source_prefix, require_source, and notes_prefix
-      @config['trait_options']
+      @config['trait_options'] || {}
     end
 
     def trait_sets?
@@ -41,11 +44,17 @@ module TraitDB
     def trait_set(path=[], tree=@config)
       # path will be a list of names to follow
       # tree must be a hash
-      if path.length == 0
+      if tree.nil?
+        # dead end
+        return {}
+      elsif path.length == 0
+        # Terminal
         tree
       else
         # slice off the first element in the path and return the subtree
-        trait_set(path[1..-1], tree['trait_sets'].find{|x| x['name'] == path[0]})
+        sliced_path = path[1..-1]
+        subtree = (tree['trait_sets'] || []).find{|x| x && x['name'] == path[0]}
+        trait_set(sliced_path,subtree)
       end
     end
 
@@ -93,12 +102,45 @@ module TraitDB
         @config['continuous_trait_columns'].map{|x| x['name'] }
       end
     end
-    
+
+    def continuous_trait_names_ungrouped
+      if trait_sets?
+        names = []
+        trait_set_qualified_continuous_trait_names.each do |qname|
+          trait = continuous(qname.join(delimiter))
+          if trait
+            names << qname.join(delimiter)
+          end
+        end
+        names
+      else
+        @config['continuous_trait_columns'].map{|x| x['name']}
+      end
+    end
+
+    def categorical_trait_names_ungrouped
+      if trait_sets?
+        names = []
+        trait_set_qualified_categorical_trait_names.each do |qname|
+          trait = categorical(qname.join(delimiter))
+          if trait
+            names << qname.join(delimiter)
+          end
+        end
+        names
+      else
+        @config['categorical_trait_columns'].map{|x| x['name']}
+      end
+    end
+
     def categorical_trait_names_in_group(group_name)
       if trait_sets?
         names = []
         trait_set_qualified_categorical_trait_names.each do |qname|
-          names << qname.join(delimiter) if categorical(qname.join(delimiter))['groups'].include? group_name
+          trait = categorical(qname.join(delimiter))
+          if trait
+            names << qname.join(delimiter) if trait['groups'].include? group_name
+          end
         end
         names
       else
@@ -110,7 +152,11 @@ module TraitDB
       if trait_sets?
         names = []
         trait_set_qualified_continuous_trait_names.each do |qname|
-          names << qname.join(delimiter) if continuous(qname.join(delimiter))['groups'].include? group_name
+          trait = continuous(qname.join(delimiter))
+          if trait
+            names << qname.join(delimiter) if trait['groups'].include? group_name
+          end
+
         end
         names
       else
@@ -129,11 +175,11 @@ module TraitDB
     end
 
     def trait_group_rank(group_name)
-      @config['trait_groups'].find{|x| x['name'] == group_name}['taxonomic_rank']
+      @config['trait_groups'].find{|x| x && x['name'] == group_name}['taxonomic_rank']
     end
 
     def trait_group_taxon_name(group_name)
-      @config['trait_groups'].find{|x| x['name'] == group_name}['taxon_name']
+      @config['trait_groups'].find{|x| x && x['name'] == group_name}['taxon_name']
     end
 
     def groups_for_categorical_trait(trait_name)
@@ -157,6 +203,50 @@ module TraitDB
       t.nil? ? [] : t['format']
     end
 
+    def column_headers(group_name)
+      headers = []
+      headers += taxonomy_columns.values
+
+      source_prefix = trait_options['source_prefix']
+      require_source = trait_options['require_source']
+      notes_prefix = trait_options['notes_prefix']
+
+      categorical_trait_names_in_group(group_name).each do |categorical_trait_name|
+        headers << categorical_trait_name
+        headers << "#{source_prefix}#{categorical_trait_name}" if require_source
+        headers << "#{notes_prefix}#{categorical_trait_name}" if notes_prefix
+      end
+      continuous_trait_names_in_group(group_name).each do |continuous_trait_name|
+        headers << continuous_trait_name
+        headers << "#{source_prefix}#{continuous_trait_name}" if require_source
+        headers << "#{notes_prefix}#{continuous_trait_name}" if notes_prefix
+      end
+      headers += metadata_columns.values
+      headers
+    end
+
+    def all_column_headers
+      headers = []
+      headers += taxonomy_columns.values
+
+      source_prefix = trait_options['source_prefix']
+      require_source = trait_options['require_source']
+      notes_prefix = trait_options['notes_prefix']
+
+      categorical_trait_names_ungrouped.each do |categorical_trait_name|
+        headers << categorical_trait_name
+        headers << "#{source_prefix}#{categorical_trait_name}" if require_source
+        headers << "#{notes_prefix}#{categorical_trait_name}" if notes_prefix
+      end
+      continuous_trait_names_ungrouped.each do |continuous_trait_name|
+        headers << continuous_trait_name
+        headers << "#{source_prefix}#{continuous_trait_name}" if require_source
+        headers << "#{notes_prefix}#{continuous_trait_name}" if notes_prefix
+      end
+      headers += metadata_columns.values
+      headers
+    end
+
     private
 
     def delimiter
@@ -171,7 +261,7 @@ module TraitDB
       else
         t = @config['continuous_trait_columns']
       end
-      t.find{|x| x['name'] == trait_name}
+      t && t.find{|x| x && x['name'] == trait_name}
     end
 
     def categorical(trait_name)
@@ -182,7 +272,7 @@ module TraitDB
       else
         t = @config['categorical_trait_columns']
       end
-      t.find{|x| x['name'] == trait_name}
+      t && t.find{|x| x && x['name'] == trait_name}
     end
 
     # returns arrays of path components
@@ -205,15 +295,33 @@ module TraitDB
       end
     end
 
-    def file_usable?
-      return false unless @template_file
-      return false unless File.exists?(@template_file)
-      return false unless File.readable?(@template_file)
+    def source_is_readable_file?
+      return false unless @template_source
+      return false unless File.exists?(@template_source)
+      return false unless File.readable?(@template_source)
       return true
     end
 
-    def read_template
-      root_object = YAML.load_file(@template_file)
+    def source_is_readable_url?
+      return false unless @template_source
+      return false unless URI.parse(@template_source).is_a? URI::HTTP
+      return true
+    end
+
+    def read_template_from_url
+      tempfile = Tempfile.new('import-template')
+      d = Downloader.new(@template_source, tempfile.path)
+      root_object = YAML.load_file(d.downloaded_file)
+      tempfile.close!
+      read_config_from_yaml root_object
+    end
+
+    def read_template_from_file
+      root_object = YAML.load_file(@template_source)
+      read_config_from_yaml root_object
+    end
+
+    def read_config_from_yaml(root_object)
       @config = root_object['traitdb_spreadsheet_template']
       @config['continuous_trait_columns'] ||= []
       @config['categorical_trait_columns'] ||= []

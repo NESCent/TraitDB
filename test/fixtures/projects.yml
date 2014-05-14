@@ -1,7 +1,23 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
-one:
-  name: MyString
+project1:
+  name: "Test Project 1"
+  summary_description: "This is a summary of a project"
+  detail_description: "Lorem ipsum ..."
+  url: "http://www.example.com"
+  url_text: "Example.com, the most popular site on the internet"
 
-two:
-  name: MyString
+project2:
+  name: "Test Project 2"
+  summary_description: "This is a summary of a project 2"
+  detail_description: "Lorem ipsum dolor..."
+  url: "http://www.demo2.com"
+  url_text: "Demo2.com, the SECOND most popular site on the internet"
+
+project3:
+  name: "Test Project 3"
+  summary_description: "This is a summary of a project 3"
+  detail_description: "Lorem ipsum dolor..."
+  url: "http://www.demo3.com"
+  url_text: "Demo3.com, it's still the internet"
+  iczn_groups: kingdom, htg, genus, species

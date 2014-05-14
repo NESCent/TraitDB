@@ -1,0 +1,35 @@
+traitdb_spreadsheet_template:
+  template_name: Sample Config
+  # All taxonomy columns specified here are required
+  taxonomy_columns: # keys refer to internal TraitDB identifiers.  Values are the column names in CSV
+    family: Family
+    genus: Genus
+    species: species
+  metadata_columns: # keys again are the internal TraitDB identifiers.
+    comments: Comments
+  trait_options:
+    source_prefix: "source: " # include the space after the colon
+    require_source: true # source rules for formatting?
+    notes_prefix: "notes: " #include the space after the colon
+    value_separator: "|" # what separates multiple values in an entry
+  categorical_trait_columns:
+    -
+      name: Karyotype
+      values:
+        - ZO
+        - ZW
+        - XY
+    -
+      name: Hybrid
+      values:
+        - yes
+        - no
+  continuous_trait_columns:
+    -
+      name: Chromosome Number
+      format: integer # formats are only for display
+    -
+      name: Avg Mass
+      format: float
+
+      

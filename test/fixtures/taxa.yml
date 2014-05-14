@@ -1,9 +1,31 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
-one:
-  name: MyString
-  uri: MyString
+homo:
+  name: Homo
+  iczn_group: :genus
+  project: :project1
 
-two:
-  name: MyString
-  uri: MyString
+sapiens:
+  name: sapiens
+  iczn_group: :species
+  project: :project2
+
+ss1:
+  name: ss1
+  project: :project3
+
+plant:
+  name: Plantae
+  iczn_group: :kingdom
+  project: :project2
+
+animal:
+  name: Animal
+  iczn_group: :kingdom
+  project: :project3
+
+ant:
+  name: Ant
+  iczn_group: :htg
+  project: :project3
+

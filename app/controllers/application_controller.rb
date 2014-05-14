@@ -24,6 +24,6 @@ class ApplicationController < ActionController::Base
   private
 
   def set_projects
-    @projects = Project.sorted
+    @selectable_projects = Project.sorted
   end
 end

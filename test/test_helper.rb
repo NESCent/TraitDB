@@ -1,6 +1,12 @@
+require 'coveralls'
+Coveralls.wear!
 ENV["RAILS_ENV"] = "test"
 require File.expand_path('../../config/environment', __FILE__)
 require 'rails/test_help'
+require 'capybara/rails'
+require 'capybara/poltergeist'
+Capybara.javascript_driver = :poltergeist
+require 'webmock/test_unit'
 
 class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.(yml|csv) for all tests in alphabetical order.
@@ -10,4 +16,18 @@ class ActiveSupport::TestCase
   fixtures :all
 
   # Add more helper methods to be used by all tests here...
+  include WebMock::API
+  WebMock.disable!
+end
+
+class ActionDispatch::IntegrationTest
+  # Make the Capybara DSL available in all integration tests
+  include Capybara::DSL
+end
+
+class ActionController::TestCase
+  include Devise::TestHelpers
+  def set_project(project)
+    session[:current_project_id] = project.id
+  end
 end

@@ -1,15 +1,10 @@
 # Controller for stepping through import process after upload
-class AfterUploadController < Wicked::WizardController
+class AfterUploadController < ApplicationController
+  include Wicked::Wizard
+  skip_before_filter :setup_wizard, only: [:download_problematic_rows, :download_issues, :delete]
   before_filter :authenticate_user!
-  before_filter :verify_is_admin
   before_filter :set_project
-
   steps :read_headers, :count_rows, :select_config, :validate_headers, :parse_rows, :import_rows, :imported
-
-  def index
-    show
-  end
-
   # Works off an import job?
   def show
     @import_job = ImportJob.find(params[:import_job_id])
@@ -30,6 +25,18 @@ class AfterUploadController < Wicked::WizardController
     @import_job.update_attributes(params[:import_job])
     handle_step
     render_wizard
+  end
+
+  def delete
+    import_job = ImportJob.find(params[:import_job_id])
+    dataset = CsvDataset.find(params[:id])
+    filename = dataset.csv_file_file_name
+
+    dataset.csv_file = nil
+    dataset.destroy
+    import_job.destroy
+    flash[:notice] = "#{filename} has been deleted."
+    redirect_to(:controller => 'upload', :action => 'index')
   end
 
   # Download the rows from this dataset that cannot be imported as a csv
@@ -104,7 +111,7 @@ class AfterUploadController < Wicked::WizardController
           end
         end
       when :parse_rows
-        if @import_job.imported?
+        if @import_job.imported? || @import_job.importing?
           skip_step
         else
           unless @import_job.parsed_rows?

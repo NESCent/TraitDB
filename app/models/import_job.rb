@@ -19,7 +19,7 @@ class ImportJob < ActiveRecord::Base
   IMPORT_STATES = %w(new reading_headers read_headers headers_failed count_failed counted_rows selecting_config selected_config validating validated validation_failed parsing parsed parse_warnings importing imported import_failed)
   validates_inclusion_of :state, :in => IMPORT_STATES
   def file_name
-    csv_dataset.csv_file_file_name
+    csv_dataset.file_name
   end
 
   def validation_failed?
@@ -28,6 +28,10 @@ class ImportJob < ActiveRecord::Base
 
   def failed?
     state.include?('failed')
+  end
+
+  def importing?
+    state == 'importing'
   end
 
   def imported?
@@ -79,9 +83,9 @@ class ImportJob < ActiveRecord::Base
     row_indices = problem_rows
     output_csv_string = CSV.generate do |csv|
       i = 0
-      CSV.foreach(csv_dataset.csv_file.path) do |row|
+      CSV.foreach(csv_dataset.get_local_file, :encoding => csv_dataset.encoding) do |row|
         # rows are not escaped properly
-        if i == 0 || row_indices.include?(i)
+        if i == 0 || row_indices.include?(i + 1)
           csv << row
         end
         i += 1
@@ -92,11 +96,11 @@ class ImportJob < ActiveRecord::Base
 
   def download_issues_csv_string
     CSV.generate do |csv|
-      csv << ['Species Name', 'CSV Row Number', 'CSV Column Number', 'CSV Column Name', 'Problem', 'Possible Solution']
+      csv << ['Genus', 'Species', 'CSV Row Number', 'CSV Column Number', 'CSV Column Name', 'Problem', 'Possible Solution']
       # loop over the issues
       # print them to the report
       parse_issues.each do |issue|
-        csv << ["#{issue.row_name[:genus]} #{issue.row_name[:species]}", issue.row_location, issue.column_location, issue.column_name, issue.issue_description, issue.suggested_solution]
+        csv << [issue.row_name['genus'], issue.row_name['species'], issue.row_location, issue.column_location, issue.column_name, issue.issue_description, issue.suggested_solution]
       end
     end
   end
@@ -110,28 +114,36 @@ class ImportJob < ActiveRecord::Base
     return false unless state == 'new'
     begin
       headers.clear
-      CSV.read(csv_dataset.csv_file.path, :headers => true).headers.each do |h|
+      CSV.read(csv_dataset.get_local_file, :headers => true, :encoding => csv_dataset.encoding).headers.each do |h|
         headers << Header.new(:column_name => h)
       end
       self.state = 'read_headers'
       save
     rescue Exception => e
-      # file is not a CSV
-      self.state = 'headers_failed'
-      self.validation_issues.create({:issue_description => e.message, :suggested_solution => 'Please upload a valid CSV file with UTF encoding'})
-      save
+      if e.message == 'invalid byte sequence in UTF-8' && csv_dataset.encoding.nil?
+        # Probably an Excel-encoded ISO-8859-1 file, try again with that encoding
+        csv_dataset.encoding = 'ISO-8859-1'
+        csv_dataset.save
+        # Try again
+        read_headers
+      else
+        # file is not a CSV
+        self.state = 'headers_failed'
+        self.validation_issues.create({:issue_description => e.message, :suggested_solution => 'Please upload a valid CSV file'})
+        save
+      end
     end
   end
 
   def count_rows
     return false unless state == 'read_headers'
     begin
-      self.csv_row_count = CSV.read(csv_dataset.csv_file.path, :headers => true).length
+      self.csv_row_count = CSV.read(csv_dataset.get_local_file, :headers => true, :encoding => csv_dataset.encoding).length
       self.state = 'counted_rows'
     rescue Exception => e
      # file is not a CSV
       self.state = 'count_failed'
-      self.validation_issues.create({:issue_description => e.message, :suggested_solution => 'Please upload a valid CSV file with UTF encoding'})
+      self.validation_issues.create({:issue_description => e.message, :suggested_solution => 'Please upload a valid CSV file'})
 
     end
     save
@@ -177,6 +189,7 @@ class ImportJob < ActiveRecord::Base
     # fail if state is not parsed
     return false unless state.in? ['parsed', 'parse_warnings']
     self.state = 'importing'
+    save
     if import_dataset
       self.state = 'imported'
     else
@@ -185,6 +198,17 @@ class ImportJob < ActiveRecord::Base
     save
   end
 
+
+  def extra_headers
+    possible_headers = csv_import_config.get_import_template.all_column_headers
+    actual_headers = headers.pluck(:column_name)
+    extra_headers = actual_headers - possible_headers
+    return extra_headers.uniq.reject &:blank?
+  end
+
+  def has_extra_headers?
+    !extra_headers.empty?
+  end
   private
 
   # The validator is a non-rails ruby class.  It is not persisted and its state isn't
@@ -194,7 +218,7 @@ class ImportJob < ActiveRecord::Base
   def get_validator
     # validator needs a template
     template = csv_import_config.get_import_template
-    validator = TraitDB::Validator.new(template, csv_dataset.csv_file.path)
+    validator = TraitDB::Validator.new(template, csv_dataset.get_local_file, csv_dataset.encoding)
     validator # returns the validator
   end
 
@@ -263,10 +287,12 @@ class ImportJob < ActiveRecord::Base
       else
         continuous_trait = ContinuousTrait.by_project(project).where(:name => import_trait[:name]).first_or_create &setup_trait
       end
-      import_trait[:groups].each do |import_group_name|
-        group = TraitGroup.by_project(project).where(:name => import_group_name).first_or_create
-        group.continuous_traits << continuous_trait unless continuous_trait.in? group.continuous_traits
-        group.save
+      if import_trait[:groups]
+        import_trait[:groups].each do |import_group_name|
+          group = TraitGroup.by_project(project).where(:name => import_group_name).first_or_create
+          group.continuous_traits << continuous_trait unless continuous_trait.in? group.continuous_traits
+          group.save
+        end
       end
       continuous_trait.save
     end
@@ -292,10 +318,12 @@ class ImportJob < ActiveRecord::Base
         categorical_trait = CategoricalTrait.by_project(project).where(:name => import_trait[:name]).first_or_create &setup_trait
       end
 
-      import_trait[:groups].each do |import_group_name|
-        group = TraitGroup.by_project(project).where(:name => import_group_name).first_or_create
-        group.categorical_traits << categorical_trait unless categorical_trait.in? group.categorical_traits
-        group.save
+      if import_trait[:groups]
+        import_trait[:groups].each do |import_group_name|
+          group = TraitGroup.by_project(project).where(:name => import_group_name).first_or_create
+          group.categorical_traits << categorical_trait unless categorical_trait.in? group.categorical_traits
+          group.save
+        end
       end
 
       import_trait[:values].each do |value|
@@ -309,139 +337,192 @@ class ImportJob < ActiveRecord::Base
   end
 
   def import_datasets(datasets)
-    # datasets is an Array of Hashes
+    # datasets is an Array of Hashes from the validator
     template = csv_import_config.get_import_template
-    import_datasets_messages = []
-    import_datasets_messages << "Received #{datasets.size} datasets"
-    @duplicates = []
-    # taxa
-    
-    # need to make an otu out of each or detect if it exists
       datasets.each do |d|
-        taxon = d[:taxon]
-        # Find or create an OTU for this row
-        last_parent = nil
-        taxa_map = {}
-        IcznGroup.sorted.each{|x| taxa_map[x.name] = nil}
-        taxa_map.keys.each do |level|
-          # level will be the name of the IcznGroup, e.g. 'htg' or 'family'
-          next if taxon[level].nil? || taxon[level].empty? # skip if this row doesn't have taxonomy information at the current level
-          model_taxon = Taxon.by_project(project).where(:name => taxon[level].strip).first_or_create do |t|
-            t.parent = last_parent
-            t.import_job = self
-            t.iczn_group = IcznGroup.find_by_name(level)
-          end
-          # add the named IcznGroup to the project
-          project.iczn_groups << model_taxon.iczn_group unless model_taxon.iczn_group.in? project.iczn_groups
-          project.save
-          last_parent = taxa_map[level] = model_taxon
-        end
+        # Create taxa
+        taxonomy_hash = d[:taxon]
+        ordered_taxonomy = get_ordered_taxa_iczngroups(taxonomy_hash)
+        row_taxa = Taxon.find_or_create_with_ordered_taxonomy(ordered_taxonomy, self)
+
+        # Add Iczn Groups to project
+        iczn_groups = ordered_taxonomy.map{|taxon| taxon[:iczn_group]}
+        project.add_iczn_groups(iczn_groups)
 
         # Create an OTU
-        # Tested this in console but not yet web.  Should work just fine
-        otu = Otu.by_project(project).create(:taxa => taxa_map.values.compact,:import_job => self)
-        otu.generate_names
-        otu.save
+        otu = Otu.by_project(project).create_with_taxa(row_taxa, self)
+        metadata_hash = d[:metadata]
+        otu.add_metadata(metadata_hash)
 
-        # Add metadata to the OTU, including notes, entry email, etc
-        d[:metadata].each do |k,v|
-          next if v.nil? || k.nil?
-          # k is the field name, v is the value
-          field = OtuMetadataField.where(:name => k).first_or_create
-          value = OtuMetadataValue.create(:value => v,
-                                          :otu_metadata_field => field,
-                                          :otu => otu)
-          field.otu_metadata_values << value
-          otu.otu_metadata_values << value
-          field.save
-          value.save
-        end
-
-        # refs
         # Categorical Traits
-        d[:categorical_trait_data].each do |import_trait|
-          # an array of hashes.  Hashes contain :name, :values, and :source
-          # Source may be nil if the template allowed it.  This would have been checked by the validator already
-          # find the trait to attach it to
-          if template.trait_sets?
-            path = template.trait_path_from_column(import_trait[:name])
-            trait = TraitSet.find_or_create_with_path(project, path[0..-2]).categorical_traits.where(:name => path[-1]).first
-          else
-            trait = CategoricalTrait.by_project(project).where(:name => import_trait[:name]).first
-          end
+        categorical_trait_hashes = d[:categorical_trait_data]
+        add_categorical_traits(otu, template, categorical_trait_hashes)
 
-          # This will result in erroneous references if source is nil, because where(nil) returns everything!
-          if import_trait[:source]
-            source_reference = SourceReference.by_project(project).where(:source => import_trait[:source]).first_or_create do |ref|
-              import_datasets_messages << "Adding Source Reference #{ref[:source]}"
-            end
-          end
-
-          import_trait[:values].each_with_index do |import_value, i|
-            # Now the values
-            category = CategoricalTraitCategory.where(:categorical_trait_id => trait.id, :name => import_value).first
-            value = CategoricalTraitValue.create(:position => i,
-                                                 :categorical_trait_id => trait.id,
-                                                 :categorical_trait_category_id => category.id)
-            if import_trait[:source]
-              value.source_reference = source_reference
-              source_reference.categorical_trait_values << value
-            end
-
-            otu.categorical_trait_values << value
-            value.save
-            otu.save
-          end
-
-          source_reference.save if import_trait[:source]
-
-          # Record trait notes if present - only one field of notes
-          if import_trait[:notes]
-            trait_note = CategoricalTraitNote.create(:categorical_trait_id => trait.id,
-                                                     :notes => import_trait[:notes])
-            otu.categorical_trait_notes << trait_note
-            trait_note.save
-            otu.save
-          end
-        end
-
-        d[:continuous_trait_data].each do |import_trait|
-          # Array of hashes.  Hashes contain :name, :value, and :source
-          # This needs to check for trait_sets
-          if template.trait_sets?
-            path = template.trait_path_from_column(import_trait[:name])
-            trait = TraitSet.find_or_create_with_path(project, path[0..-2]).continuous_traits.where(:name => path[-1]).first
-          else
-            trait = ContinuousTrait.by_project(project).where(:name => import_trait[:name]).first
-          end
-
-          # This will result in erroneous references if source is nil, because where(nil) returns everything!
-          if import_trait[:source]
-            source_reference = SourceReference.by_project(project).where(:source => import_trait[:source]).first_or_create do |ref|
-              import_datasets_messages << "Adding Source Reference #{ref[:source]}"
-            end
-          end
-
-          value = ContinuousTraitValue.create(:continuous_trait_id => trait.id,
-                                              :value => import_trait[:value])
-          if import_trait[:source]
-            value.source_reference = source_reference
-            source_reference.continuous_trait_values << value
-          end
-          otu.continuous_trait_values << value
-          source_reference.save if import_trait[:source]
-
-          # Record notes if present - only one field of notes
-          if import_trait[:notes]
-            trait_note = ContinuousTraitNote.create(:continuous_trait_id => trait.id,
-                                                    :notes => import_trait[:notes])
-            otu.continuous_trait_notes << trait_note
-            trait_note.save
-          end
-          otu.save
-        end
-      end #end of datasets.each
+        # Continuous Traits
+        continuous_trait_hashes = d[:continuous_trait_data]
+        add_continuous_traits(otu, template, continuous_trait_hashes)
+      end
     project.save
+  end
+
+  # This new stuff should be private
+  # also needs to be refactored to make instance variables
+
+  # given a hash of iczn group names to taxa (e.g.{'Kingdom' => 'Plantae', 'htg' => 'Angiosperms'},
+  # returns an array, ordered by descending IcznGroup level, with elements that indicate a
+  # taxon name and an iczn group
+  def get_ordered_taxa_iczngroups(taxon_hash)
+    ordered_taxa_iczngroups = []
+    IcznGroup.sorted.each do |iczn_group|
+      if iczn_group.name.in? taxon_hash.keys
+        ordered_taxa_iczngroups << {:taxon_name => taxon_hash[iczn_group.name],
+                                    :iczn_group => iczn_group}
+      end
+    end
+    return ordered_taxa_iczngroups
+  end
+
+
+  # Can go in source_reference.rb
+  # Given a source name (e.g. 'Book of things 2009')
+  # creates a SourceReference object in the current project with it.
+  def add_trait_source(trait_source)
+    return nil unless trait_source
+    return SourceReference.by_project(project).where(:source => trait_source).first_or_create
+  end
+
+  # categorical_trait_hashes is an array of hashes.  Hashes contain :name, :values, and :source
+  # Source may be nil if the template allowed it.  This would have been checked by the validator already
+  # find the trait to attach it to
+  def add_categorical_traits(otu, template, categorical_trait_hashes)
+    categorical_trait_hashes.each do |categorical_trait_hash|
+      model_trait = get_categorical_trait(template, categorical_trait_hash)
+      model_source_reference = add_trait_source(categorical_trait_hash[:source])
+      add_categorical_trait_values(otu, model_trait, categorical_trait_hash[:values], model_source_reference)
+      add_categorical_trait_note(otu, model_trait, categorical_trait_hash[:notes])
+    end
+    otu.save
+  end
+
+  # should go in categorical_trait.rb
+  # Fetches the trait from the database.  Trait must exist
+  # behaves differently if template uses trait sets or not
+
+  def get_categorical_trait(template, categorical_trait_hash)
+    if template.trait_sets?
+      # This is messy because I can't remember why the path 0..-2 is significant or how the paths are constructed
+      path = template.trait_path_from_column(categorical_trait_hash[:name])
+      model_trait = TraitSet.find_or_create_with_path(project, path[0..-2]).categorical_traits.where(:name => path[-1]).first
+    else
+      model_trait = CategoricalTrait.by_project(project).where(:name => categorical_trait_hash[:name]).first
+    end
+    model_trait
+  end
+
+# Given an otu, a trait, an array of values, and an optionally nil source reference
+# creates an indexed categorical trait value for each value.  Links the trait value to the source if the source is not nil
+  def add_categorical_trait_values(otu, model_trait, categorical_trait_values, model_source_reference)
+    categorical_trait_values.each_with_index do |trait_value, index|
+      model_value = add_categorical_trait_value(otu, model_trait, trait_value, index)
+      link_categorical_value_to_source_reference(model_value, model_source_reference) if model_source_reference
+      model_value.save
+    end
+  end
+
+  # Creates a CategoricalTraitValue object
+  # with the specified category
+  # assumes the categoricalTraitCategory exists
+  # creates the model value.  values are just references to categories, traits, and a position
+  # should this go in CategoricalTrait.rb or CategoricalTraitValue.rb?
+  def add_categorical_trait_value(otu, model_trait, trait_value, index)
+    model_category = CategoricalTraitCategory.where(:categorical_trait_id => model_trait.id, :name => trait_value).first
+    model_value = CategoricalTraitValue.create(:otu_id => otu.id,
+                                               :position => index,
+                                               :categorical_trait_id => model_trait.id,
+                                               :categorical_trait_category_id => model_category.id
+    )
+    return model_value
+
+  end
+
+  def link_categorical_value_to_source_reference(model_value, model_source_reference)
+    return if model_source_reference.nil?
+    model_value.source_reference = model_source_reference
+    model_source_reference.categorical_trait_values << model_value
+    model_value.save
+    model_source_reference.save
+  end
+
+  # Given a string containing a trait note, create a CategoricalTraitNote object and link it to the model_trait
+  # move to CategoricalTraitNote.rb or Otu.rb?
+  # Test that on adding a categorical trait note, the note appears in the otus relationship
+  def add_categorical_trait_note(otu, model_trait, trait_note)
+    return CategoricalTraitNote.create(:otu_id => otu.id,
+                                       :categorical_trait_id => model_trait.id,
+                                       :notes => trait_note)
+  end
+
+  # continuous_trait_hashes is an array of hashes.  Hashes contain :name, :values, and :source
+  # source may be nil if the template allowed it.  This should have been checked by the validator already
+  # traits themselves are pre-existing in the database
+  def add_continuous_traits(otu, template, continuous_trait_hashes)
+    continuous_trait_hashes.each do |continuous_trait_hash|
+      model_trait = get_continuous_trait(template, continuous_trait_hash)
+      model_source_reference = add_trait_source(continuous_trait_hash[:source])
+      add_continuous_trait_values(otu, model_trait, continuous_trait_hash[:values], model_source_reference)
+      add_continuous_trait_note(otu, model_trait, continuous_trait_hash[:notes])
+    end
+    otu.save
+  end
+
+  # should go in continuous_trait.rb
+  # Fetches the trait from the database.  Trait must exist
+  # behaves differently if template uses trait sets or not
+  def get_continuous_trait(template, continuous_trait_hash)
+    if template.trait_sets?
+      # This is messy because I can't remember why the path 0..-2 is significant or how the paths are constructed
+      path = template.trait_path_from_column(continuous_trait_hash[:name])
+      model_trait = TraitSet.find_or_create_with_path(project, path[0..-2]).continuous_traits.where(:name => path[-1]).first
+    else
+      model_trait = ContinuousTrait.by_project(project).where(:name => continuous_trait_hash[:name]).first
+    end
+    model_trait
+
+  end
+
+  # where should this go?
+  def add_continuous_trait_values(otu, model_trait, continuous_trait_values, model_source_reference)
+    continuous_trait_values.each_with_index do |trait_value, index|
+      model_value = add_continuous_trait_value(otu, index, model_trait, trait_value)
+      link_continuous_value_to_source_reference(model_value, model_source_reference) if model_source_reference
+    end
+  end
+
+  # where should this go?
+  def add_continuous_trait_value(otu, index, model_trait, trait_value)
+    model_value = ContinuousTraitValue.create(:otu_id => otu.id,
+                                              :position => index,
+                                              :continuous_trait_id => model_trait.id,
+                                              :value => trait_value)
+    return model_value
+  end
+
+  # This should go in ContinuousTraitValue.rb
+  # Test if it's even necessary to add the model_value to the array of continuous / categorical values
+  def link_continuous_value_to_source_reference(model_value, model_source_reference)
+    return if model_source_reference.nil?
+    model_value.source_reference = model_source_reference
+    # Is this even necessary
+    model_source_reference.continuous_trait_values << model_value
+    model_value.save
+    model_source_reference.save
+  end
+
+  # should go in ContinuousTraitNote.rb
+  def add_continuous_trait_note(otu, model_trait, trait_note)
+    return ContinuousTraitNote.create(:otu_id => otu.id,
+                                      :continuous_trait_id => model_trait.id,
+                                      :notes => trait_note)
   end
 
   def link_trait_groups

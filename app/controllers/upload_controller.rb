@@ -2,8 +2,8 @@
 
 class UploadController < ApplicationController
   before_filter :authenticate_user!
-  before_filter :verify_is_admin
   before_filter :set_project # populates @project and makes sure project has been selected
+  before_filter :verify_is_admin_or_owner, :only => [:delete, :destroy]
 
   def index
     # show the uploaded datasets
@@ -26,7 +26,6 @@ class UploadController < ApplicationController
     end
   end
 
-
   def delete
     @dataset = @project.csv_datasets.find(params[:id])
   end
@@ -46,6 +45,15 @@ class UploadController < ApplicationController
 
   def new
     @dataset = CsvDataset.new
+  end
+
+  private
+
+  def verify_is_admin_or_owner
+    return true if current_user && current_user.admin?
+    dataset = @project.csv_datasets.find(params[:id])
+    return true if current_user && dataset.user == current_user
+    false
   end
 
 end

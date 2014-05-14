@@ -4,7 +4,7 @@ traitdb_spreadsheet_template:
   template_name: Tree of Sex
   # All taxonomy columns specified here are required
   taxonomy_columns: # keys are the local to the app.  Values are literals in the CSV
-    kingdom: kingdom # For plants or animals
+    kingdom: Kingdom # For plants or animals
     htg: Higher taxonomic group
     order: Order
     family: Family
@@ -18,15 +18,20 @@ traitdb_spreadsheet_template:
     notes: notes, comments
     entry_name: entry name
     entry_email: entry email
+    theplantlist_name: Name in ThePlantListV1.1
+    theplantlist_status: ThePlantListV1.1 (1=accepted at species level,-1=recognized synonym,0=other)
+    gametophytic_chromosome_number: Gametophytic chromosome number
+    sporophytic_chromosome_number: Sporophytic chromosome number
+    woodiness_count: Woodiness count
   trait_groups: # these define a relationship of a taxonomy to a set of traits.  They can only be applied after data is imported
     -
       name: Plants
       taxonomic_rank: kingdom
-      taxon_name: plants
+      taxon_name: Plantae
     - 
       name: Animals
       taxonomic_rank: kingdom
-      taxon_name: animals
+      taxon_name: Animal
   trait_options:
     source_prefix: "source: " # include the space after the colon
     require_source: true # source rules for formatting?
@@ -36,7 +41,7 @@ traitdb_spreadsheet_template:
   categorical_trait_columns:
     -
       name: Hybrid # Denoted as hybrid based on species name; add reference to notes column if known from other data
-      values: [0,1]
+      values: ["0","1"]
       groups: [Plants]
     -
       name: Sexual System
@@ -51,6 +56,9 @@ traitdb_spreadsheet_template:
         - polygamodioecy
         - polygamomonoecy
         - apomictic
+        - parthenogenetic
+        - gonochorous
+        - gonochoristic
         - other
       groups: [Plants, Animals]
     -
@@ -86,6 +94,7 @@ traitdb_spreadsheet_template:
         - homomorphic
         - complex XY
         - complex ZW
+        - complex XO
       groups: [Plants, Animals]
     -
       name: Molecular basis
@@ -114,6 +123,7 @@ traitdb_spreadsheet_template:
       values:
         - TSD
         - TSD Ia
+        - TSD Ib
         - TSD II
         - size
         - density
@@ -122,32 +132,47 @@ traitdb_spreadsheet_template:
       groups: [Animals]
     -
       name: Polyfactorial
-      values: [yes, no]
+      values: ["yes", "no"]
       groups: [Animals]
-      
+    -
+      name: Woodiness
+      values: [W, H, variable]
+      groups: [Plants]
+    -
+      name: Heterostyly
+      values: [tristyly, distyly, homostyly, other]
+      groups: [Plants]
+    -
+      name: Predicted ploidy
+      values: ["1","2","3","4","5","6"]
+      groups: [Animals]
   continuous_trait_columns:
     -
-      name: Gametophytic chromosome number
+      name: Gametophytic chromosome number (minimum)
       format: integer # formats are only for display
       groups: [Plants]
     -
-      name: Sporophytic chromosome number
+      name: Gametophytic chromosome number (mean)
+      format: integer # formats are only for display
+      groups: [Plants]
+    -
+      name: Sporophytic chromosome number (minimum)
       format: integer
       groups: [Plants]
     -
-      name: Chromosome number (female)
+      name: Sporophytic chromosome number (mean)
+      format: integer
+      groups: [Plants]
+    -
+      name: Chromosome number (female) 2N
       format: integer
       groups: [Animals]
     -
-      name: Chromosome number (male)
+      name: Chromosome number (male) 2N
       format: integer
       groups: [Animals]
     -
       name: C-value
       format: float
-      groups: [Animals]
-    -
-      name: Predicted ploidy
-      format: integer
       groups: [Animals]
       

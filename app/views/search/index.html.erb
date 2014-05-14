@@ -1,8 +1,24 @@
 <div class="row-fluid">
-  <div class="offset1 span10">
+  <div class="span12">
     <div class="row-fluid">
-      <h2>Search</h2>
-      <!--<p class="lead">Number of records available: <span id="available"><%= 5  -%></span> out of <span id="total"><%= 423 %></span></p>-->
+          <%= form_tag '/search/results.csv', { :class => 'form' } do -%>
+            <h2>Search
+              <% if @iczn_groups.first %>
+                <button type="submit" class="pull-right btn btn-success">Download All<i class="icon-download icon-white"></i></button>
+                <%= hidden_field_tag 'download_all' %>
+                <%= hidden_field_tag 'select_all_traits' %>
+                <%= hidden_field_tag 'include_references' %>
+                <% group = @iczn_groups.first
+                   taxa = group.taxa.by_project(@project.id).sorted
+                   taxa.each_with_index do |taxon, i|
+                   field_name = "#{group.name}[#{i}]"
+                   field_value = taxon.id
+                %>
+                  <%= hidden_field_tag field_name, field_value %>
+                <% end %>
+              <% end %>
+        </h2>
+    <% end %>
     </div>
     <div class="row-fluid">
       <div id="searchform" class="well">
@@ -24,10 +40,15 @@
                       <% @iczn_groups.each_with_index do |group, i| %>
                         <td>
                           <%# 'All' is not valid for the first taxon %>
-                          <% prompt = '-- All --' if i > 0 %>
+                          <% if i == 0
+                               options = options_from_collection_for_select(group.taxa.by_project(@project.id).sorted, 'id', 'name')
+                             else
+                               options = ''
+                             end
+                          %>
                         <%= select_tag("#{group.name}[0]",
-                                       options_from_collection_for_select(group.taxa.by_project(@project.id).sorted, 'id', 'name'),
-                                       :prompt => prompt,
+                                       options,
+                                       :prompt => '-- All --',
                                        'data-groupid' => group.id,
                                        'data-groupname' => group.name,
                                        'data-grouplevel' => group.level,
@@ -96,18 +117,24 @@
           <div id="options">
             <div class="row-fluid options-row">
               <label class="checkbox inline">
-                <input type="checkbox" id="select_all_traits" name="select_all_traits">Select all traits
+                <%= check_box_tag 'select_all_traits' %>Select all traits
               </label>
             </div>
             <div class="row-fluid options-row">
               <label class="checkbox inline">
-                <input type="checkbox" id="only_rows_with_data" name="only_rows_with_data">Only include rows with data for chosen traits
+                <%= check_box_tag 'only_rows_with_data', true, true %>Only include rows with data for chosen traits
               </label>
             </div>
             <div class="row-fluid options-row">
               <label class="checkbox inline">
-                <input type="checkbox" id="include_references" name="include_references" checked>Include references
+                <%= check_box_tag 'include_references', true, true %>Include references
               </label>
+            </div>
+            <div class="row-fluid options-row form-inline">
+              <label class="checkbox inline">
+                <%= check_box_tag :summarize_results %>Return results summarized as:
+              </label>
+              <%= select_tag(:summarize_iczn_group_id, options_from_collection_for_select(@iczn_groups,:id,:name), :class => 'input-small inline') %>
             </div>
           </div>
           <div class="form-actions">

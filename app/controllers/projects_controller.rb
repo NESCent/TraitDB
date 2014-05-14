@@ -2,6 +2,7 @@ class ProjectsController < ApplicationController
   before_filter :authenticate_user!, :except => [:select_project, :selected_project]
   before_filter :verify_is_admin, :except => [:select_project, :selected_project, :show, :index]
   def index
+    @projects = Project.sorted
   end
 
   def show

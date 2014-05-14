@@ -1,0 +1,60 @@
+sqlite: &sqlite
+  adapter: sqlite3
+  database: db/<%= Rails.env %>.sqlite3
+
+mysql: &mysql
+  adapter: mysql2
+  database: "<%=ENV['OPENSHIFT_APP_NAME']%>"
+  username: "<%=ENV['OPENSHIFT_MYSQL_DB_USERNAME']%>"
+  password: "<%=ENV['OPENSHIFT_MYSQL_DB_PASSWORD']%>"
+  host:     <%=ENV['OPENSHIFT_MYSQL_DB_HOST']%>
+  port:     <%=ENV['OPENSHIFT_MYSQL_DB_PORT']%>
+
+postgresql: &postgresql
+  adapter: postgresql
+  database: <%=ENV['OPENSHIFT_APP_NAME']%>
+  username: <%=ENV['OPENSHIFT_POSTGRESQL_DB_USERNAME']%>
+  password: <%=ENV['OPENSHIFT_POSTGRESQL_DB_PASSWORD']%>
+  host:     <%=ENV['OPENSHIFT_POSTGRESQL_DB_HOST']%>
+  port:     <%=ENV['OPENSHIFT_POSTGRESQL_DB_PORT']%>
+  min_messages: ERROR
+  reconnect: false
+
+defaults: &defaults
+  pool: 5
+  timeout: 5000
+  encoding: utf8
+  <<: *<%= ENV['RAILS_DB'] || "postgresql" %>
+
+development:
+  adapter: postgresql
+  database: traitdb_dev
+  pool: 5
+  username: <%=ENV['TRAITDB_PG_DEV_USER']%>
+  password: <%=ENV['TRAITDB_PG_DEV_PASS']%>
+  host:     <%=ENV['TRAITDB_PG_DEV_HOST']%>
+  port:     <%=ENV['TRAITDB_PG_DEV_PORT']%>
+  min_messages: ERROR
+  reconnect: false
+
+test: &test
+  adapter: postgresql
+  database: traitdb_test
+  pool: 5
+  username: <%=ENV['TRAITDB_PG_TEST_USER']%>
+  password: <%=ENV['TRAITDB_PG_TEST_PASS']%>
+  host:     <%=ENV['TRAITDB_PG_TEST_HOST']%>
+  port:     <%=ENV['TRAITDB_PG_TEST_PORT']%>
+  min_messages: ERROR
+  reconnect: false
+
+production:
+  adapter: postgresql
+  database: traitdb_prod
+  pool: 5
+  username: <%=ENV['TRAITDB_PG_PROD_USER']%>
+  password: <%=ENV['TRAITDB_PG_PROD_PASS']%>
+  host:     <%=ENV['TRAITDB_PG_PROD_HOST']%>
+  port:     <%=ENV['TRAITDB_PG_PROD_PORT']%>
+  min_messages: ERROR
+  reconnect: false

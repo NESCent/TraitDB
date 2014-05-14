@@ -1,0 +1,310 @@
+traitdb_spreadsheet_template:
+  template_name: Baker's Law
+  # All taxonomy columns specified here are required
+  taxonomy_columns: # keys refer to internal TraitDB identifiers.  Values are the column names in CSV
+    family: Family
+    genus: Genus
+    species: Species
+    subspecies: Subspecies
+    variety: Variety
+    population: Population ID from reference
+  metadata_columns: # keys again are the internal TraitDB identifiers.
+    date_entered: Date entered
+    by_whom: By whom
+    authors: Authors
+    year: Year
+    reference: Reference
+    study_type: Study type
+    geographic_scale: Geographic scale
+    population_level: Population-level information
+    phylogeny_in_reference: Phylogeny in reference?
+    latitude: Latitude
+    longitude: Longitude
+    utm: UTM
+    hemisphere: Hemisphere
+    biome: Biome
+    island_name: Island name
+    archipelago: Archipelago
+    disturbed_habitat: Disturbed/Undisturbed habitat
+    data_year: Data Year
+    weediness: Weediness as reported by authors
+    comparison_taxon: Comparison taxon
+    where_t: Where-t
+    where_f: Where-F
+    taxonomy_notes: Taxonomy notes
+  trait_options:
+    require_source: false
+    notes_prefix: "notes: "
+  trait_sets:
+  -
+    name: Species Description
+    depth: 1
+    continuous_trait_columns:
+      -
+        name: Min height
+        format: float
+      -
+        name: Max height
+        format: float
+      -
+        name: Chromosome number (haploid)
+        format: integer
+      -
+        name: DNA content (C-value)
+        format: integer
+    categorical_trait_columns:
+      -
+        name: Gymnosperm/Dicot/Moncot
+        values: [gymnosperm,dicot,monocot]
+      -
+        name: Growth Form
+        values: [woody,herbaceous,unknown]
+      -
+        name: Life history
+        values: [annual,biennial,perennial,variable,unknown]
+      -
+        name: Semelparous/Iteroparous
+        values: [semelparous,iteroparous,unknown]
+      -
+        name: Provenance
+        values: [native,introduced,unknown]
+      -
+        name: Endemism
+        values: [local endemic,regional endemic,unknown]
+      -
+        name: Polyploidy level
+        values: [diploid,tetraploid,hexaploid,octaploid,other,unknown]
+      -
+        name: Habitat specialist
+        values: ["no","yes","unknown","NA"]
+  -
+    name: Reproductive Traits
+    depth: 1
+    continuous_trait_columns:
+      -
+        name: tm number of markers used
+        format: float
+      -
+        name: tm
+        format: float
+      -
+        name: SE-tm
+        format: float
+      -
+        name: ts
+        format: float
+      -
+        name: SE-ts
+        format: float
+      -
+        name: Lower-tm
+        format: float
+      -
+        name: Upper-tm
+        format: float
+      -
+        name: nPops(F)
+        format: float
+      -
+        name: F
+        format: float
+      -
+        name: SE-F
+        format: float
+      -
+        name: Lower-F
+        format: float
+      -
+        name: Upper-F
+        format: float
+      -
+        name: Fis
+        format: float
+      -
+        name: ISI (#)
+        format: float
+      -
+        name: Self-compatibility (% seed set self vs outx)
+        format: float
+      -
+        name: Autonomous selfing (% seed set bagged vs unbagged)
+        format: float
+      -
+        name: Hand outx (% seed set self vs hand outx=(average of bagged/unbagged if both are reported))
+        format: float
+      -
+        name: Flower Size (corolla diameteer)
+        format: float
+      -
+        name: Floral tube length
+        format: float
+      -
+        name: Flowers per inflorescence
+        format: float
+      -
+        name: Number of inflorescences
+        format: float
+      -
+        name: Total number of flowers
+        format: float
+      -
+        name: Open flowers per inflorescence
+        format: float
+      -
+        name: Open inflorescences
+        format: float
+      -
+        name: Total number of open flowers
+        format: float
+    categorical_trait_columns:
+      -
+        name: tm marker type
+        values: [microsatellites,isoallozymes,allozymes,floral polymorphism,morphological polymorphism,RAPDs,SNPs,other]
+      -
+        name: t&F?
+        values: ["both reported","false"]
+      -
+        name: Sexual system/Gender strategy
+        values: [cosexual,monoecious,dioecious,gynodioecious,androdioecious,gynomonoecious,andromonoecious,other,unknown]
+      -
+        name: Stylar polymorphism
+        values: [homosylous,distylous,tristylous,enantiostylous,other,unknown]
+      -
+        name: SI/SC
+        values: [gametophytic SI,sporophytic SI,SC,unknown,NA]
+      -
+        name: Vegetative reproduction
+        values: [No,Yes,unknown,NA]
+      -
+        name: Apomictic/Automictic seed set
+        values: [No,apomictic,automictic,one but not sure which,unknown,NA]
+      -
+        name: Cleistogamous flowers produced
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Flower color
+        values: [white,pink,red,yellow,orange, blue,purple,bicolor,unknown,NA]
+      -
+        name: Open Pollinated vs Manipulated
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Bagging data reported? (y/n)
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Metric underlying percentage hand outx estimates
+        values: [seeds/flower,seeds/plant,fruits/flower,fruits/plant]
+      -
+        name: Dichogamy
+        values: ["no","yes","unknown"]
+      -
+        name: Herkogamy
+        values: ["no","yes","delayed selfing","unknown","NA"]
+      -
+        name: Floral Symmetry
+        values: [radial,bilateral,unknown]
+      -
+        name: Seed production via Autonous autogamy
+        values: ["no","yes","unknown"]
+  -
+    name: Pollination
+    depth: 1
+    continuous_trait_columns:
+      -
+        name: "Total # of pollinator taxa observed in study"
+        format: integer
+    categorical_trait_columns:
+      -
+        name: "Generalist/Specialist pollinated?"
+        values: [generalist,specialist,unknown,NA]
+      -
+        name: Insect
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Bee
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Fly
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Moth
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Beetle
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Butterfly
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Wasp
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Bird
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Mammal
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Wind
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Water
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Nectar
+        values: ["no","yes","unknown","NA"]
+  -
+    name: Seed & Fruit Traits
+    depth: 1
+    continuous_trait_columns:
+      -
+        name: "Propagule size (seed #/diaspore)"
+        format: float
+      -
+        name: Seed mass
+        format: float
+    categorical_trait_columns:
+      -
+        name: Seed dormancy
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Seed bank
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Diaspore unit
+        values: [fruit,seed,unknown,NA]
+      -
+        name: Wind dispersal
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Water dispersal
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Ant dispersal
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Vert. ingestion dispersal
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Vert. attachment dispersal
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Ballistic dispersal
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Unassisted dispersal
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Wings
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Eliasome
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Aril
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Fleshy fruit
+        values: ["no","yes","unknown","NA"]
+      -
+        name: Pappus
+        values: ["no","yes","unknown","NA"]

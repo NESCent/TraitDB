@@ -15,19 +15,24 @@ class Taxon < ActiveRecord::Base
 
   has_and_belongs_to_many :trait_groups
 
-  scope :sorted, order('name ASC')
+  scope :sorted, -> { order('name ASC') }
 
-  scope :sorted_by_iczn, joins(:iczn_group).order('iczn_groups.level ASC')
+  scope :sorted_by_iczn, -> { joins(:iczn_group).order('iczn_groups.level ASC') }
   scope :under_iczn_group, lambda{|iczn_group| joins(:iczn_group).where('iczn_groups.level > ?', iczn_group.level)}
-
+  scope :in_iczn_group, lambda{|iczn_group_id| where(:iczn_group_id => iczn_group_id)}
   scope :by_project, lambda{|p| where(:project_id => p) unless p.nil?}
 
+  scope :with_parent, lambda{|parent_id| joins(:parent_taxon).where('parent_id = ?', parent_id)}
+  scope :with_child, lambda{|child_id| joins(:child_taxa).where('child_id = ?', child_id)}
+
   def grouped_categorical_traits
-    trait_groups.map{|g| g.categorical_traits.sorted }.flatten
+    return project.categorical_traits if project.trait_groups.empty?
+    return trait_groups.map{|g| g.categorical_traits.sorted }.flatten
   end
 
   def grouped_continuous_traits
-    trait_groups.map{|g| g.continuous_traits.sorted }.flatten
+    return project.continuous_traits if project.trait_groups.empty?
+    return trait_groups.map{|g| g.continuous_traits.sorted }.flatten
   end
 
   def descendants_with_level(dest_iczn_group)
@@ -48,7 +53,7 @@ class Taxon < ActiveRecord::Base
   end
 
   def dataset_name
-    csv_dataset.csv_file_file_name if csv_dataset
+    csv_dataset.file_name if csv_dataset
   end
   
   def iczn_group_name
@@ -59,4 +64,32 @@ class Taxon < ActiveRecord::Base
     parent.name if parent
   end
 
+  # returns taxa found or created based on an ordered_taxonomy array.
+  # Items in the array should be hashes with :taxon_name and :iczn_group
+  # returns a list of the created taxa
+  def self.find_or_create_with_ordered_taxonomy(ordered_taxonomy, import_job)
+    taxa = []
+    ordered_taxonomy.each do |ordered_taxon|
+      taxa << self.find_or_create_with_parent(ordered_taxon[:taxon_name], taxa.last, ordered_taxon[:iczn_group], import_job)
+    end
+    return taxa
+  end
+
+  # Finds or creates a taxon with the provided parentage
+  def self.find_or_create_with_parent(taxon_name, parent, iczn_group, import_job)
+    # taxon_scope specifies a where clause within the project and with the parent as ancestor
+    if parent
+      # scope should be children of the parent
+      taxon_scope = parent.children
+    else
+      # Scope should be project taxa.  Not obvious how to search for taxa with no parents,
+      # because TaxonAncestor doesn't allow NULLs
+      taxon_scope = self
+    end
+    model_taxon = taxon_scope.by_project(import_job.project).where(:name => taxon_name, :iczn_group => iczn_group).first_or_create do |taxon|
+      taxon.import_job = import_job
+      taxon.parent = parent
+    end
+    return model_taxon
+  end
 end

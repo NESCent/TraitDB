@@ -1,4 +1,6 @@
 require 'doi_detector'
+require 'merge_trait_hashes'
+
 class SearchController < ApplicationController
   before_filter :set_project
   OPERATORS = { :or => 'or', :and => 'and' }
@@ -13,10 +15,10 @@ class SearchController < ApplicationController
     @trait_set_levels = @project.trait_sets.levels
   end
 
-  def list_taxa # needs iczn_group_id and parent_ids
+  def list_taxa # needs iczn_group_id and parent_id
     iczn_group_id = params[:iczn_group_id]
-    parent_ids = params[:parent_ids]
-    @taxa_list = taxa_in_iczn_group_with_parents(iczn_group_id, parent_ids)
+    parent_id = params[:parent_id]
+    @taxa_list = taxa_in_iczn_group_with_parent(iczn_group_id, parent_id)
     render :json => @taxa_list
   end
 
@@ -63,7 +65,7 @@ class SearchController < ApplicationController
     @results = {}
     @results[:columns] = {} # start with an empty hash for output display columns
 
-    analyze_lowest_requested_taxa # populates @lowest_requested_taxa, @selected_taxon_ids, and @results[:columns][:iczn_groups]
+    analyze_lowest_requested_taxa # populates @lowest_requested_taxa and @selected_taxon_ids
     # analyze_lowest_requested_taxa must come before assemble_trait_filters
     assemble_trait_filters # populates @categorical_trait_category_map and @continuous_trait_predicate_map
 
@@ -87,6 +89,8 @@ class SearchController < ApplicationController
     rows = {}
     include_references = !params['include_references'].nil?
     only_with_data = !params['only_rows_with_data'].nil?
+    should_summarize_results = !params['summarize_results'].nil?
+    summarize_iczn_group_id = Integer(params['summarize_iczn_group_id'] || 0)
 
     # At this point, we'll have a list of the most specific taxa requested at each level
     @lowest_requested_taxa.each do |taxon|
@@ -122,7 +126,7 @@ class SearchController < ApplicationController
         # Notes are optional and only stored once per OTUxTrait
         # When a note is found, we record the trait_id so that the view can display a notes column for the trait
         # Notes are expected to be rare, so we only display the column if we have data
-        note = continuous_trait_value.otu.continuous_trait_notes.find{|n| n.continuous_trait.id == trait_id }
+        note = continuous_trait_value.otu.continuous_trait_notes.find{|n| n.continuous_trait_id == trait_id }
         if note
           continuous_trait_notes_ids << trait_id
           result_arrays[:notes] ||= note.notes
@@ -139,6 +143,7 @@ class SearchController < ApplicationController
       end
       CategoricalTraitValue.where(:otu_id => otu_ids).where(:categorical_trait_id => @categorical_trait_category_map.keys).includes(:otu => [:categorical_trait_notes]).includes(:categorical_trait, :categorical_trait_category, :source_reference).each do |categorical_trait_value|
         trait_id = categorical_trait_value.categorical_trait_id
+        category_id = categorical_trait_value.categorical_trait_category_id
         value_id = categorical_trait_value.id
         # loops over the categorical_trait_value
 
@@ -155,15 +160,15 @@ class SearchController < ApplicationController
           :notes => nil, # Array of notes attached to a categorical trait value.
           :value_matches => {} # Hash of categorical_trait_value_id => true|false
         }
-        result_arrays[:values] << { value_id => categorical_trait_value.formatted_value }
+        result_arrays[:values] << { category_id => categorical_trait_value.formatted_value }
         if include_references && categorical_trait_value.source_reference
           source_id = categorical_trait_value.source_reference.id
-          result_arrays[:sources][value_id] = source_id
+          result_arrays[:sources][category_id] = source_id
         end
         # Notes are optional and only stored once per OTUxTrait
         # When a note is found, we record the trait_id so that the view can display a notes column for the trait
         # Notes are expected to be rare, so we only display the column if we have data
-        note = categorical_trait_value.otu.categorical_trait_notes.find{|n| n.continuous_trait.id == trait_id }
+        note = categorical_trait_value.otu.categorical_trait_notes.find{|n| n.categorical_trait_id == trait_id }
         if note
           categorical_trait_notes_ids << trait_id
           result_arrays[:notes] ||= note.notes
@@ -172,7 +177,7 @@ class SearchController < ApplicationController
         category_ids = @categorical_trait_category_map[trait_id]
         # Record a match if no predicate or if the predicate was matched
         # Note that the database will not be queried again unless there is a predicate
-        if category_ids.length == 0 || CategoricalTraitValue.where(:id => value_id, :categorical_trait_category_id => category_ids)
+        if category_ids.length == 0 || CategoricalTraitValue.where(:id => value_id, :categorical_trait_category_id => category_ids).count > 0
           # No category id specified or value matched input criteria
           result_arrays[:value_matches][value_id] = true
         else
@@ -186,25 +191,41 @@ class SearchController < ApplicationController
     # and another hash of otu names to otu ids
     # Get the name for each OTU in the rows hash and stuff it back into the hash
     #
-    Otu.where(:id => rows.keys).includes(:otu_metadata_values => [:otu_metadata_field]).each do |otu|
-      rows[otu.id][:sort_name] = otu.sort_name
+
+    Otu.where(:id => rows.keys).
+      includes(:otu_metadata_values => [:otu_metadata_field]).
+      includes(:import_job => {:csv_dataset  => :user}).
+      includes(:taxa => [:iczn_group]).
+      sorted().
+      each do |otu|
       rows[otu.id][:name] = otu.name
+      rows[otu.id][:taxonomy] = Hash[*otu.taxa.map{|t| [t.iczn_group.name, t.name]}.flatten]
+      rows[otu.id][:summary_taxon] = otu.taxa.map do |t|
+        {:taxon =>t, :iczn_group_id => t.iczn_group_id}
+      end.select do |t|
+        t[:iczn_group_id] == summarize_iczn_group_id
+      end.map{|t| t[:taxon]}.first
       rows[otu.id][:metadata] = otu.metadata_hash
+      rows[otu.id][:uploader_email] = otu.import_job.csv_dataset.user.email
+      rows[otu.id][:upload_date] = otu.import_job.created_at
       otu.metadata_hash.keys.each{|field_name| otu_metadata_field_names << field_name unless field_name.in? otu_metadata_field_names}
     end
-    # When sorting a hash, it is converted to an array where element 0 is the key and element 1 is the value
-    # sort based on the :sort_name in the value and convert back to a hash
-    rows = Hash[rows.sort{|a,b| a[1][:sort_name] <=> b[1][:sort_name]}]
-
+    @results[:columns][:iczn_groups] = @project.iczn_groups.sorted.pluck(:name)
     @results[:columns][:categorical_trait_notes_ids] = categorical_trait_notes_ids
     @results[:columns][:continuous_trait_notes_ids] = continuous_trait_notes_ids
     @results[:columns][:otu_metadata_field_names] = otu_metadata_field_names
 
     # extract sources
     @results[:sources] = sources_from_rows(rows)
+
+    # Handle summarization if selected
+    if should_summarize_results
+      rows = summarize_results(rows)
+    end
     # data to return to view
     # @results[:columns] is a hash with keys :categorical_traits and :continuous_traits
-    @results[:rows] = rows # rows is an array of hashes.  Each hash has :otu, :categorical_trait_values, and :continuous_trait_values
+    @results[:rows] = rows # rows is a hash where the keys are otu_ids.
+    # Values are hashes with :name, :taxonomy, :metadata, :uploader_email, :upload_date
     @results[:include_references] = include_references
 
     respond_to do |format|
@@ -275,7 +296,6 @@ class SearchController < ApplicationController
     # The values are the Taxon IDs
     sorted_groups_requested = @project.iczn_groups.sorted.where(:name => params.keys)
     valid_group_names = @project.iczn_groups.sorted.pluck(:name)
-    @results[:columns][:iczn_groups]= sorted_groups_requested.map{|group| {:name => group.name, :id => group.id}}
 
     # An example params hash looks like this
     # "{"htg"=>{"0"=>"2601", "2"=>"2601"}, "order"=>{"0"=>"2602", "2"=>"2602"}, "family"=>{"0"=>"2603", "2"=>"2607"}, "genus"=>{"0"=>"2625", "2"=>"2612"}, "species"=>{"0"=>"2623", "2"=>"2613"}, "trait_types"=>{"0"=>""}, "categorical_trait_name"=>{"0"=>""}, "categorical_trait_values"=>{"0"=>""}, "continuous_trait_name"=>{"0"=>""}, "continuous_trait_value_predicates"=>{"0"=>""}, "continuous_trait_entries"=>{"0"=>""}, "include_references"=>"on", "controller"=>"search", "action"=>"results"}"
@@ -392,10 +412,44 @@ class SearchController < ApplicationController
     end
   end
 
-  def taxa_in_iczn_group_with_parents(iczn_group_id, parent_taxon_ids)
-    iczn_group = @project.iczn_groups.find(iczn_group_id)
-    taxon_ids = @project.taxa.where(:id => parent_taxon_ids).map{|t| t.descendants_with_level(iczn_group).map{|x| x.id}}.inject{|memo,id| memo & id}
-    return @project.taxa.where(:id => taxon_ids).sorted
+  def summarize_results(rows)
+    # Chunk rows on summary_taxon.  rows is a hash of otu_ids to hashes of result data
+    # summary_taxon is in the hash of result data
+    summarized_rows = rows.chunk{|otu_id,row_hash| row_hash[:summary_taxon]}.map do |summary_taxon,chunk|
+      # For now let's just take the first one
+      # Each chunk is an array.  First element is the chunk summary_taxon_id and the second element is
+      # another array with all the members of the chunk
+      summarized = {}
+      row_hash_chunk = Hash[chunk]
+      # row_hash_chunk is a hash where keys are otu_ids and values are row_hashes
+      summarized[:name] = summary_taxon.name
+      summarized[:uploader_email] = row_hash_chunk.map{|k,v| v[:uploader_email]}.uniq.join(',')
+      summarized[:upload_date] = row_hash_chunk.map{|k,v| v[:upload_date]}.max
+      categorical_chunk = row_hash_chunk.map{|k,v| v[:categorical]}.compact
+      categorical_trait_ids = @results[:columns][:categorical_traits].map{|x| x[:id]}
+      summarized[:categorical] = {}
+      categorical_trait_ids.each do |trait_id|
+        summarized[:categorical].merge!(categorical_chunk.merge_trait_hashes(trait_id, :collect))
+      end
+      continuous_chunk = row_hash_chunk.map{|k,v| v[:continuous]}.compact
+      # Need to get the continuous trait ids
+      continuous_trait_ids = @results[:columns][:continuous_traits].map{|x| x[:id]}
+      summarized[:continuous] = {}
+      continuous_trait_ids.each do |trait_id|
+        summarized[:continuous].merge!(continuous_chunk.merge_trait_hashes(trait_id, :avg))
+      end
+      # Taxonomy can be reconstituted by chopping off things after the summary taxon
+      summarized[:metadata] = row_hash_chunk.map{|k,v| v[:metadata]}.compact.inject do |memo, metadata|
+        memo.deep_merge(metadata)
+      end
+      [summary_taxon.id, summarized]
+    end
+    return Hash[summarized_rows]
+
+  end
+
+  def taxa_in_iczn_group_with_parent(iczn_group_id, parent_taxon_id)
+    return @project.taxa.with_parent(parent_taxon_id).in_iczn_group(iczn_group_id).sorted
   end
 
   def traits

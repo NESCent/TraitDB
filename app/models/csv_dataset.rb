@@ -39,7 +39,7 @@ class CsvDataset < ActiveRecord::Base
   def get_local_file
     # If the file is local, just return the file system path
     if File.exists?(csv_file.path)
-      return csv_file_path
+      return csv_file.path
     else
       cache_file
       return @cached_file.file

@@ -1,5 +1,4 @@
 require 'yaml'
-require 'traitdb_import/downloader'
 require 'tempfile'
 
 module TraitDB

@@ -42,7 +42,7 @@ class Otu < ActiveRecord::Base
   end
 
   def dataset_name
-    csv_dataset.csv_file_file_name if csv_dataset
+    csv_dataset.file_name if csv_dataset
   end
 
   def generate_names

@@ -20,3 +20,4 @@ config/database.yml
 # ignore uploaded CSV and config files
 public/system/*
 public/assets/*
+coverage

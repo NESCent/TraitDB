@@ -24,3 +24,10 @@ class ActionDispatch::IntegrationTest
   # Make the Capybara DSL available in all integration tests
   include Capybara::DSL
 end
+
+class ActionController::TestCase
+  include Devise::TestHelpers
+  def set_project(project)
+    session[:current_project_id] = project.id
+  end
+end

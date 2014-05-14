@@ -15,7 +15,6 @@ class CsvImportConfigsControllerTest < ActionController::TestCase
     # Keeping yml file out of fixtures directory because otherwise rails thinks its a fixture
     config_file = fixture_file_upload('../../lib/traitdb_import/Sample.yml')
     post :create, config: {:config_file => config_file}
-    assert_template 'csv_import_configs/index'
     assert_redirected_to csv_import_configs_path
   end
 

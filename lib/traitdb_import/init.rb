@@ -8,6 +8,7 @@ $:.unshift APP_ROOT # puts the directory into the search path
 
 require 'import_template'
 require 'validator' # loads once the validator.rb file
+require 'downloader'
 require 'pp'
 
 # Instantiate a template validator with the first argument

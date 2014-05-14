@@ -1,3 +1,4 @@
+require 'traitdb_import/downloader'
 class CachedFile
   def initialize(url=nil)
     @url = url

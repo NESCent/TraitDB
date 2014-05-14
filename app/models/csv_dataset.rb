@@ -59,7 +59,7 @@ class CsvDataset < ActiveRecord::Base
 
   def cache_file
     unless file_cached?
-      @cached_file = CsvDatasetsHelper::CachedFile.new(csv_file.url)
+      @cached_file = CachedFile.new(csv_file.url)
     end
   end
 

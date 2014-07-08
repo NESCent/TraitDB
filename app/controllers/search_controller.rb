@@ -208,7 +208,9 @@ class SearchController < ApplicationController
       rows[otu.id][:metadata] = otu.metadata_hash
       rows[otu.id][:uploader_email] = otu.import_job.csv_dataset.user.email
       rows[otu.id][:upload_date] = otu.import_job.created_at
-      otu.metadata_hash.keys.each{|field_name| otu_metadata_field_names << field_name unless field_name.in? otu_metadata_field_names}
+      if otu.metadata_hash
+        otu.metadata_hash.keys.each{|field_name| otu_metadata_field_names << field_name unless field_name.in? otu_metadata_field_names}
+      end
     end
     @results[:columns][:iczn_groups] = @project.iczn_groups.sorted.pluck(:name)
     @results[:columns][:categorical_trait_notes_ids] = categorical_trait_notes_ids

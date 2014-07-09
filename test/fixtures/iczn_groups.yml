@@ -14,11 +14,10 @@ htg:
   level: 200
   projects: project3
 
-
 genus:
   name: 'genus'
   level: 400
-  projects: project1
+  projects: project3
 
 species:
   name: 'species'
@@ -29,4 +28,4 @@ species:
 subspecies:
   name: 'subspecies'
   level: 600
-  projects: project1
+  projects: project3

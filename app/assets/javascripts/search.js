@@ -125,8 +125,14 @@ function traitSetChanged(traitSetSelectElement) {
     }).done(function(data) {
             // update the child trait set if any
             var childLevel = parseInt(level, 10) + 1;
-            var childTraitSetSelect = $('select.trait_set_level[data-trait-set-level=' + childLevel + '][data-trait-filter-row=' + row + ']'); // should be one element
-            updateTraitSets(childTraitSetSelect, data);
+            var childTraitSetSelect = $('select.trait_set_level[data-trait-set-level=' + childLevel + '][data-trait-filter-row=' + row + ']'); // should be zero or one elements
+            // If there are no more child trait sets, reload the traits
+            if(childTraitSetSelect.length == 0) {
+                var traitTypeElement = $('select.trait_type[data-trait-filter-row=' + row + ']')[0];
+                traitTypeChanged(traitTypeElement);
+            } else {
+                updateTraitSets(childTraitSetSelect, data);
+            }
         }
     );
 }
@@ -272,7 +278,7 @@ function getIndex(element) {
 }
 
 // need an update trait types
-function traitTypeChanged(traitTypeElement, traitTypeId) {
+function traitTypeChanged(traitTypeElement) {
     // When getting traits, need to supply the selected taxonomy
     var selectedTaxonIds = jQuery.map($('#taxa').find('select'), function(e, i) { return $(e).val(); }).filter( function(e, i) { return e.length > 0; });
     var traitFilterRow = $(traitTypeElement).attr('data-trait-filter-row');
@@ -349,7 +355,7 @@ function addSelectionChangeListeners() {
     });
     // trait
     $('select.trait_type').change(function() {
-        traitTypeChanged(this,this.value);
+        traitTypeChanged(this);
     });
 }
 

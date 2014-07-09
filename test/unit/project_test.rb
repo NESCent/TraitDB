@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class ProjectTest < ActiveSupport::TestCase
-
+  fixtures :projects
   # Test that project has a name after creation
   test "Project exists" do
     assert_not_nil Project.first
@@ -17,7 +17,7 @@ class ProjectTest < ActiveSupport::TestCase
   # how to test for validates_uniqueness_of ?
 
   test "Project add iczn groups uniquely" do
-    p = Project.first
+    p = projects(:project1)
     assert_empty p.iczn_groups
     p.add_iczn_groups(IcznGroup.all)
     p.add_iczn_groups(IcznGroup.all)

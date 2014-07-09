@@ -22,9 +22,14 @@ class SearchController < ApplicationController
     render :json => @taxa_list
   end
 
+  def requested_taxon_ids_or_root
+    params[:taxon_ids] || @project.iczn_groups.sorted.first.taxa.pluck(:id)
+  end
+
   def list_categorical_trait_names # needs taxon_ids and optionally trait_set_id
     @categorical_trait_names = []
-    @project.taxa.where(:id => params[:taxon_ids]).each do |taxon|
+    taxon_ids = requested_taxon_ids_or_root
+    @project.taxa.where(:id => taxon_ids).each do |taxon|
       @categorical_trait_names = @categorical_trait_names | taxon.grouped_categorical_traits # filter on trait set id if provided
     end
     if params[:trait_set_id]
@@ -35,7 +40,9 @@ class SearchController < ApplicationController
 
   def list_continuous_trait_names # needs taxon_ids and optionally trait_set_id
     @continuous_trait_names = []
-    @project.taxa.where(:id => params[:taxon_ids]).each do |taxon|
+    # If no taxa selected, use all highest level taxa in project
+    taxon_ids = requested_taxon_ids_or_root
+    @project.taxa.where(:id => taxon_ids).each do |taxon|
       @continuous_trait_names = @continuous_trait_names | taxon.grouped_continuous_traits # Filter on trait_set_id if provided
     end
     if params[:trait_set_id]
@@ -66,6 +73,7 @@ class SearchController < ApplicationController
     @results[:columns] = {} # start with an empty hash for output display columns
 
     analyze_lowest_requested_taxa # populates @lowest_requested_taxa and @selected_taxon_ids
+    populate_requested_taxa_if_empty
     # analyze_lowest_requested_taxa must come before assemble_trait_filters
     assemble_trait_filters # populates @categorical_trait_category_map and @continuous_trait_predicate_map
 
@@ -326,6 +334,14 @@ class SearchController < ApplicationController
         end
       end
       @lowest_requested_taxa << lowest_requested_taxon if lowest_requested_taxon
+    end
+  end
+
+  def populate_requested_taxa_if_empty
+    # If no taxa are requested, assume the highest level taxa in the project, e.g. kingdoms
+    if @lowest_requested_taxa.empty?
+      @lowest_requested_taxa = @project.iczn_groups.sorted.first.taxa
+      @selected_taxon_ids = @project.iczn_groups.sorted.first.taxa.pluck(:id)
     end
   end
 

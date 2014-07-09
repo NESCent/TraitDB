@@ -7,19 +7,25 @@
 kingdom:
    name: 'kingdom'
    level: 100
+   projects: project2, project3
 
 htg:
   name: 'htg'
   level: 200
+  projects: project3
 
 genus:
   name: 'genus'
   level: 400
+  projects: project3
 
 species:
   name: 'species'
   level: 500
+  projects: project2
+
 
 subspecies:
   name: 'subspecies'
   level: 600
+  projects: project3

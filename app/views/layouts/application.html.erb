@@ -23,7 +23,7 @@
            </li>
         </ul>
         <ul class="nav pull-right">
-          <li class="<%= 'active' if params[:controller] == 'about' -%>"><%= link_to("About", :controller => '/about') %></li>
+          <li class="<%= 'active' if params[:controller] == 'info' -%>"><%= link_to("Info", :controller => '/info') %></li>
           <li class="<%= 'active' if params[:controller] == 'search' -%>"><%= link_to("Search", :controller => '/search') %></li>
           <% if user_signed_in? %>
             <li class="<%= 'active' if params[:controller] == 'upload' -%>"><%= link_to("Upload", :controller => '/upload') %></li>

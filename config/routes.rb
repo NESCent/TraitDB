@@ -44,7 +44,7 @@ TraitDB::Application.routes.draw do
   get 'info' => 'info#index'
   match 'upload(/:action)(/:id)(.:format)' => 'upload', :via => [:get, :post, :delete]
   get 'csv_templates(/:action)(/:id)(.:format)' => 'csv_template'
-  root :to => 'about#index'
+  root :to => redirect('/about')
   get 'about' => 'about#index'
 
   # The priority is based upon order of creation:

@@ -63,11 +63,8 @@
     </div>
     <!-- right div -->
     <div class="span5">
-      <%= form_tag(omniauth_authorize_path(resource, :open_id), {:class => 'form-signin'}) do %>
         <h4 class="form-signin-heading">Sign in with <%= image_tag('Googlelogo.png', :size => '100x34', :alt => 'Google') %></h4>
-        <%= hidden_field_tag :openid_url, "https://www.google.com/accounts/o8/id" %>
-        <%= button_tag("Sign in", {:class => 'btn btn-primary'}) %>
-      <% end %>
+      <%= link_to("Sign in", user_omniauth_authorize_path(:google_oauth2), {:class => 'btn btn-primary'}) %>
       <%= link_to('Create a Google account','https://accounts.google.com/SignUp') %>
     </div>
   </div>

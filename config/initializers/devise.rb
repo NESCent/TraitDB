@@ -241,6 +241,7 @@ Devise.setup do |config|
   # so you need to do it manually. For the users scope, it would be:
   # config.omniauth_path_prefix = "/my_engine/users/auth"
   config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('/tmp'), :require => 'omniauth-openid'
+  config.omniauth :google_oauth2, ENV['TRAITDB_GOOGLE_APP_ID'], ENV['TRAITDB_GOOGLE_APP_SECRET']
   config.secret_key = '1fc5b14268fbbcf000384bcd9454d9a6c48ce35c6b0e588f3a62e00d72e44fa4d0ae63fe3592fbe3007fecd4ffb0139967b53c940fbd2a74f0edd0710df4cf93'
 
 end

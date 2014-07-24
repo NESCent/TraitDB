@@ -1,7 +1,7 @@
 TraitDB::Application.routes.draw do
 
   # Devise, an auth framework
-  devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }
+  devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }, :providers => [:open_id, :google_oauth2]
 
   # Resourceful routes
   resources :projects do

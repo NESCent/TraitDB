@@ -63,8 +63,10 @@
     </div>
     <!-- right div -->
     <div class="span5">
+      <div class="form-signin">
         <h4 class="form-signin-heading">Sign in with <%= image_tag('Googlelogo.png', :size => '100x34', :alt => 'Google') %></h4>
-      <%= link_to("Sign in", user_omniauth_authorize_path(:google_oauth2), {:class => 'btn btn-primary'}) %>
+        <%= link_to("Sign in", user_omniauth_authorize_path(:google_oauth2), {:class => 'btn btn-primary'}) %>
+      </div>
       <%= link_to('Create a Google account','https://accounts.google.com/SignUp') %>
     </div>
   </div>

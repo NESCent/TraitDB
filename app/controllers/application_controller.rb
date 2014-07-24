@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
 
   def verify_is_admin
     if current_user.nil? || !current_user.admin?
-      redirect_to root_path
+      redirect_to info_path
       false
     end
   end

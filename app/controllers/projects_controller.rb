@@ -62,6 +62,6 @@ class ProjectsController < ApplicationController
     else
       session[:current_project_id] = nil
     end
-    redirect_to root_url
+    redirect_to info_url
   end
 end

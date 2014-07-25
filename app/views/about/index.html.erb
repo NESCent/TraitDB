@@ -1,7 +1,98 @@
-<% @page_name = "About" %>
-<div class="row-fluid">
-  <h3><%= @project.name %></h3>
-  <p class="lead"><%= @project.summary_description %></p>
-  <p><%= @project.detail_description %></p>
-  <p><%= link_to_if(@project.url, @project.url_text, @project.url) %></p>
+<div class="container">
+	<div class="row about header">
+		<h3>
+			About TraitDB 
+		</h3>
+		<p>
+			TraitDB is a web application built to facilitate storage, searching, subsetting, and sharing trait data. Data are loaded from CSV files and organized into projects. Each project has a template for datasets, and TraitDB performs extensive validation when CSV files are uploaded.
+		<p>
+	</div>
+	<div class="row about source-code">
+		<h3>
+			Source Code 
+		</h3>
+		<p>
+			TraitDB is open source software. Source code is available on <a href="https://github.com/NESCent/TraitDB"> GitHub </a> under an <a href="https://github.com/NESCent/TraitDB/raw/master/LICENSE.txt"> MIT License </a> 
+		</p>
+		<p>
+			TraitDB uses <a href="http://travis-ci.org"> Travis CI </a> for continuous integration. Automated tests are run with each commit to the repository, build status is reported at <a href="https://travis-ci.org/NESCent/TraitDB">travis-ci.org/NESCent/TraitDB</a>. 
+		</p>
+		<p>
+			Please report issues using the <a href="https://github.com/NESCent/TraitDB/issues"> GitHub Issue Tracker</a>.
+    </p>
+	</div>
+	<div class="row about technology">
+		<h3>
+			Technology 
+		</h3>
+		<div class="span6">
+			<h4>
+				Core Components 
+			</h4>
+			<dl class="dl-horizontal"> 
+				<dt> Web Frameworks </dt>
+				<dd> <a href="http://rubyonrails.org"> Rails </a> </dd>
+				<dd> <a href="http://getbootstrap.com/2.3.2"> Bootstrap </a> </dd>
+				<dt> Relational Database </dt>
+				<dd> <a href="http://www.postgresql.org"> PostgreSQL </a> </dd>
+				<dt> Programming Language </dt>
+				<dd> <a href="http://ruby-lang.org"> Ruby </a> </dd>
+				<dt> Dataset Templates </dt>
+				<dd> <a href="http://yaml.org"> YAML </a> </dd>
+			</dl>
+		</div>
+		<div class="span6">
+			<h4>
+				Additional Libraries 
+			</h4>
+			<dl class="dl-horizontal"> 
+				<dt> User Authenciation </dt>
+				<dd> OpenID via <a href="https://github.com/intridea/omniauth"> OmniAuth </a> / <a href="http://devise.plataformatec.com.br"> Devise </a> </dd>
+				<dt> Background processing </dt>
+				<dd> <a href="https://github.com/collectiveidea/delayed_job"> Delayed Job </a> </dd>
+				<dt> Attachment storage </dt>
+				<dd> <a href="https://github.com/thoughtbot/paperclip"> Paperclip </a> </dd>
+			</dl>
+		</div>
+	</div>
+	<div class="row about credits">
+		<h3>
+			Credits 
+		</h3>
+		<p>
+			Content and requirements:
+		</p>
+		<ul>
+			<li><a href="http://treeofsex.org">Tree of Sex - NESCent Working Group</a>, Tree of Sex Consortium</li>
+			<li><a href="http://www.nescent.org/science/awards_summary.php?id=285">Social Traits - NESCent Working Group</a>, Jennifer Fewell (Arizona State University), Dustin Rubenstein (Columbia University), James H Hunt (North Carolina State University)</li>
+			<li><a href="http://www.nescent.org/science/awards_summary.php?id=401">Baker's Law - NESCent Working Group</a>, Susan Kalisz (University of Pittsburgh), April M Randle (Colorado State University), Pierre-Olivier Cheptou (Centre d&rsquo;Ecologie Fonctionnelle et Evolutive)</li>
+		</ul>
+		<p>
+			Development and design:
+		</p>
+		<ul>
+			<li><a href="https://github.com/dleehr">Dan Leehr</a> (NESCent)</li>
+			<li><a href="https://github.com/mgosby">Mercedes Gosby</a> (NESCent)</li>
+		</ul>
+	</div>
+	<div class="row about publications">
+		<h3>
+			Publications 
+		</h3>
+		<div class="citation">
+			The Tree of Sex Consortium. Tree of Sex: A database of sexual systems. Sci. Data 1:140015 <a href="http://dx.doi.org/10.1038/sdata.2014.15">doi:10.1038/sdata.2014.15</a> (2014). 
+		</div>
+	</div>
+	<div class="row about contact">
+		<h3>
+			Contact 
+		</h3>
+		<p>
+			TraitDB is a project of 
+		<address><a href="http://nescent.org">National Evolutionary Synthesis Center (NESCent)</a><br>
+		2024 W. Main Street, Suite A200<br>
+		Durham, NC 27705-4667<br>
+		<abbr title="Phone">P:</abbr> (919) 668-4551<br>
+		<abbr title="Fax">F:</abbr> (919) 668-4551 </address>
+	</div>
 </div>

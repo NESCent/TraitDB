@@ -41,10 +41,11 @@ TraitDB::Application.routes.draw do
   match 'selected_project' => 'projects#selected_project', :via => [:get, :post]
 
   match 'search(/:action)(.:format)' => "search", :via => [:get, :post]
-  get 'about' => 'about#index'
+  get 'info' => 'info#index'
   match 'upload(/:action)(/:id)(.:format)' => 'upload', :via => [:get, :post, :delete]
   get 'csv_templates(/:action)(/:id)(.:format)' => 'csv_template'
-  root :to => "about#index"
+  root :to => redirect('/about')
+  get 'about' => 'about#index'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

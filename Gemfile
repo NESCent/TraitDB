@@ -26,6 +26,7 @@ gem 'devise', '~> 3.2.4'
 # OmniAuth for open id in devise
 gem 'omniauth'
 gem 'omniauth-openid'
+gem 'omniauth-google-oauth2'
 
 # Wicked for step-by-step wizard in data upload
 gem 'wicked'

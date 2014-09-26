@@ -12,7 +12,7 @@ traitdb_spreadsheet_template:
     date_entered: Date entered
     by_whom: By whom
     authors: Authors
-    year: Year
+    pub_year: Pub Year
     reference: Reference
     study_type: Study type
     geographic_scale: Geographic scale
@@ -21,6 +21,7 @@ traitdb_spreadsheet_template:
     latitude: Latitude
     longitude: Longitude
     utm: UTM
+    elevation: Elevation
     hemisphere: Hemisphere
     biome: Biome
     island_name: Island name
@@ -260,7 +261,7 @@ traitdb_spreadsheet_template:
         name: "Propagule size (seed #/diaspore)"
         format: float
       -
-        name: Seed mass
+        name: Seed mass (mg)
         format: float
     categorical_trait_columns:
       -

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140724195853) do
+ActiveRecord::Schema.define(version: 20141002144445) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -259,12 +259,12 @@ ActiveRecord::Schema.define(version: 20140724195853) do
     t.integer  "import_job_id"
     t.integer  "row_location",       null: false
     t.integer  "column_location",    null: false
-    t.string   "column_name"
-    t.string   "issue_description",  null: false
-    t.string   "suggested_solution", null: false
+    t.text     "column_name"
+    t.text     "issue_description",  null: false
+    t.text     "suggested_solution", null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "row_name"
+    t.text     "row_name"
   end
 
   add_index "parse_issues", ["column_location"], name: "index_parse_issues_on_column_location", using: :btree
@@ -380,9 +380,9 @@ ActiveRecord::Schema.define(version: 20140724195853) do
   create_table "validation_issues", force: true do |t|
     t.integer  "import_job_id"
     t.integer  "column_location"
-    t.string   "column_name"
-    t.string   "issue_description",  null: false
-    t.string   "suggested_solution", null: false
+    t.text     "column_name"
+    t.text     "issue_description",  null: false
+    t.text     "suggested_solution", null: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end

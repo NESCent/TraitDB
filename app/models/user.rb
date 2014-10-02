@@ -28,12 +28,7 @@ class User < ActiveRecord::Base
       user.uid = auth.uid
       user
     else
-      where(auth.slice(:provider, :uid)).first_or_create do |user|
-        user.provider = auth.provider
-        user.uid = auth.uid
-        user.username = auth.info.name
-        user.email = auth.info.email
-      end
+      User.create!(:email => auth.info.email, :password => Devise.friendly_token[0,20], :provider => auth.provider, :uid => auth.uid, :username => auth.info.name)
     end
   end
 end

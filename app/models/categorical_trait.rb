@@ -8,7 +8,4 @@ class CategoricalTrait < ActiveRecord::Base
     categorical_trait_categories.pluck(:name)
   end
 
-  def summarization_method
-    :collect
-  end
 end

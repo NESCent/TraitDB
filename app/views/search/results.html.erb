@@ -25,7 +25,7 @@
               <% col_count += 1 -%>
             <% end %>
             <% @results[:columns][:categorical_traits].each do |trait| %>
-              <th><%= trait[:name] %></th>
+              <th><%= trait[:name] %><% if params['summarize_results']%> (<%= trait[:summarization_method].to_s %>) <% end %></th>
               <% col_count += 1 -%>
               <% if @results[:columns][:categorical_trait_notes_ids].include? trait[:id] %>
                 <th>Notes: <%= trait[:name] %></th>
@@ -33,7 +33,7 @@
               <% end %>
             <% end %>
             <% @results[:columns][:continuous_traits].each do |trait| %>
-              <th><%= trait[:name] %></th>
+              <th><%= trait[:name] %><% if params['summarize_results']%> (<%= trait[:summarization_method].to_s %>) <% end %></th>
               <% col_count += 1 -%>
               <% if @results[:columns][:continuous_trait_notes_ids].include? trait[:id] %>
                 <th>Notes: <%= trait[:name] %></th>

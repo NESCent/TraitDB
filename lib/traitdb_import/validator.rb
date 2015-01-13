@@ -146,7 +146,8 @@ module TraitDB
       @trait_headers[:continuous] += found_headers.map{|x|
         {:name => x,
          :groups => @config.groups_for_continuous_trait(x),
-         :format => @config.continuous_trait_format(x)
+         :format => @config.continuous_trait_format(x),
+         :summarization_method => @config.continuous_trait_summarization_method(x)
         }
       }
       @validation_results[:info] << {:info => "Found #{found_headers.count} continuous trait headers"}
@@ -163,7 +164,8 @@ module TraitDB
         {:name => x,
          :groups => @config.groups_for_categorical_trait(x),
          :format => @config.categorical_trait_format(x),
-         :values => @config.categorical_trait_values(x)
+         :values => @config.categorical_trait_values(x),
+         :summarization_method => @config.categorical_trait_summarization_method(x)
         }
       }
       @validation_results[:info] << {:info => "Found #{found_headers.count} categorical trait headers"}

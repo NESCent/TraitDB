@@ -19,6 +19,7 @@ traitdb_spreadsheet_template:
         - ZO
         - ZW
         - XY
+      summarization_method: "collect"
     -
       name: Hybrid
       values:
@@ -28,6 +29,7 @@ traitdb_spreadsheet_template:
     -
       name: Chromosome Number
       format: integer # formats are only for display
+      summarization_method: "avg"
     -
       name: Avg Mass
       format: float

@@ -10,7 +10,6 @@ class Array
     all_keys = traits_matching_id.map{|x| x[:values]}.flatten.map{|x| x.keys}.flatten
     all_values = traits_matching_id.map{|x| x[:values]}.flatten.map{|x| x.values}.flatten
     merged = select{|x| x[trait_id]}.map{|x| x[trait_id]}.first.deep_dup
-    summarized = nil
     if merged
       case method
         when :avg

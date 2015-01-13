@@ -79,12 +79,12 @@ class SearchController < ApplicationController
 
     # Output columns should include chosen continuous traits
     @results[:columns][:continuous_traits] = @project.continuous_traits.where(:id => @continuous_trait_predicate_map.keys).map do |continuous_trait|
-      {:id => continuous_trait.id, :name => continuous_trait.full_name}
+      {:id => continuous_trait.id, :name => continuous_trait.full_name, :summarization_method => continuous_trait.summarization_method.to_sym }
     end
 
     # output columns should include chosen categorical traits
     @results[:columns][:categorical_traits] = @project.categorical_traits.where(:id => @categorical_trait_category_map.keys).map do |categorical_trait|
-      {:id => categorical_trait.id, :name => categorical_trait.full_name}
+      {:id => categorical_trait.id, :name => categorical_trait.full_name, :summarization_method => categorical_trait.summarization_method.to_sym }
     end
 
     # Arrays to hold ids of the traits where notes were recorded
@@ -433,6 +433,10 @@ class SearchController < ApplicationController
   def summarize_results(rows)
     # Chunk rows on summary_taxon.  rows is a hash of otu_ids to hashes of result data
     # summary_taxon is in the hash of result data
+    #
+    # Note on "chunk":
+    # chunk partitions an array (or other enumerable) based on the return value of the block, which is the summary
+    # taxon. In other words - group the rows together that have the same summary taxon and map them through the below block
     summarized_rows = rows.chunk{|otu_id,row_hash| row_hash[:summary_taxon]}.map do |summary_taxon,chunk|
       # For now let's just take the first one
       # Each chunk is an array.  First element is the chunk summary_taxon_id and the second element is
@@ -444,17 +448,17 @@ class SearchController < ApplicationController
       summarized[:uploader_email] = row_hash_chunk.map{|k,v| v[:uploader_email]}.uniq.join(',')
       summarized[:upload_date] = row_hash_chunk.map{|k,v| v[:upload_date]}.max
       categorical_chunk = row_hash_chunk.map{|k,v| v[:categorical]}.compact
-      categorical_trait_ids = @results[:columns][:categorical_traits].map{|x| x[:id]}
+      categorical_trait_ids = @results[:columns][:categorical_traits].map{|x| [x[:id], x[:summarization_method]]}
       summarized[:categorical] = {}
-      categorical_trait_ids.each do |trait_id|
-        summarized[:categorical].merge!(categorical_chunk.merge_trait_hashes(trait_id, :collect))
+      categorical_trait_ids.each do |trait_id, summarization_method|
+        summarized[:categorical].merge!(categorical_chunk.merge_trait_hashes(trait_id, summarization_method))
       end
       continuous_chunk = row_hash_chunk.map{|k,v| v[:continuous]}.compact
       # Need to get the continuous trait ids
-      continuous_trait_ids = @results[:columns][:continuous_traits].map{|x| x[:id]}
+      continuous_trait_ids = @results[:columns][:continuous_traits].map{|x| [x[:id], x[:summarization_method]]}
       summarized[:continuous] = {}
-      continuous_trait_ids.each do |trait_id|
-        summarized[:continuous].merge!(continuous_chunk.merge_trait_hashes(trait_id, :avg))
+      continuous_trait_ids.each do |trait_id, summarization_method|
+        summarized[:continuous].merge!(continuous_chunk.merge_trait_hashes(trait_id, summarization_method))
       end
       # Taxonomy can be reconstituted by chopping off things after the summary taxon
       summarized[:metadata] = row_hash_chunk.map{|k,v| v[:metadata]}.compact.inject do |memo, metadata|

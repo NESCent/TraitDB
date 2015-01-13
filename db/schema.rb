@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141002144445) do
+ActiveRecord::Schema.define(version: 20150113155832) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -58,7 +58,8 @@ ActiveRecord::Schema.define(version: 20141002144445) do
     t.datetime "updated_at"
     t.integer  "display_format_id"
     t.integer  "trait_set_id"
-    t.integer  "project_id",        default: 1, null: false
+    t.integer  "project_id",           default: 1,         null: false
+    t.string   "summarization_method", default: "collect"
   end
 
   add_index "categorical_traits", ["display_format_id"], name: "index_categorical_traits_on_display_format_id", using: :btree
@@ -108,7 +109,8 @@ ActiveRecord::Schema.define(version: 20141002144445) do
     t.datetime "updated_at"
     t.integer  "display_format_id"
     t.integer  "trait_set_id"
-    t.integer  "project_id",        default: 1, null: false
+    t.integer  "project_id",           default: 1,         null: false
+    t.string   "summarization_method", default: "collect"
   end
 
   add_index "continuous_traits", ["display_format_id"], name: "index_continuous_traits_on_display_format_id", using: :btree

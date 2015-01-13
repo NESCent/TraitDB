@@ -275,6 +275,9 @@ class ImportJob < ActiveRecord::Base
         if import_trait[:format]
           trait.display_format = DisplayFormat.where(:name => import_trait[:format]).first
         end
+        if import_trait[:summarization_method]
+          trait.summarization_method = import_trait[:summarization_method]
+        end
       end
 
       # Find or create a trait set for each level and the last delimiter becomes the name of the trait
@@ -304,6 +307,9 @@ class ImportJob < ActiveRecord::Base
         trait.project = project
         if import_trait[:format]
           trait.display_format = DisplayFormat.where(:name => import_trait[:format]).first
+        end
+        if import_trait[:summarization_method]
+          trait.summarization_method = import_trait[:summarization_method]
         end
       end
 

@@ -5,7 +5,12 @@
     headers << "Upload Date"
   end
   @results[:columns][:categorical_traits].each do |trait|
-    headers << trait[:name]
+    if params['summarize_results']
+      # If summarizing, put the summarization method in the column name
+      headers << "#{trait[:name]} #{trait[:summarization_method]}"
+    else
+      headers << trait[:name]
+    end
     if @results[:columns][:categorical_trait_notes_ids].include? trait[:id]
       headers << "Notes: #{trait[:name]}"
     end
@@ -14,7 +19,12 @@
     end
   end
   @results[:columns][:continuous_traits].each do |trait|
-    headers << trait[:name]
+    if params['summarize_results']
+      # If summarizing, put the summarization method in the column name
+      headers << "#{trait[:name]} #{trait[:summarization_method]}"
+    else
+      headers << trait[:name]
+    end
     if @results[:columns][:continuous_trait_notes_ids].include? trait[:id]
       headers << "Notes: #{trait[:name]}"
     end

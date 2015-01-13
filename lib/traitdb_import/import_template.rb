@@ -203,6 +203,18 @@ module TraitDB
       t.nil? ? [] : t['format']
     end
 
+    # Summarization method
+    def continuous_trait_summarization_method(trait_name)
+      t = continuous(trait_name)
+      t.nil? ? [] : t['summarization_method']
+    end
+
+    def categorical_trait_summarization_method(trait_name)
+      t = categorical(trait_name)
+      t.nil? ? [] : t['summarization_method']
+    end
+
+
     def column_headers(group_name)
       headers = []
       headers += taxonomy_columns.values

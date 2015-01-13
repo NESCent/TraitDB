@@ -448,14 +448,14 @@ class SearchController < ApplicationController
       summarized[:uploader_email] = row_hash_chunk.map{|k,v| v[:uploader_email]}.uniq.join(',')
       summarized[:upload_date] = row_hash_chunk.map{|k,v| v[:upload_date]}.max
       categorical_chunk = row_hash_chunk.map{|k,v| v[:categorical]}.compact
-      categorical_trait_ids = @results[:columns][:categorical_traits].map{|x| x[:id], x[:summarization_method]}
+      categorical_trait_ids = @results[:columns][:categorical_traits].map{|x| [x[:id], x[:summarization_method]]}
       summarized[:categorical] = {}
       categorical_trait_ids.each do |trait_id, summarization_method|
         summarized[:categorical].merge!(categorical_chunk.merge_trait_hashes(trait_id, summarization_method))
       end
       continuous_chunk = row_hash_chunk.map{|k,v| v[:continuous]}.compact
       # Need to get the continuous trait ids
-      continuous_trait_ids = @results[:columns][:continuous_traits].map{|x| x[:id], x[:summarization_method]}
+      continuous_trait_ids = @results[:columns][:continuous_traits].map{|x| [x[:id], x[:summarization_method]]}
       summarized[:continuous] = {}
       continuous_trait_ids.each do |trait_id, summarization_method|
         summarized[:continuous].merge!(continuous_chunk.merge_trait_hashes(trait_id, summarization_method))

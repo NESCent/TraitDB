@@ -11,4 +11,8 @@ class ContinuousTrait < ActiveRecord::Base
       'Default'
     end
   end
+
+  def summarization_method
+    :avg
+  end
 end

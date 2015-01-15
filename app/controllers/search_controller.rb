@@ -200,7 +200,7 @@ class SearchController < ApplicationController
     # Get the name for each OTU in the rows hash and stuff it back into the hash
     #
 
-    Otu.where(:id => rows.keys).
+    @project.otus.where(:id => rows.keys).
       includes(:otu_metadata_values => [:otu_metadata_field]).
       includes(:import_job => {:csv_dataset  => :user}).
       includes(:taxa => [:iczn_group]).
@@ -231,6 +231,8 @@ class SearchController < ApplicationController
     # Handle summarization if selected
     if should_summarize_results
       rows = summarize_results(rows)
+      # also, if summarizing, the iczn_group columns should be limited to the selected summary iczn group
+      @results[:columns][:iczn_groups] = @project.iczn_groups.where(:id => summarize_iczn_group_id).pluck(:name)
     end
     # data to return to view
     # @results[:columns] is a hash with keys :categorical_traits and :continuous_traits
@@ -445,6 +447,7 @@ class SearchController < ApplicationController
       row_hash_chunk = Hash[chunk]
       # row_hash_chunk is a hash where keys are otu_ids and values are row_hashes
       summarized[:name] = summary_taxon.name
+      summarized[:taxonomy] = {summary_taxon.iczn_group_name => summary_taxon.name}
       summarized[:uploader_email] = row_hash_chunk.map{|k,v| v[:uploader_email]}.uniq.join(',')
       summarized[:upload_date] = row_hash_chunk.map{|k,v| v[:upload_date]}.max
       categorical_chunk = row_hash_chunk.map{|k,v| v[:categorical]}.compact

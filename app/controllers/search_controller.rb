@@ -200,7 +200,7 @@ class SearchController < ApplicationController
     # Get the name for each OTU in the rows hash and stuff it back into the hash
     #
 
-    Otu.where(:id => rows.keys).
+    @project.otus.where(:id => rows.keys).
       includes(:otu_metadata_values => [:otu_metadata_field]).
       includes(:import_job => {:csv_dataset  => :user}).
       includes(:taxa => [:iczn_group]).

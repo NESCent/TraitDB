@@ -1,0 +1,158 @@
+-*- mode: outline -*-
+
+[Several variants of the vision statement for the product that should
+eventually result from the project.  ]
+
+We need to come up with a succinct Vision Statement for the traits
+application that we would like to develop, as well as a restricted
+scope for the release that would be feasible to develop here at
+NESCent.  
+
+Below are three variants of a possible vision statement, just to
+illustrate how much expectations and ambitions may differ and to
+provide starting points for developing our common vision. 
+
+
+
+* Possible Vision Statements
+
+** Vision Variant 1: TraitCollector 
+For an evolution researcher who embarks on a trait-based study, the
+TraitCollector is a client application That helps collecting and
+managing, in one place, lots of bits of data gathered from various
+sources (mostly scientific publications) about a variety of traits for
+a large number of related taxons.  User interfaces of the application
+support efficient data entry, exploration of collected data through
+filtering, grouping, summarization, tables, etc., and exporting to
+formats expected by analysis software.  TraitCollector easily adapts
+to new studies with new taxons and traits, as well as to taxon list
+and trait structure changes in the course of a study, while preserving
+integrity and quality of already-collected data.  TraitCollector
+supports individual work or a small-group collaboration.
+
+** Vision Variant 2: TraitBank 
+For a biologist who posesses a collection of trait data for one or
+several taxons (amassed either through original observations or
+compiled from literature), the TraitBank is a web-based vehicle for
+publishing the collection.  TraitBank categorizes each published data
+point w.r.t. commonly-agreed categorization frameworks (ontologies),
+which integrates it with data from other published collections and
+enables seamless integrative searches through the whole database.
+
+Consequently, for an evolution researcher who embarks on a trait-based
+study, the TraitBank is an extensive, authoritative, and searchable
+collection of published data on various traits of the majority of
+named taxons that is collaboratively maintained by a community of
+experts.  The researcher can use TraitBank to find and retrieve a
+starting data set (for subsets of taxons and traits of interest) that
+the researcher can download and later extend with more data.
+
+** Vision Variant 3: TraitWeb 
+For the community of biologists who are involved in creating and
+consuming trait data for arbitrary taxons, the TraitWeb is a suite of
+data interchange and query protocols (together with their reference
+implementations) that enables community-driven creation of a network
+of servers and clients serving as a distributed storage of trait
+data.  A biologist can use a TraitWeb client application to find and
+gather together, from various servers on the network, data on the
+traits and taxons of interest, transform it into representations more
+suitable for her study, extend it with data from sources outside
+TraitWeb, and finally publish the new data set through one of the
+TraitWeb servers.  TraitWeb protocols are designed to maintain
+detailed provenance relationships between dataset
+publications. TraitNet itself does not ensure authoritativeness and
+quality of published data, but it may allow establishment of
+community-driven reputation mechanisms.
+
+
+* Possible product features 
+
+** Setting up a database 
+
+ - Create a new database (usually, it is one database per a trait study). 
+
+ - Modify the list of taxons by importing, adding, modifying, or
+   deleting.  Taxon names may be structured (species, genus, family,
+   etc.) but this does not imply taxonomic or phylogenetic subordination. 
+   Taxon list modification should be possible at any time. 
+
+ - Modify the set of traits by adding or deleting. 
+
+ - Modify a trait by adding or deleting data fields being tracked. 
+
+ - Modify a trait by specifying the datatype of a trait's
+   field. Available datatypes are a selection of primitive datatypes
+   such as integers, real numbers, dates, geo coordinates, etc (full
+   list TBD), free-form text, and user-specified controlled vocabularies. 
+
+ - Create, populate or modify a controlled vocabulary. 
+
+ - Specify a rule for computing the value of a trait field from values
+   of other fields in this or other traits. (Rules language is TBD)
+
+ - Modify a trait by specifying whether it allows sub-taxon data.
+   ("Sub-taxon" corresponds to, e.g., distinct specimens or
+   populations.)  
+
+ - Specify the rule for summarising sub-taxon data of a trait. 
+
+ - Construct a data entry form by specifying traits and/or fields that
+   should appear on the form. (There can be several alternative entry
+   forms, corresponding to different kinds of source publications.)
+
+
+** Data entry 
+
+ - Enter data for a taxon using one of the previously defined entry forms. 
+
+ - Enter data for a group of taxons, based on a common entry form
+   (e.g., for taxons from the same publication).  This mode should
+   apply best effort to minimize duplicate data entry. 
+
+ - For a controlled vocabulary, the application tracks all ad-hoc
+   overrides in fields that are declared to contain values from the
+   vocabulary.
+
+ - Resolve overrides tracked for a controlled vocabulary by manually
+   changing them to existing, new or revised controlled values. The
+   system assists by bringing up records where the overrides occur.
+
+** Data curation 
+
+   Cleaning, translation, aggregation, ...
+
+** Data exploration 
+
+   Creating slices...
+
+** Data export 
+
+ - Export a slice into one of these formats of choice: 
+    -- Commma- or tab- separated file
+    -- Excel speadsheet 
+    -- NEXUS
+
+ - When an export requires setting up multiple parameters, there is a
+   way to memorize a parameter combination for later reuse. 
+
+
+* To do with the stakeholhers 
+
+** Write the Vision statement 
+   Using the vision variants above as a starting point, arrive to a Vision
+   statement for THE product we want to develop. 
+
+** Determine success criteria 
+   [Good success criteria are a "must-have" according to SE
+   methodologists.  Unfortunately, the methodologists did not succeed
+   teaching me how to arrive to non-trivial success
+   criteria.... --vladimir]
+
+** Assemble the list of major features 
+   ... using the "kitchen sink" list above.  It is expected that there
+   will be additions, deletions, and refactorings.
+
+** Prioritize the features
+   Determine the "must have" features for a useful first release. 
+
+

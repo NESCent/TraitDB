@@ -1,0 +1,498 @@
+-*- mode: outline -*-
+
+This file: Examples of data in traits-based studies 
+
+Examples here come from the concrete data sets that we have on hand:
+Body Size WG, Plant Mating WG, Brian Sidlauskas, Brian O'Meara,
+Samantha Price
+
+Reading note: Where "Data Summary" is followed by "Non-trit data" and
+"Trait data" subsections, the latter supercede the former.  
+
+
+* Understanding parallel morphological diversification in sister fish faunas 
+(Brian Sidlauskas)
+
+** Study overview 
+
+Determine the cause of large-scale parallel evolution in the diverse
+characiform fishes inhabiting the rivers of tropical South America and
+Africa.  The strong evolutionary parallels between these sister faunas
+suggest that the same evolutionary forces have driven the
+diversification of both.
+This research will synthesize measurements of morphological diversity,
+evolutionary simulations, phylogenies, and detailed information about
+ecology and anatomy to compare and explain the parallel evolutionary
+histories of the two faunas.
+Products will include the further development and distribution of a
+new simulation-based test for heterogeneity in evolutionary rates that
+can be applied to any sister group comparison (even when a phylogeny
+is lacking or species numbers are unequal), reconstruction of the
+history of diversification in these fishes, and identification of
+aspects of ecology and morphology that may promote or restrict the
+evolution of biodiversity whenever they arise.
+
+
+** Data summary 
+
+For each species, defined as (family + subfamily[opional] + genus +
+species) and each publication that studies the species, record as much
+of the following data as available: 
+
+   - Museum identifier of a specimen and its type indicator (holotype,
+     paratype, ...), who identified the species and when, whether the
+     identity was verified [what is this?]
+   - Body length measurements (mm, SL vs TL vs FL, is it the maximum).
+   - Dietary info: dominant foods, other foods, life stage to which
+     info applies, source of this info (stomachs of how many specimens). 
+   - Location: country, river system, locality, latitude and longitude. 
+   - Publication reference and location within it (page, figure) from
+     where the data was taken.
+
+When separate sets of data are available for several different values
+of some of these parameters (e.g., observations in different rivers or
+at different life stages), record them all as separate rows in the
+database.
+
+** Non-trait data 
+
+*** Meta-information per row 
+Identifying data (always present): 
+  - Taxon: family + subfamily[opional] + genus + species
+  - Species identified by: 
+      -- Scientist(s)'s name 
+      -- Year of ID
+      -- "ID Verified?"  [what is this? most are empty]
+  - Citation 
+
+Other data (not always present): 
+  - Indirect (Secondary) Citation [what is this?  rarely used]
+  - Presumed Life History Stage (adult, juvenile, ...)
+      [is this overloaded w.r.t. vitals vs diet?]
+  - Location [is this overloaded w.r.t. vitals vs diet?]
+
+Examples of pertinent entries from the row-wide Notes field:
+
+  - "The paper was in German" [meaning "Some info might have been in
+    the paper, but was not understood"?]
+  - "information obtained from a very questionable paper"
+  -  "June data can't be read"
+  - "the geographic information makes note of more diversity in Amazon
+    and Orinoco basins with less diversity in coastal rivers of the
+    Guianas, the Sao Francisco River basin, and the shorter rivers
+    from northeastern Brazil to Uruguay"
+  - "Brazilian location, study probably examined a different species of Leporellus"
+  - "probably more info in Santos 1981"
+  - "Is this record in error??"
+
+
+*** Citation 
+Data: 
+  - Brief label (e.g., "Lauzanne, 1973") 
+  - Full free-text citation 
+  - Location within a paper: Page # plus, if applicable, Figure #,
+    Table #, Appendix # (both values within the same text cell)
+
+Examples of pertinent entries from the row-wide Notes field:
+
+  - "This was an online book which gave virtually no information about
+    the editor or anything like that."
+
+*** Location (of specimen collection or field observation) 
+Data: 
+  - Geo coordinates (latitude and longitude)
+  - Country 
+  - River system (a river name)
+  - Locality (free text like "upper course of the Tucurui Reservoir",
+    "city of Aripuana, state of Mato Grosso, Brazil", "island of
+    Melia-Makilala in Lake Chad")
+
+Examples of pertinent entries from the row-wide Notes field:
+  - 
+      
+*** Meta-information about a specimen
+Data: 
+    - Museum 
+    - Lot number 
+    - Specimen Number within Lot (appears unused)
+    - Type status (holotype, paratype, ...)
+
+Examples of pertinent entries from the row-wide Notes field:
+  - 
+
+
+** Trait data 
+
+*** Vital characters 
+Data:
+  - Body length, in mm, SL vs TL vs FL, is it the maximum).
+  - Length Measure (SL, TL or FL)
+  - "Is this cited as a maximum length?" (Yes, no, or blank)
+
+Examples of pertinent entries from the row-wide Notes field:
+  - "maximum of "mean length range""
+  - "also, 70 mm TL"
+  - "eating habits and maximum body length are noted for the entire
+    species, therefore there is no distinct specimen citable for
+    either of these data"
+  - "supposedly reach about a meter in length, but 500mm was the max
+    named for fish actually taken"
+  - "size is in wild…in captivity it can reach 200mm SL"
+  - "size is from in captivity…Taphorn notes "the largest specimens
+    taken during this study didn't reach half that size"
+  
+
+*** Dietary habits 
+  - Dominant food item(s) (free text or list of terms from a controlled vocabulary)
+  - "Other Foods Present (in significant quantitites, >3% by volume)"
+    (free text or list of terms from a controlled vocabulary)
+  - Source of dietary info (when present, is usually of the form
+    "stomach contents of NNN of specimens")
+  - Trophic Classification (subset from a set of controlled values
+    such as insectivore, algivore, piscivore, invertivore, frugivore,
+    ...) -- appears to be the value to be synthesized from the above. 
+
+Examples of pertinent entries from the row-wide Notes field:
+  - "specimens sampled in April" (... October, June, ...) and
+    "combination of all samples taken" -- here we have 6 or so rows
+    that give more detailed dietary information than usual (with
+    breakdown by months)
+  - "diets documented according to size category" -- an idication that
+    curator did some aggregation of source data before entering it
+    into the spreadsheet?
+  - "diet applies to the life history stage entered"
+  - "stomach also contained sand"
+  - "not entire diet"
+  - "may only be part of diet"
+  - "not necessarily primary diet, mentioned in passing"
+  - "sponges may only be part of the diet"
+  - "Presumably juvenile fishes/scales"
+  - "insects, crustaceans, molluscs, fruits and seeds" [in an "omnivore" specimen]
+  - "high water" and "low water" -- essentially splits the entry for
+    the specimen in two, duplicating all the values except "Other
+    foods", which differ.
+  - "Algae at 3%"
+  - "diet of the young primarily algae, adults seems to eat an
+    increasing quantity of macrophytes"
+  - "included stems and leaves"
+  - "all specimens from october/december, yearlong diet may be broader"
+
+** General observations 
+
+  - The natural key for records is (almost):  taxon + citation 
+
+  - There are various combinations of presence/absence for the groups
+    of information above, since the goal was to collect _any_ info
+    that was available.  Here are some patterns, though: 
+    -- Entries that contain a museum specimen value usually provide
+       some size measurement, but not dietary information. 
+
+
+** More questions to be asked 
+
+  - Is ajacency of two rows ever important in this spreadsheet? 
+
+  - "ID Verified" field -- empty everywhere except Brian's own species
+    identifications?
+
+  - Location within a citation (Page#, Figure#, etc.)  -- now it is
+    per whole record; would making it per field or per trait be
+    useful?
+
+  - Citation like "Sidlauskas personal observations" -- there must be
+    many; is there need to disambiguate them?
+
+  - Entries at the end of file: no full citations -- just not
+    completed yet?
+
+  - Is "Type Status" (holotype vs. paratype, vs none) important for
+    data organization or processing or it is just a piece of info as
+    any other?
+  
+  - Is "TypeStatus" a characteristic of the specimen (as a museum
+    item) w.r.t. the taxon or is it an indicator of whether the
+    citation was about a particular specimen?   
+
+  - In "Species" column, values like "Sp. A", "Sp. C", "sp 1", "Sp?"
+    -- meaning?  If this means that the author could not identify the
+    species, how this info will be used in Brian's study?
+
+  - While browsing, I could not see rows where "Citation" vs "Species
+    identified by" + "Year of identification" contained different data
+    -- are these fields supposed to go in lockstep?
+
+
+* Evolution of whales and relatives 
+(Samantha Price)
+
+** Study overview
+   [TODO: get from Samantha...]
+
+** Data summary 
+For each specimen, defined as a museum ID, record the following: 
+  - Specimen reference [publication?], type (holotype, paratype, ..). 
+  - Taxon (suborder + family + subfamily + Latin binomial).
+  - Sex (if known) and estimated life stage.
+  - Location info: country, textual description of the more precise
+    location, geo coordinates, formation name and lithology description. 
+  - Geological dating (period + epoch + age), date range, method of dating
+  - Sizes of skeletal features (number + measurement unit), for the
+    following: skeletal length, estimated body size with the
+    estimation method used, endocranial volume, estimated brain size,
+    scapula length, ....
+    [are all of these data points from the publication, or some are
+    estimates done by you?]
+  - For each vertebra from 1 to 48: designation, length, width and
+    height of centrum, units used for measurement. 
+    [What is the difference between numbers 1 to 48 used for vertebrae
+    columns vs the data in "vertebra designation"?]
+  - EndNote bibliographic reference. 
+  - "primary" vs "secondary" marker [what is this?]. 
+
+
+** Non-trait data 
+
+*** Citations 
+  -- Textual strings from EndNote
+
+*** Meta-data on the specimen 
+  Data collected: 
+  - Citation 
+  - "primary" vs "secondary" marker [? whtr the original description or not?]. 
+  - Specimen reference [how is this different from Citation], 
+  - Type (holotype, paratype, ..., often missing). 
+  - Taxon (suborder + family + subfamily + Latin binomial).
+  - Fossil meta-data [see separate description]
+
+  Notes: 
+  - One source paper often contains data on more than one specimen and
+    more than one species
+
+*** Fossil meta-data
+  Data collected: 
+  - Location info: 
+      -- country, 
+      -- textual description of the more precise location, 
+      -- geo coordinates [cited or estimated?]
+  - Formation name 
+  - Lithology description (Usually missing, only a couple entries:
+    "Chocolate Limestone, Babia Stage (Berwali Series)", "soft,
+    massive, fine sandstone")
+  - Geological dating   
+      -- (period + epoch + age), 
+      -- date range (in "Ma", often is missing),
+      -- method of dating [for the quoted date range?]
+  
+
+** Trait data 
+
+*** Descriptive data on the specimen 
+  - "Sex?" ["?" = "if known"?]   (always missing in the dataset)
+  - Estimated life stage         (always missing in the dataset)
+
+  - General measurements:  number + units 
+    (Skeletal_length, Estimated_bodysize,
+    Method_mass_or_length_estimate, Endocranial_volume,
+    Estimated_Brain_size)
+    (Very sparcely populated in the data set)
+    [Need to find our which of these are quoted and which are computed]
+
+Sample row-wide textual notes that seem pertinent:
+  -- "Questionable identification; some speciments, at least,
+     identified as Rodhocetus kasrani by Thewissen 1998 without
+     explanation" (applied to 9 specimen rows from the same
+     paper, which identifies all the specimens as "Indocetus ramani?")
+
+  -- "Occipital condyle breadth identified as "distance between
+     lateral margins of occipital condyles" (applied to 2 specimen
+     rows from the same paper).
+
+*** Vertebrae measurements 
+ There are 48 vertebra for which info is collected, and for each vertebrae: 
+    - designation [anatomic name for the bone?]
+    - centrum length, width, and height  
+    - measurement units for the above measurements
+
+ - For a given specimen, far from each of 48 vertebra contains data
+
+ - Record the raw reported data (e.g., use Imperial measurement units
+    if this is what the paper reported) -- translation into uniform
+    units is to be done later.
+
+ - Some Designation values carry notes like "eroded", "?", "in
+   articulation with S1". [meaning to be found out]
+
+ - Some measurement numbers carry notations like "*" or "+" [meaning
+   to be found out]
+
+ - A record-wide textual not that pertains to vertebrae: 
+    -- "identifies centrum widths specifically as "anterior"
+
+** General notes / observations 
+
+ - The main "skeleton index" for the data appears to be Species Name,
+   however there are non-common complications: If info on multiple
+   specimens within a species is available, or if there is conflicting
+   info for a specimen, record it all -- disambiguation is to be done
+   later.
+
+** More questions to ask
+
+  - "Primary_Secondary?" field: Whether the citation contains primary
+    vs. secondary description of the specimen?  Possible uses? 
+
+  - "Specimen Reference?" field: No values in the sheet. Would it
+    duplicate "Endnote_ref"?
+
+  - Is there significance to "?" in field names?: Primary_Secondary?,
+    Specimen_reference?, Type? [holo/para/..]
+
+  - Are geo coordinates quoted or esimated?  
+
+  - Are Date_range and Method_of_dating  related? 
+
+  - None of the following fields have any data in the sheet:
+    Skeletal_length, Estimated_bodysize,
+    Method_mass_or_length_estimate, Endocranial_volume,
+    Estimated_Brain_size.
+    Are they to be computed or this indicates sources had no data? 
+    Generally, which columns are to contain computed data?  What if for
+    some of those source papers do report some numbers?
+
+  - Column Method_mass_or_length_estimate =?=> there could be
+    different methods for mass/length estimates applied to different
+    species.  Is it meaningful to apply subsequent traits analysis to
+    mass estimates coming from different methods, or there have to be
+    several traits analyses, segregated per mass method that was used?
+    - Some lengths are "Starred" or "plussed", eg, 60.0* and 218+.
+    What's the meaning?
+
+ - What's the difference between the vertebra column number (Vertebra1
+   ... Vertebra48) and vertebra designation value (e.g., Cervical, C3,
+   Ca15, Ca1?, Posterior thoracic, T8, Proximal caudal, Proximal
+   caudal (articulated with v. 34), S2 (in articulation with S1), C2
+   (eroded) ...)
+
+ - What are the differences in meaning between the three (or 4?) kinds
+   of designation values above?
+
+ - If there is no data for Vertebra N?: Paper had no data vs. this
+   specimen is not supposed to have Vertebra N?
+
+ - Some vertebrae designations are question-marked, e.g. "T5?". Is
+   this meta-info for "Author was not sure" field?
+
+ - Interesting length values (e.g., for Vertebrae 15 and 16): 
+      "84 (posterior epiphysis missing)"
+    Something for a note field?  
+
+ - What is the "natural backbone" for the data collection?
+   Species name? SpecimenID? SpecimenID + Citation?
+   [What if several papers provide info for the same
+   specimen?]
+
+
+* Ants 
+(Brian O'Meara)
+** Study overview
+** Data summary 
+** Non-trait data 
+** Trait data 
+** General notes / observations 
+** More questions to ask 
+
+
+* Body size evolution 
+(Phanerozoic body size trends WG)
+
+** Study overview
+Explain trends in maximal body sizes achieved by different taxonomic
+groups by geological, climatic, ecological, and evolutionary changes
+or pressures.
+
+** Data summary
+For each taxonomic class (given as kingdom + phylum +
+class), record information about one or several species of the class
+that achieved maximum body size within the class, in a particular
+geologic period.  Data recorded for each such species: 
+   - Taxon (as order + family + genus + species), 
+   - Environment, motility. 
+   - Geological time period: period, period midpoint ["Ma" - in
+     millions of years?], epoch, stage. 
+   - Size measurements: length, width, thickness, mass.
+   - Computed biovolume and info about the formula and method used for
+     the computation.
+   - Fossil info: lithology, location, formation, regional and local
+     environments.
+   - Provenance info: literature reference for size data and for the
+     original species description, experts contacted, other sources.
+
+
+* Evolution of plant mating systems
+(Mixed Mating WG)
+
+** Study description 
+Background: Plant mating systems cover the continuum from
+self-pollinating to mixed to fully cross-pollinating.  Morever,
+significant portion of plant species is capable of using several kinds
+of fertilization.
+
+Broad question: How do various genetic, developmental, evolutionary,
+ecological, temporal and spatial factors influence where a plant's
+population lies on the mating continuum?
+
+Factors that are hypothesized to play role: 
+
+  - Pollen limitation, which can be caused by geographic location of a
+    population within the species' range (central vs. the edge), which
+    in turn influences pollinator visitation and density of pollen
+    donors.
+  - Reproductive assurance of selfing. 
+  - Relative costs and benefits of selfing vs. outcrossing. 
+  - Inbreeding depression in the species -- a complex genetic factor
+    caused by the expression of deleterious recessive alleles and
+    manifested as self-progeny being less vigorous than outcross
+    progeny.
+
+** Data summary
+    [see also 
+     https://www.nescent.org/wg/mixedmating/index.php?title=Database_Requirements]
+
+  -- Data per species: 
+     - Taxonomic name (reference(?) + family + genus + species).
+     - General plant features: taxcat (monocot, dicot, gymnosperm),
+       biome (tundra, rainforest, ..), growth form (herb, tree, ...),
+       life history (annual, perennial, ...).
+     - Average of latitudes for which outcrossing rate was measured. 
+     - Sexual system (hermaphroditic, heterostylous, ...), presence of
+       a self-incompatibility mechanism.
+     - Flowering details: flower size, flower size variability among
+       genotypes or populations, flowers per inflorescence, number of
+       inflorescences, inforescence variability among genotypes or
+       populations, dichogamy, herkogamy, floral symmetry.
+     - Pollination details: reproduction in the absence of
+       pollinators, pollinators (a subset of: insect, bee, fly, ...,
+       wind, water), presence of nectar,
+     - Combined list of references from which the data was derived.
+
+  -- Data per population: 
+     - Taxon name (family + genus + species) 
+     - Outcrossing: population name (if named by investigators),
+       population type (natural, experimental, ...), year for which
+       estimates were made, measurements and standard errors for
+       various progeny indicators: F, tm, ts, paper reference and
+       location in the paper where the data were reported.
+     - Inbreeding depression: measurements and standard deviations,
+       for inbred vs. outcrossed populations, of fitness
+       characteristics (such as seed number per cross, proportion of
+       seeds from crosses, seed weight, germination rate, juvenile
+       survival, adult survival, fecundity, vegetative size) at
+       diffferent developmental stages (seed, germination, juvenile,
+       adult).
+     - Experimental pollination: population's name and country,
+       measurements of various reproductive characteristics (fruits
+       per flower, seeds per fruit, ...) under various treatments
+       (Fci, Fio, Fis, Fin, Fen [what are these?]).
+
+        
+

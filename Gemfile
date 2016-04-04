@@ -17,7 +17,7 @@ gem 'delayed_job', '~> 4.0.0'
 
 # delayed_job_active_record 4.0.0 has issues with postgres 8.4
 # This version has a workaround
-gem 'delayed_job_active_record', :git => 'https://github.com/panter/delayed_job_active_record.git'
+gem 'delayed_job_active_record', '~> 4.0.0'
 gem "daemons"
 
 # devise for user accounts

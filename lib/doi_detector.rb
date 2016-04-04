@@ -10,6 +10,7 @@ class String
 
   def doi?
     return true if start_with?('http://dx.doi.org/')
+    return true if start_with?('https://doi.org/')
     return true if start_with?('doi:')
     false
   end
@@ -18,6 +19,6 @@ class String
     return nil unless doi?
     return self if uri?
     # Otherwise, 'doi:...'
-    return gsub('doi:','http://dx.doi.org/')
+    return gsub('doi:','https://doi.org/')
   end
 end

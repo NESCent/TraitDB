@@ -15,16 +15,26 @@ TraitDB is a Rails 4 application.  It requires [ruby](http://ruby-lang.org) and 
     ```
     git clone git@github.com:NESCent/TraitDB.git
     ```
-    
+
 2. Install dependencies with `bundle install`
 3. Set your database credentials as environment variables.  `config/database.yml` will read these values out of the environment.  If your database server is on a different host, set the host/port as well:
-<pre><code>export TRAITDB_PG_DEV_USER="traitdb_dev_user"
-export TRAITDB_PG_DEV_PASS="your-password-here"</code></pre>
+```
+export TRAITDB_PG_DEV_USER="traitdb_dev_user"
+export TRAITDB_PG_DEV_PASS="your-password-here"
+```
 4. Run `rake db:setup`.  This Instructs Rails to connect to your database and create the required users and databases.  If your database requires you to authenticate before creating users/databases, you will be prompted for credentials.
 5. If `rake db:setup` is successful, it will also run a `rake db:migrate` to create database tables.  If not successful, you can create the databases and users manually, then run `rake db:migrate` manually.
-6. Start the server with `rails server`.
-7. Visit [http://localhost:3000](http://localhost:3000) to access the application.  You will be shown the about page.  If you click _Upload_, you will be redirected to the sign-in screen.  From here, you can create an account or sign in with OpenID.
-8. Start a [delayed_job](https://github.com/collectiveidea/delayed_job) worker.  Delayed job is used to execute dataset imports as a background process.  It includes a rake task to start a worker.  You can run `rake jobs:work` in an additional terminal process, or run a worker as a daemon with `script/delayed_job start`.
+6. If you wish to enable Google Sign-in (recommended), you will need to
+  1. Register an application for [Google OAuth 2.0](https://developers.google.com/identity/protocols/OAuth2)
+  2. Enable the Google+ API
+  3. Set the Client ID and Client Secret credentials in your environment:
+  ```
+  export TRAITDB_GOOGLE_APP_ID="your-google-app-id"
+  export TRAITDB_GOOGLE_APP_SECRET="your-google-app-secret"
+  ```
+7. Start the server with `rails server`.
+8. Visit [http://localhost:3000](http://localhost:3000) to access the application.  You will be shown the about page.  If you click _Upload_, you will be redirected to the sign-in screen.  From here, you can sign in with OpenID or a Google Account
+9. Start a [delayed_job](https://github.com/collectiveidea/delayed_job) worker.  Delayed job is used to execute dataset imports as a background process.  It includes a rake task to start a worker.  You can run `rake jobs:work` in an additional terminal process, or run a worker as a daemon with `script/delayed_job start`.
 
 ## Usage
 
@@ -32,10 +42,12 @@ export TRAITDB_PG_DEV_PASS="your-password-here"</code></pre>
 
 Data in TraitDB is publicly searchable and organized into projects.  Initially there are no projects, and only administrators can create projects.  Authentication is handled by OpenID, so in order to get started, you must:
 
-1. Sign in with an OpenID by clicking __Sign In__ in the top menu bar.  After signing in, there will be an entry in the users table with your email address.
+1. After signing in, there will be an entry in the users table with your email address.
 2. Upgrade this user to an Administrator with the following rake command:
-<pre><code>$ rake traitdb:upgrade_admin[email@domain.com]
-Upgrading email@domain.com</code></pre>
+```
+$ rake traitdb:upgrade_admin[email@domain.com]
+Upgrading email@domain.com
+```
 3. Reload your web browser, you will have an __Admin__ menu option.
 4. Click __Admin->Projects__, and the __New Project__ button.
 5. Fill out the project details and save the new project

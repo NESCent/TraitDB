@@ -1,0 +1,23 @@
+{
+  "@context": "https://raw.githubusercontent.com/codemeta/codemeta/master/codemeta.jsonld",
+  "@type": "Code",
+  "author": [
+    {
+      "@id": " https://orcid.org/0000-0003-3221-9579",
+      "@type": "Person",
+      "email": "dan.leehr@duke.edu",
+      "name": "Dan Leehr",
+      "affiliation": "Duke University"
+    }
+  ],
+  "identifier": "",
+  "codeRepository": "https://github.com/NESCent/TraitDB",
+  "datePublished": "2018-07-20",
+  "dateModified": "2018-07-20",
+  "dateCreated": "2018-07-20",
+  "description": "Web application database of phenotypic trait data",
+  "keywords": "trait, rails, csv",
+  "license": "MIT",
+  "title": "TraitDB",
+  "version": "v0.9.1"
+}

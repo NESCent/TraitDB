@@ -1,9 +1,7 @@
 # .travis.yml
 language: ruby
 rvm:
-  - 1.9.3
-  - 2.0.0
-  - 2.1 # 2.1.0 is broken, see https://github.com/travis-ci/travis-ci/issues/2220
+  - 2.2.0
 env:
   - TRAITDB_PG_TEST_USER=postgres TEST_SUITE=units
   - TRAITDB_PG_TEST_USER=postgres TEST_SUITE=functionals

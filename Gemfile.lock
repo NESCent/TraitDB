@@ -262,5 +262,8 @@ DEPENDENCIES
   webmock (~> 1.17.4)
   wicked
 
+RUBY VERSION
+   ruby 2.3.0p0
+
 BUNDLED WITH
-   1.12.5
+   1.17.3

@@ -1,7 +1,7 @@
 # .travis.yml
 language: ruby
 rvm:
-  - 2.2.0
+  - 2.3.0
 env:
   - TRAITDB_PG_TEST_USER=postgres TEST_SUITE=units
   - TRAITDB_PG_TEST_USER=postgres TEST_SUITE=functionals

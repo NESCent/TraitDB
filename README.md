@@ -56,7 +56,9 @@ Any authenticated user can upload data to any project, but only administrators c
 
 ### Upload
 
-TraitDB accepts data uploads in CSV format, with a specific focus on data validation and organization.  In order to upload data into a project, you must write at least one import configuration file in YAML format. This configuration file will contain the project-specific data for your spreadsheets, as well as allowable values and rules for data relationships and which columns to import, ignore, or convert.
+TraitDB accepts data uploads in CSV format, with a specific focus on data validation and organization.  Only logged-in users can upload data. When not logged-in, the upload link will not appear.
+
+In order to upload data into a project, you must write at least one import configuration file in YAML format. This configuration file will contain the project-specific data for your spreadsheets, as well as allowable values and rules for data relationships and which columns to import, ignore, or convert.
 
 For detailed information on writing import configs, see the documentation on the [wiki](../../wiki).
 

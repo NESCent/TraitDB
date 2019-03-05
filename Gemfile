@@ -40,7 +40,7 @@ gem 'pg', '~> 0.17.1'
 # Formerly in the assets group
 gem 'sass-rails',   '~> 4.0.3'
 gem 'coffee-rails', '~> 4.0.1'
-gem 'jquery-tablesorter', '~> 1.12.6'
+gem 'jquery-tablesorter', '~> 1.26.1'
 
 # See https://github.com/sstephenson/execjs#readme for more supported runtimes
 

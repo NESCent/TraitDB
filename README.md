@@ -22,8 +22,8 @@ TraitDB is a Rails 4 application.  It requires [ruby](http://ruby-lang.org) and 
 export TRAITDB_PG_DEV_USER="traitdb_dev_user"
 export TRAITDB_PG_DEV_PASS="your-password-here"
 ```
-4. Run `rake db:setup`.  This Instructs Rails to connect to your database and create the required users and databases.  If your database requires you to authenticate before creating users/databases, you will be prompted for credentials.
-5. If `rake db:setup` is successful, it will also run a `rake db:migrate` to create database tables.  If not successful, you can create the databases and users manually, then run `rake db:migrate` manually.
+4. Run `createuser -d -P traitdb_dev_user` to create this user in your database.
+5. Run `rake db:setup`. It will verify rails can connect to the database and run a `rake db:migrate` to create database tables.  If not successful, you can create the databases and users manually, then run `rake db:migrate` manually.
 6. If you wish to enable Google Sign-in (recommended), you will need to
     - Register an application for [Google OAuth 2.0](https://developers.google.com/identity/protocols/OAuth2)
     - Enable the Google+ API

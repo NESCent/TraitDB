@@ -76,6 +76,10 @@ As an admin user, you can upload and manage Import Configs for a project.  Authe
 
 At the upload stage, the user can get information about the Import Config, or download a template CSV file that conforms to it.
 
+## Community
+
+For contributing to TraitDB (patches, feature requests, bugs), please see [CONTRIBUTING.md](CONTRIBUTING.md). For support requests, please create an issue.
+
 ## License
 
 TraitDB is open source under the [MIT License](http://opensource.org/licenses/MIT).  See [LICENSE.txt](LICENSE.txt) for more information.

@@ -4,7 +4,7 @@ ruby '~> 2.3.0'
 gem 'rails', '4.1.4'
 
 # Paperclip adds file upload support to ActiveRecord models
-gem 'paperclip', '~> 4.2.0'
+gem 'paperclip', '~> 4.3.7'
 
 # Rails 4 removed attr_accessible and attr_protected from your models.
 # Per https://github.com/collectiveidea/delayed_job/blob/master/README.md

@@ -19,13 +19,7 @@ bibliography: paper.bib
 
 # Summary
 
-TraitDB is a web application that synthesizes phenotypic trait datasets from various data structures and formats. It organizes datasets into a consistent format and taxonomy, making it easier for users to query, subset, and share data by traits and taxa.
-
-Many software packages are available to store structured and unstructured relational data alike. From graphical spreadsheets to query-powered database engines, these software excel at the direct ingesting, storing, and vending homogenous datasets.
-
-When synthesizing multiple heterogenous datasets together, these software can still serve as vital infrastructure, but by design do not enforce requirements on organization, categorization, or uniformity.
-
-As a result, well-intentioned efforts to maintain data integrity can easily fall short in the face of building complicated validation and transformation routines to fit datasets into a common schema.
+TraitDB is a web application that synthesizes phenotypic trait datasets from various data structures and formats. It organizes datasets into a consistent format and taxonomy, making it easier for users to query, subset, and share data by traits and taxa. Many software packages are available to store structured and unstructured relational data alike. From graphical spreadsheets to query-powered database engines, these software excel at the direct ingesting, storing, and vending homogenous datasets. When synthesizing multiple heterogenous datasets together, these software can still serve as vital infrastructure, but by design do not enforce requirements on organization, categorization, or uniformity. As a result, well-intentioned efforts to maintain data integrity can easily fall short in the face of building complicated validation and transformation routines to fit datasets into a common schema.
 
 Through work with multiple [NESCent](http://nescent.org/) working groups, we observed and supported real-world efforts to build a database of traits by collecting and organizing thousands of trait data observations. We evaluated software including [OpenRefine](http://openrefine.org/), [SQLite Manager](https://addons.mozilla.org/en-US/firefox/addon/sqlite-manager-webext/), and [mx](https://github.com/mx3/mx) that aim to address many of these challenges.
 

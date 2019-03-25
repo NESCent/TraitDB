@@ -19,7 +19,7 @@ bibliography: paper.bib
 
 # Summary
 
-TraitDB is a web application built to facilitate storage, searching, subsetting, and sharing trait data from multiple sources.
+TraitDB is a web application that synthesizes phenotypic trait datasets from various data structures and formats. It organizes datasets into a consistent format and taxonomy, making it easier for users to query, subset, and share data by traits and taxa.
 
 Many software packages are available to store structured and unstructured relational data alike. From graphical spreadsheets to query-powered database engines, these software excel at the direct ingesting, storing, and vending homogenous datasets.
 

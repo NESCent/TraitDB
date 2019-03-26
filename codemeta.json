@@ -13,11 +13,11 @@
   "identifier": "",
   "codeRepository": "https://github.com/NESCent/TraitDB",
   "datePublished": "2018-07-20",
-  "dateModified": "2019-03-05",
+  "dateModified": "2019-03-26",
   "dateCreated": "2018-07-20",
   "description": "Web application database of phenotypic trait data",
   "keywords": "trait, rails, csv",
   "license": "MIT",
   "title": "TraitDB",
-  "version": "v1.0.0"
+  "version": "v1.0.1"
 }

@@ -34,5 +34,3 @@ TraitDB has been used to gather and produce datasets hosted by the [Tree of Sex]
 # Acknowledgements
 
 TraitDB is a project of [National Evolutionary Synthesis Center](http://nescent.org/)
-
-# References

@@ -1,6 +1,7 @@
 TraitDB
 =============
 [![Build Status](https://travis-ci.org/NESCent/TraitDB.svg?branch=master)](https://travis-ci.org/NESCent/TraitDB)
+[![DOI](http://joss.theoj.org/papers/10.21105/joss.01201/status.svg)](https://doi.org/10.21105/joss.01201)
 
 ## Synopsis
 
